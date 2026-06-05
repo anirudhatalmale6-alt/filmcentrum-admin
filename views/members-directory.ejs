@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medlemskatalog - FilmCentrum Riks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#1a1a2e;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+    .header a.logo{color:#dc2626;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase}
+    .header nav a{color:#94a3b8;text-decoration:none;font-size:13px;margin-left:24px}
+    .header nav a:hover{color:#fff}
+    .hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);padding:48px 32px;text-align:center;color:#fff}
+    .hero h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:12px}
+    .hero p{color:#94a3b8;font-size:15px;max-width:600px;margin:0 auto 24px}
+    .search-bar{max-width:500px;margin:0 auto;display:flex;gap:8px}
+    .search-bar input{flex:1;padding:12px 18px;border:none;border-radius:8px;font-size:14px;outline:none;background:#0f172a;color:#e2e8f0;border:1px solid #334155}
+    .search-bar input:focus{border-color:#dc2626}
+    .search-bar select{padding:12px 14px;border:none;border-radius:8px;font-size:13px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;cursor:pointer}
+    .container{max-width:1100px;margin:0 auto;padding:32px 24px}
+    .stats{display:flex;gap:16px;margin-bottom:24px;font-size:13px;color:#64748b}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+    .member-card{background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;transition:box-shadow 0.2s,transform 0.2s}
+    .member-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);transform:translateY(-2px)}
+    .member-card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+    .member-card .headline{font-size:13px;color:#dc2626;margin-bottom:8px}
+    .member-card .location{font-size:12px;color:#64748b;margin-bottom:10px}
+    .member-card .branches{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+    .member-card .branch-tag{padding:2px 8px;background:#fef2f2;color:#dc2626;border-radius:12px;font-size:11px;font-weight:500}
+    .member-card .bio{font-size:12px;color:#475569;line-height:1.5;max-height:48px;overflow:hidden}
+    .member-card .links{margin-top:10px;display:flex;gap:8px}
+    .member-card .links a{font-size:11px;color:#1d4ed8;text-decoration:none}
+    .member-card .links a:hover{text-decoration:underline}
+    .no-results{text-align:center;padding:48px;color:#64748b;font-size:15px}
+    .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
+    .footer a{color:#dc2626;text-decoration:none}
+    @media(max-width:600px){.grid{grid-template-columns:1fr}.search-bar{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/filmcentrum/" class="logo">FilmCentrum Riks</a>
+    <nav>
+      <a href="/filmcentrum/">Hem</a>
+      <a href="/filmcentrum/members">Medlemskatalog</a>
+      <a href="/filmcentrum/login">Logga in</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <h1>Medlemskatalog</h1>
+    <p>Utforska vara medlemmar - oberoende filmskapare fran hela Sverige</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Sok efter namn..." oninput="filterMembers()">
+      <select id="branchFilter" onchange="filterMembers()">
+        <option value="">Alla filmgrenar</option>
+        <% branches.forEach(function(b) { %>
+          <option value="<%= b.name_sv || b.name %>"><%= b.name_sv || b.name %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats" id="statsBar"><%= members.length %> medlemmar</div>
+    <div class="grid" id="membersGrid">
+      <% if (members.length === 0) { %>
+        <div class="no-results">Inga medlemmar att visa annu.</div>
+      <% } %>
+      <% members.forEach(function(m) { %>
+        <div class="member-card" data-name="<%= (m.name || '').toLowerCase() %>" data-branches="<%= (m.branch_names || '').toLowerCase() %>">
+          <h3><%= m.name %><% if (m.stage_name) { %> <span style="font-weight:400;color:#64748b;font-size:13px;">(<%= m.stage_name %>)</span><% } %></h3>
+          <% if (m.headline) { %><div class="headline"><%= m.headline %></div><% } %>
+          <% if (m.city) { %><div class="location"><%= m.city %><% if (m.country && m.country !== 'SE') { %>, <%= m.country %><% } %></div><% } %>
+          <% if (m.branch_names) { %>
+            <div class="branches">
+              <% m.branch_names.split(',').forEach(function(bn) { if(bn.trim()) { %>
+                <span class="branch-tag"><%= bn.trim() %></span>
+              <% } }); %>
+            </div>
+          <% } %>
+          <% if (m.biography) { %><div class="bio"><%= m.biography.substring(0, 120) %><%= m.biography.length > 120 ? '...' : '' %></div><% } %>
+          <div class="links">
+            <% if (m.website) { %><a href="<%= m.website %>" target="_blank">Webb</a><% } %>
+            <% if (m.imdb_link) { %><a href="<%= m.imdb_link %>" target="_blank">IMDb</a><% } %>
+            <% if (m.showreel_url) { %><a href="<%= m.showreel_url %>" target="_blank">Showreel</a><% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a> - Sveriges filmkooperativ
+  </div>
+
+<script>
+function filterMembers() {
+  var q = document.getElementById('searchInput').value.toLowerCase().trim();
+  var branch = document.getElementById('branchFilter').value.toLowerCase();
+  var cards = document.querySelectorAll('.member-card');
+  var shown = 0;
+  cards.forEach(function(c) {
+    var name = c.getAttribute('data-name') || '';
+    var branches = c.getAttribute('data-branches') || '';
+    var nameMatch = !q || name.indexOf(q) !== -1;
+    var branchMatch = !branch || branches.indexOf(branch) !== -1;
+    if (nameMatch && branchMatch) { c.style.display = ''; shown++; }
+    else { c.style.display = 'none'; }
+  });
+  document.getElementById('statsBar').textContent = shown + ' medlemmar' + (q || branch ? ' (filtrerade)' : '');
+}
+</script>
+</body>
+</html>

@@ -763,6 +763,15 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 // START SERVER
 
 // ============================================================
+// ============================================================
+// PUBLIC MEMBERS DIRECTORY
+// ============================================================
+app.get(BASE.replace("/admin", "") + "/members", function(req, res) {
+  var members = db.prepare("SELECT m.*, GROUP_CONCAT(COALESCE(fb.name_sv, fb.name)) as branch_names FROM members m LEFT JOIN member_branches mb ON mb.member_id = m.id LEFT JOIN film_branches fb ON fb.id = mb.branch_id WHERE m.is_public = 1 AND m.approved = 1 GROUP BY m.id ORDER BY m.name").all();
+  var branches = db.prepare("SELECT * FROM film_branches ORDER BY sort_order").all();
+  res.render("members-directory", { layout: false, members: members, branches: branches });
+});
+
 // MEMBER PORTAL (login + profile + password change)
 // ============================================================
 function memberAuth(req, res, next) {
