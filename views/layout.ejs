@@ -90,7 +90,7 @@
     <div class="top-bar">
       <h1>FilmCentrum Admin</h1>
       <% if (typeof admin !== "undefined" && admin) { %>
-        <div class="user-info">Logged in as <strong><%= admin %></strong></div>
+        <div class="user-info" style="display:flex;align-items:center;gap:12px;"><select id="adminLang" onchange="changeAdminLang(this.value)" style="padding:4px 8px;background:#0f172a;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px;cursor:pointer;"><option value="sv">SV</option><option value="en">EN</option><option value="no">NO</option><option value="da">DA</option><option value="fi">FI</option><option value="de">DE</option><option value="es">ES</option><option value="it">IT</option><option value="ar">AR</option><option value="tr">TR</option><option value="ur">UR</option><option value="hi">HI</option></select>Logged in as <strong><%= admin %></strong></div>
       <% } %>
     </div>
     <%- body %>
