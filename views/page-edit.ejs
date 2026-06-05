@@ -1,36 +1,30 @@
 <style>
-  .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
+  .back-link { display: inline-block; margin-bottom: 16px; color: #94a3b8; text-decoration: none; font-size: 13px; }
   .back-link:hover { color: #dc2626; }
-  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
-  .page-edit-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 960px; }
-  .page-edit-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 6px; }
-  .page-edit-card .slug-info { font-size: 13px; color: #64748b; margin-bottom: 24px; font-family: monospace; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
-  .form-group input { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
-  .form-group input:focus { border-color: #dc2626; }
-  .lang-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #334155; }
-  .lang-section h3 { font-size: 15px; color: #dc2626; margin-bottom: 16px; }
-  .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+  .page-header h2 { font-size: 20px; color: #f1f5f9; }
+  .page-header .slug-info { font-size: 13px; color: #64748b; font-family: monospace; }
+  .title-row { display: flex; gap: 12px; margin-bottom: 16px; }
+  .title-row .form-group { flex: 1; }
+  .title-row .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+  .title-row .form-group input { width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; }
+  .title-row .form-group input:focus { border-color: #dc2626; }
+  .lang-tabs { display: flex; gap: 0; margin-bottom: 0; }
+  .lang-tab { padding: 8px 20px; font-size: 13px; font-weight: 600; border: 1px solid #334155; background: #1a2332; color: #64748b; cursor: pointer; border-bottom: none; }
+  .lang-tab:first-child { border-radius: 6px 0 0 0; }
+  .lang-tab:last-child { border-radius: 0 6px 0 0; }
+  .lang-tab.active { background: #dc2626; color: #fff; border-color: #dc2626; }
+  .editor-container { border: 1px solid #334155; border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 16px; }
+  .gjs-one-bg { background: #1e293b !important; }
+  .gjs-two-color { color: #e2e8f0 !important; }
+  .gjs-three-bg { background: #0f172a !important; }
+  .gjs-four-color, .gjs-four-color-h:hover { color: #dc2626 !important; }
+  .btn-save { padding: 10px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .btn-save:hover { background: #b91c1c; }
-  .btn-secondary { padding: 10px 24px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 12px; }
+  .btn-secondary { padding: 10px 20px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 8px; }
   .btn-secondary:hover { background: #475569; }
-  .editor-toolbar { display: flex; flex-wrap: wrap; gap: 2px; background: #1a2332; border: 1px solid #334155; border-bottom: none; border-radius: 6px 6px 0 0; padding: 6px 8px; }
-  .editor-toolbar button { background: none; border: 1px solid transparent; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; min-width: 28px; }
-  .editor-toolbar button:hover { background: #334155; color: #e2e8f0; }
-  .editor-toolbar .sep { width: 1px; background: #334155; margin: 0 4px; }
-  .rich-editor { width: 100%; min-height: 250px; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 0 0 6px 6px; color: #e2e8f0; font-size: 14px; font-family: inherit; outline: none; line-height: 1.6; overflow-y: auto; }
-  .rich-editor:focus { border-color: #dc2626; }
-  .rich-editor h1, .rich-editor h2, .rich-editor h3 { color: #f1f5f9; margin: 12px 0 8px; }
-  .rich-editor a { color: #60a5fa; }
-  .rich-editor ul, .rich-editor ol { padding-left: 24px; margin: 8px 0; }
-  .rich-editor blockquote { border-left: 3px solid #dc2626; padding-left: 12px; color: #94a3b8; margin: 8px 0; }
-  .rich-editor img { max-width: 100%; border-radius: 4px; }
-  .mode-toggle { display: flex; gap: 0; margin-bottom: 0; }
-  .mode-toggle button { padding: 5px 14px; font-size: 12px; border: 1px solid #334155; background: #1a2332; color: #64748b; cursor: pointer; }
-  .mode-toggle button:first-child { border-radius: 4px 0 0 4px; }
-  .mode-toggle button:last-child { border-radius: 0 4px 4px 0; }
-  .mode-toggle button.active { background: #dc2626; color: #fff; border-color: #dc2626; }
+  .actions-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 </style>
 
 <a href="<%= base %>/pages" class="back-link">&larr; Back to Pages</a>
@@ -39,140 +33,159 @@
   <div class="success-banner">Page saved successfully.</div>
 <% } %>
 
-<div class="page-edit-card">
-  <h2>Edit Page</h2>
-  <div class="slug-info">Slug: /<%= page.slug %></div>
-
-  <form method="POST" action="<%= base %>/pages/<%= page.id %>" id="pageForm">
-    <div class="lang-section">
-      <h3>Swedish (SV)</h3>
-      <div class="form-group">
-        <label>Title</label>
-        <input type="text" name="title_sv" value="<%= page.title_sv || '' %>">
-      </div>
-      <div class="form-group">
-        <label>Content</label>
-        <div class="mode-toggle" id="mode_sv">
-          <button type="button" class="active" onclick="setMode('sv','visual')">Visual</button>
-          <button type="button" onclick="setMode('sv','html')">HTML</button>
-        </div>
-        <div class="editor-toolbar" id="toolbar_sv">
-          <button type="button" onclick="fmt('sv','bold')" title="Bold"><b>B</b></button>
-          <button type="button" onclick="fmt('sv','italic')" title="Italic"><i>I</i></button>
-          <button type="button" onclick="fmt('sv','underline')" title="Underline"><u>U</u></button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmtBlock('sv','H2')" title="Heading 2">H2</button>
-          <button type="button" onclick="fmtBlock('sv','H3')" title="Heading 3">H3</button>
-          <button type="button" onclick="fmtBlock('sv','P')" title="Paragraph">P</button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmt('sv','insertUnorderedList')" title="Bullet list">&#8226;</button>
-          <button type="button" onclick="fmt('sv','insertOrderedList')" title="Numbered list">1.</button>
-          <div class="sep"></div>
-          <button type="button" onclick="insertLink('sv')" title="Insert link">Link</button>
-          <button type="button" onclick="insertImage('sv')" title="Insert image">Img</button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmt('sv','justifyLeft')" title="Align left">&#8676;</button>
-          <button type="button" onclick="fmt('sv','justifyCenter')" title="Center">&#8596;</button>
-          <button type="button" onclick="fmt('sv','justifyRight')" title="Align right">&#8677;</button>
-        </div>
-        <div contenteditable="true" class="rich-editor" id="editor_sv"><%= page.content_sv || '' %></div>
-        <textarea name="content_sv" id="hidden_sv" style="display:none;"><%= page.content_sv || '' %></textarea>
-      </div>
-    </div>
-
-    <div class="lang-section">
-      <h3>English (EN)</h3>
-      <div class="form-group">
-        <label>Title</label>
-        <input type="text" name="title_en" value="<%= page.title_en || '' %>">
-      </div>
-      <div class="form-group">
-        <label>Content</label>
-        <div class="mode-toggle" id="mode_en">
-          <button type="button" class="active" onclick="setMode('en','visual')">Visual</button>
-          <button type="button" onclick="setMode('en','html')">HTML</button>
-        </div>
-        <div class="editor-toolbar" id="toolbar_en">
-          <button type="button" onclick="fmt('en','bold')" title="Bold"><b>B</b></button>
-          <button type="button" onclick="fmt('en','italic')" title="Italic"><i>I</i></button>
-          <button type="button" onclick="fmt('en','underline')" title="Underline"><u>U</u></button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmtBlock('en','H2')" title="Heading 2">H2</button>
-          <button type="button" onclick="fmtBlock('en','H3')" title="Heading 3">H3</button>
-          <button type="button" onclick="fmtBlock('en','P')" title="Paragraph">P</button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmt('en','insertUnorderedList')" title="Bullet list">&#8226;</button>
-          <button type="button" onclick="fmt('en','insertOrderedList')" title="Numbered list">1.</button>
-          <div class="sep"></div>
-          <button type="button" onclick="insertLink('en')" title="Insert link">Link</button>
-          <button type="button" onclick="insertImage('en')" title="Insert image">Img</button>
-          <div class="sep"></div>
-          <button type="button" onclick="fmt('en','justifyLeft')" title="Align left">&#8676;</button>
-          <button type="button" onclick="fmt('en','justifyCenter')" title="Center">&#8596;</button>
-          <button type="button" onclick="fmt('en','justifyRight')" title="Align right">&#8677;</button>
-        </div>
-        <div contenteditable="true" class="rich-editor" id="editor_en"><%= page.content_en || '' %></div>
-        <textarea name="content_en" id="hidden_en" style="display:none;"><%= page.content_en || '' %></textarea>
-      </div>
-    </div>
-
-    <button type="submit" class="btn-save">Save Page</button>
-    <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
-  </form>
+<div class="page-header">
+  <div>
+    <h2>Edit Page</h2>
+    <div class="slug-info">/<%= page.slug %></div>
+  </div>
 </div>
 
+<form method="POST" action="<%= base %>/pages/<%= page.id %>" id="pageForm">
+  <div class="title-row">
+    <div class="form-group"><label>Title (SV)</label><input type="text" name="title_sv" value="<%= page.title_sv || '' %>"></div>
+    <div class="form-group"><label>Title (EN)</label><input type="text" name="title_en" value="<%= page.title_en || '' %>"></div>
+  </div>
+
+  <div class="lang-tabs">
+    <div class="lang-tab active" onclick="switchLang('sv')">Svenska</div>
+    <div class="lang-tab" onclick="switchLang('en')">English</div>
+  </div>
+
+  <div id="editor-sv" class="editor-container" style="height:520px;"></div>
+  <div id="editor-en" class="editor-container" style="height:520px;display:none;"></div>
+
+  <textarea name="content_sv" id="hidden_sv" style="display:none;"><%= page.content_sv || '' %></textarea>
+  <textarea name="content_en" id="hidden_en" style="display:none;"><%= page.content_en || '' %></textarea>
+
+  <div class="actions-bar">
+    <button type="submit" class="btn-save" onclick="saveEditors()">Save Page</button>
+    <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
+  </div>
+</form>
+
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
+<link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.css">
+<script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
+<script src="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.js"></script>
+
 <script>
-var modes = { sv: 'visual', en: 'visual' };
+var currentLang = 'sv';
+var editors = {};
 
-function fmt(lang, cmd) {
-  document.getElementById('editor_' + lang).focus();
-  document.execCommand(cmd, false, null);
-}
+function initEditor(lang) {
+  var container = document.getElementById('editor-' + lang);
+  var content = document.getElementById('hidden_' + lang).value || '<p>Start editing...</p>';
 
-function fmtBlock(lang, tag) {
-  document.getElementById('editor_' + lang).focus();
-  document.execCommand('formatBlock', false, '<' + tag + '>');
-}
-
-function insertLink(lang) {
-  var url = prompt('Enter URL:', 'https://');
-  if (url) { document.getElementById('editor_' + lang).focus(); document.execCommand('createLink', false, url); }
-}
-
-function insertImage(lang) {
-  var url = prompt('Enter image URL:', 'https://');
-  if (url) { document.getElementById('editor_' + lang).focus(); document.execCommand('insertImage', false, url); }
-}
-
-function setMode(lang, mode) {
-  var editor = document.getElementById('editor_' + lang);
-  var toolbar = document.getElementById('toolbar_' + lang);
-  var btns = document.getElementById('mode_' + lang).querySelectorAll('button');
-  modes[lang] = mode;
-  if (mode === 'html') {
-    var html = editor.innerHTML;
-    editor.innerText = html;
-    toolbar.style.display = 'none';
-    btns[0].classList.remove('active');
-    btns[1].classList.add('active');
-  } else {
-    var text = editor.innerText;
-    editor.innerHTML = text;
-    toolbar.style.display = 'flex';
-    btns[0].classList.add('active');
-    btns[1].classList.remove('active');
-  }
-}
-
-document.getElementById('pageForm').addEventListener('submit', function() {
-  ['sv', 'en'].forEach(function(lang) {
-    var editor = document.getElementById('editor_' + lang);
-    var hidden = document.getElementById('hidden_' + lang);
-    if (modes[lang] === 'html') {
-      hidden.value = editor.innerText;
-    } else {
-      hidden.value = editor.innerHTML;
+  editors[lang] = grapesjs.init({
+    container: '#editor-' + lang,
+    height: '520px',
+    width: 'auto',
+    storageManager: false,
+    plugins: ['gjs-preset-webpage'],
+    pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
+    canvas: { styles: [
+      'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap'
+    ]},
+    components: content,
+    styleManager: {
+      sectors: [{
+        name: 'Typography',
+        open: true,
+        properties: [
+          { name: 'Font Family', property: 'font-family', type: 'select',
+            options: [
+              {id:'Inter, sans-serif', label:'Inter'},
+              {id:'Playfair Display, serif', label:'Playfair Display'},
+              {id:'Arial, sans-serif', label:'Arial'},
+              {id:'Georgia, serif', label:'Georgia'},
+              {id:'Verdana, sans-serif', label:'Verdana'},
+              {id:'Times New Roman, serif', label:'Times New Roman'},
+              {id:'Courier New, monospace', label:'Courier New'},
+            ]},
+          { name: 'Font Size', property: 'font-size', type: 'slider', min: 10, max: 72, step: 1, units: ['px','em','rem'] },
+          { name: 'Font Weight', property: 'font-weight', type: 'select',
+            options: [{id:'300',label:'Light'},{id:'400',label:'Normal'},{id:'500',label:'Medium'},{id:'600',label:'Semi Bold'},{id:'700',label:'Bold'}] },
+          { name: 'Color', property: 'color', type: 'color' },
+          { name: 'Line Height', property: 'line-height', type: 'slider', min: 1, max: 3, step: 0.1 },
+          { name: 'Letter Spacing', property: 'letter-spacing', type: 'slider', min: -2, max: 10, step: 0.5, units: ['px'] },
+          { name: 'Text Align', property: 'text-align', type: 'radio', options: [{id:'left',label:'L'},{id:'center',label:'C'},{id:'right',label:'R'},{id:'justify',label:'J'}] },
+          { name: 'Text Transform', property: 'text-transform', type: 'select', options: [{id:'none',label:'None'},{id:'uppercase',label:'Uppercase'},{id:'lowercase',label:'Lowercase'},{id:'capitalize',label:'Capitalize'}] },
+        ]
+      },{
+        name: 'Spacing',
+        properties: [
+          { name: 'Margin', property: 'margin', type: 'composite', properties: [
+            {name:'Top',property:'margin-top',type:'integer',units:['px','%']},
+            {name:'Right',property:'margin-right',type:'integer',units:['px','%']},
+            {name:'Bottom',property:'margin-bottom',type:'integer',units:['px','%']},
+            {name:'Left',property:'margin-left',type:'integer',units:['px','%']}
+          ]},
+          { name: 'Padding', property: 'padding', type: 'composite', properties: [
+            {name:'Top',property:'padding-top',type:'integer',units:['px','%']},
+            {name:'Right',property:'padding-right',type:'integer',units:['px','%']},
+            {name:'Bottom',property:'padding-bottom',type:'integer',units:['px','%']},
+            {name:'Left',property:'padding-left',type:'integer',units:['px','%']}
+          ]}
+        ]
+      },{
+        name: 'Background',
+        properties: [
+          { name: 'Background Color', property: 'background-color', type: 'color' },
+          { name: 'Background Image', property: 'background-image', type: 'file' },
+          { name: 'Border Radius', property: 'border-radius', type: 'slider', min: 0, max: 50, units: ['px','%'] },
+        ]
+      },{
+        name: 'Dimension',
+        properties: [
+          { name: 'Width', property: 'width', type: 'integer', units: ['px','%','vw'] },
+          { name: 'Max Width', property: 'max-width', type: 'integer', units: ['px','%'] },
+          { name: 'Height', property: 'height', type: 'integer', units: ['px','vh','auto'] },
+        ]
+      }]
+    },
+    blockManager: {
+      blocks: [
+        { id: 'heading', label: 'Heading', category: 'Basic', content: '<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;margin-bottom:16px;">Rubrik</h2>' },
+        { id: 'paragraph', label: 'Text', category: 'Basic', content: '<p style="font-size:15px;line-height:1.7;margin-bottom:12px;">Skriv text har...</p>' },
+        { id: 'image', label: 'Image', category: 'Basic', content: { type: 'image' } },
+        { id: 'link', label: 'Link', category: 'Basic', content: '<a href="#" style="color:#dc2626;text-decoration:underline;">Lank</a>' },
+        { id: 'button', label: 'Button', category: 'Basic', content: '<a href="#" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;">Knapp</a>' },
+        { id: 'divider', label: 'Divider', category: 'Basic', content: '<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">' },
+        { id: 'list', label: 'List', category: 'Basic', content: '<ul style="padding-left:20px;margin-bottom:16px;"><li>Punkt 1</li><li>Punkt 2</li><li>Punkt 3</li></ul>' },
+        { id: 'section', label: 'Section', category: 'Layout', content: '<section style="padding:40px 24px;"><div style="max-width:900px;margin:0 auto;"><h2>Section</h2><p>Content</p></div></section>' },
+        { id: 'columns', label: '2 Columns', category: 'Layout', content: '<div style="display:flex;gap:24px;flex-wrap:wrap;"><div style="flex:1;min-width:250px;"><p>Column 1</p></div><div style="flex:1;min-width:250px;"><p>Column 2</p></div></div>' },
+        { id: 'cols3', label: '3 Columns', category: 'Layout', content: '<div style="display:flex;gap:20px;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><p>Col 1</p></div><div style="flex:1;min-width:200px;"><p>Col 2</p></div><div style="flex:1;min-width:200px;"><p>Col 3</p></div></div>' },
+        { id: 'card', label: 'Card', category: 'Components', content: '<div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.05);"><h3 style="margin-bottom:8px;">Card Title</h3><p style="color:#64748b;font-size:14px;">Card content</p></div>' },
+        { id: 'video', label: 'Video', category: 'Components', content: { type: 'video' } },
+        { id: 'quote', label: 'Quote', category: 'Components', content: '<blockquote style="border-left:4px solid #dc2626;padding:16px 20px;margin:16px 0;font-style:italic;color:#475569;background:#f8fafc;border-radius:0 8px 8px 0;"><p>Citat har...</p></blockquote>' },
+      ]
     }
   });
-});
+}
+
+initEditor('sv');
+initEditor('en');
+
+function switchLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(function(t, i) {
+    t.classList.toggle('active', (i === 0 && lang === 'sv') || (i === 1 && lang === 'en'));
+  });
+  document.getElementById('editor-sv').style.display = lang === 'sv' ? 'block' : 'none';
+  document.getElementById('editor-en').style.display = lang === 'en' ? 'block' : 'none';
+  if (editors[lang]) editors[lang].refresh();
+}
+
+function saveEditors() {
+  ['sv', 'en'].forEach(function(lang) {
+    if (editors[lang]) {
+      var html = editors[lang].getHtml();
+      var css = editors[lang].getCss();
+      var fullContent = css ? '<style>' + css + '</style>' + html : html;
+      document.getElementById('hidden_' + lang).value = fullContent;
+    }
+  });
+}
+
+document.getElementById('pageForm').addEventListener('submit', function() { saveEditors(); });
 </script>
