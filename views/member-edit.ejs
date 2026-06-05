@@ -1,0 +1,334 @@
+<style>
+  .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
+  .back-link:hover { color: #dc2626; }
+  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+  .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .profile-header h2 { font-size: 22px; color: #f1f5f9; }
+  .section-card { background: #1e293b; border-radius: 10px; padding: 24px; border: 1px solid #334155; margin-bottom: 24px; }
+  .section-card h3 { font-size: 16px; color: #dc2626; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; font-weight: 500; }
+  .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #dc2626; }
+  .form-group textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+  .form-group-full { grid-column: 1 / -1; }
+  .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; color: #fff; }
+  .btn-primary { background: #dc2626; }
+  .btn-primary:hover { background: #b91c1c; }
+  .btn-secondary { background: #334155; color: #e2e8f0; font-weight: 500; font-size: 12px; padding: 6px 14px; }
+  .btn-secondary:hover { background: #475569; }
+  .btn-danger-sm { background: #7f1d1d; color: #fca5a5; font-size: 12px; padding: 6px 14px; }
+  .btn-danger-sm:hover { background: #991b1b; }
+  .branch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; }
+  .branch-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #0f172a; border-radius: 6px; font-size: 13px; }
+  .branch-item input[type="checkbox"] { accent-color: #dc2626; }
+  .branch-item input[type="radio"] { accent-color: #dc2626; }
+  .branch-item label { color: #cbd5e1; cursor: pointer; }
+  .branch-item .primary-label { color: #64748b; font-size: 11px; margin-left: auto; }
+  .repeatable-section { margin-top: 12px; }
+  .repeatable-row { background: #0f172a; border-radius: 8px; padding: 16px; margin-bottom: 12px; border: 1px solid #334155; position: relative; }
+  .repeatable-row .remove-row { position: absolute; top: 8px; right: 8px; background: #7f1d1d; color: #fca5a5; border: none; border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+  .repeatable-row .remove-row:hover { background: #991b1b; }
+  .toggle-group { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .toggle-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: #dc2626; }
+  .toggle-group label { font-size: 14px; color: #e2e8f0; }
+  .toggle-group .hint { font-size: 12px; color: #64748b; margin-left: 4px; }
+  .form-actions { display: flex; gap: 12px; margin-top: 8px; }
+</style>
+
+<a href="<%= base %>/members" class="back-link">&larr; Back to Members</a>
+
+<% if (success) { %>
+  <div class="success-banner">Member profile updated successfully.</div>
+<% } %>
+
+<div class="profile-header">
+  <h2>Edit Member: <%= member.name %></h2>
+</div>
+
+<form method="POST" action="<%= base %>/members/<%= member.id %>">
+
+  <!-- BASIC INFO -->
+  <div class="section-card">
+    <h3>Basic Information</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" name="name" value="<%= member.name || '' %>" required>
+      </div>
+      <div class="form-group">
+        <label>Stage Name</label>
+        <input type="text" name="stage_name" value="<%= member.stage_name || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" value="<%= member.email || '' %>" required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" name="phone" value="<%= member.phone || '' %>">
+      </div>
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" name="city" value="<%= member.city || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Country</label>
+        <input type="text" name="country" value="<%= member.country || 'SE' %>">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Profile Slug (URL)</label>
+        <input type="text" name="profile_slug" value="<%= member.profile_slug || '' %>" placeholder="e.g. anna-svensson">
+      </div>
+      <div class="form-group">
+        <label>Film Type</label>
+        <input type="text" name="film_type" value="<%= member.film_type || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Languages Spoken</label>
+        <input type="text" name="languages_spoken" value="<%= member.languages_spoken || '' %>" placeholder="e.g. Swedish, English, French">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label>Headline</label>
+        <input type="text" name="headline" value="<%= member.headline || '' %>" placeholder="Short professional headline">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label>Biography</label>
+        <textarea name="biography" rows="4" placeholder="Professional biography..."><%= member.biography || '' %></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="pending" <%= member.status === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="active" <%= member.status === 'active' ? 'selected' : '' %>>Active</option>
+          <option value="inactive" <%= member.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <input type="text" name="notes" value="<%= member.notes || '' %>">
+      </div>
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="section-card">
+    <h3>Links & Social Media</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Website</label>
+        <input type="url" name="website" value="<%= member.website || '' %>" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label>IMDb Link</label>
+        <input type="url" name="imdb_link" value="<%= member.imdb_link || '' %>" placeholder="https://imdb.com/...">
+      </div>
+      <div class="form-group">
+        <label>Social Media</label>
+        <input type="text" name="social_media" value="<%= member.social_media || '' %>" placeholder="Instagram, LinkedIn, etc.">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Showreel URL</label>
+        <input type="url" name="showreel_url" value="<%= member.showreel_url || '' %>" placeholder="https://vimeo.com/... or YouTube">
+      </div>
+    </div>
+  </div>
+
+  <!-- FILM BRANCHES -->
+  <div class="section-card">
+    <h3>Film Branches</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Select the branches this member works in. Choose one as primary.</p>
+    <div class="branch-grid">
+      <% branches.forEach(function(br) { %>
+        <% var isMember = memberBranches.some(function(mb) { return mb.branch_id === br.id; }); %>
+        <% var isPrimary = memberBranches.some(function(mb) { return mb.branch_id === br.id && mb.is_primary; }); %>
+        <div class="branch-item">
+          <input type="checkbox" name="branch_ids" value="<%= br.id %>" id="branch_<%= br.id %>" <%= isMember ? 'checked' : '' %>>
+          <label for="branch_<%= br.id %>"><%= br.name %> <span style="color:#64748b;">(<%= br.name_sv || '' %>)</span></label>
+          <span class="primary-label">
+            <input type="radio" name="primary_branch" value="<%= br.id %>" <%= isPrimary ? 'checked' : '' %>> Primary
+          </span>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="section-card">
+    <h3>Education</h3>
+    <div class="repeatable-section" id="educationRows">
+      <% if (education.length === 0) { %>
+        <div class="repeatable-row">
+          <div class="form-row">
+            <div class="form-group"><label>Institution</label><input type="text" name="edu_institution" value=""></div>
+            <div class="form-group"><label>Qualification</label><input type="text" name="edu_qualification" value=""></div>
+            <div class="form-group"><label>Field of Study</label><input type="text" name="edu_field" value=""></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Start Year</label><input type="number" name="edu_start_year" value="" min="1950" max="2030"></div>
+            <div class="form-group"><label>End Year</label><input type="number" name="edu_end_year" value="" min="1950" max="2030"></div>
+          </div>
+        </div>
+      <% } else { %>
+        <% education.forEach(function(edu, idx) { %>
+          <div class="repeatable-row">
+            <button type="button" class="remove-row" onclick="this.parentElement.remove()">Remove</button>
+            <div class="form-row">
+              <div class="form-group"><label>Institution</label><input type="text" name="edu_institution" value="<%= edu.institution || '' %>"></div>
+              <div class="form-group"><label>Qualification</label><input type="text" name="edu_qualification" value="<%= edu.qualification || '' %>"></div>
+              <div class="form-group"><label>Field of Study</label><input type="text" name="edu_field" value="<%= edu.field_of_study || '' %>"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Start Year</label><input type="number" name="edu_start_year" value="<%= edu.start_year || '' %>" min="1950" max="2030"></div>
+              <div class="form-group"><label>End Year</label><input type="number" name="edu_end_year" value="<%= edu.end_year || '' %>" min="1950" max="2030"></div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="addEducationRow()">+ Add Education</button>
+  </div>
+
+  <!-- EXPERIENCE / FILMOGRAPHY -->
+  <div class="section-card">
+    <h3>Experience / Filmography</h3>
+    <div class="repeatable-section" id="experienceRows">
+      <% if (experience.length === 0) { %>
+        <div class="repeatable-row">
+          <div class="form-row">
+            <div class="form-group"><label>Project Title</label><input type="text" name="exp_title" value=""></div>
+            <div class="form-group"><label>Type</label><input type="text" name="exp_type" value="" placeholder="Feature, Short, Documentary..."></div>
+            <div class="form-group"><label>Role</label><input type="text" name="exp_role" value=""></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Production Company</label><input type="text" name="exp_company" value=""></div>
+            <div class="form-group"><label>Year</label><input type="number" name="exp_year" value="" min="1950" max="2030"></div>
+            <div class="form-group" style="justify-content:flex-end;">
+              <label style="display:flex;align-items:center;gap:6px;padding-top:6px;">
+                <input type="checkbox" name="exp_featured" value="0" style="accent-color:#dc2626;"> Featured
+              </label>
+            </div>
+          </div>
+        </div>
+      <% } else { %>
+        <% experience.forEach(function(exp, idx) { %>
+          <div class="repeatable-row">
+            <button type="button" class="remove-row" onclick="this.parentElement.remove()">Remove</button>
+            <div class="form-row">
+              <div class="form-group"><label>Project Title</label><input type="text" name="exp_title" value="<%= exp.project_title || '' %>"></div>
+              <div class="form-group"><label>Type</label><input type="text" name="exp_type" value="<%= exp.project_type || '' %>" placeholder="Feature, Short, Documentary..."></div>
+              <div class="form-group"><label>Role</label><input type="text" name="exp_role" value="<%= exp.role || '' %>"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Production Company</label><input type="text" name="exp_company" value="<%= exp.production_company || '' %>"></div>
+              <div class="form-group"><label>Year</label><input type="number" name="exp_year" value="<%= exp.year || '' %>" min="1950" max="2030"></div>
+              <div class="form-group" style="justify-content:flex-end;">
+                <label style="display:flex;align-items:center;gap:6px;padding-top:6px;">
+                  <input type="checkbox" name="exp_featured" value="<%= idx %>" <%= exp.is_featured ? 'checked' : '' %> style="accent-color:#dc2626;"> Featured
+                </label>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="addExperienceRow()">+ Add Experience</button>
+  </div>
+
+  <!-- SKILLS, AWARDS, EQUIPMENT -->
+  <div class="section-card">
+    <h3>Skills, Awards & Equipment</h3>
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label>Skills (comma-separated)</label>
+        <input type="text" name="skills" value="<%= member.skills || '' %>" placeholder="e.g. Adobe Premiere, DaVinci Resolve, ARRI Alexa">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label>Awards (comma-separated)</label>
+        <input type="text" name="awards" value="<%= member.awards || '' %>" placeholder="e.g. Guldbagge 2023, Berlin Film Festival">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label>Equipment (comma-separated)</label>
+        <input type="text" name="equipment" value="<%= member.equipment || '' %>" placeholder="e.g. RED Komodo, Sennheiser MKH 416">
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY & APPROVAL -->
+  <div class="section-card">
+    <h3>Privacy & Approval</h3>
+    <div class="toggle-group">
+      <input type="checkbox" name="is_public" value="1" id="is_public" <%= member.is_public ? 'checked' : '' %>>
+      <label for="is_public">Public Profile</label>
+      <span class="hint">- Show in public member directory</span>
+    </div>
+    <div class="toggle-group">
+      <input type="checkbox" name="approved" value="1" id="approved" <%= member.approved ? 'checked' : '' %>>
+      <label for="approved">Approved</label>
+      <span class="hint">- Profile reviewed and approved by admin</span>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Save Member Profile</button>
+    <a href="<%= base %>/members" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+
+<script>
+var eduIndex = <%= education.length || 1 %>;
+function addEducationRow() {
+  var container = document.getElementById('educationRows');
+  var row = document.createElement('div');
+  row.className = 'repeatable-row';
+  row.innerHTML = '<button type="button" class="remove-row" onclick="this.parentElement.remove()">Remove</button>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Institution</label><input type="text" name="edu_institution" value=""></div>'
+    + '<div class="form-group"><label>Qualification</label><input type="text" name="edu_qualification" value=""></div>'
+    + '<div class="form-group"><label>Field of Study</label><input type="text" name="edu_field" value=""></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Start Year</label><input type="number" name="edu_start_year" value="" min="1950" max="2030"></div>'
+    + '<div class="form-group"><label>End Year</label><input type="number" name="edu_end_year" value="" min="1950" max="2030"></div>'
+    + '</div>';
+  container.appendChild(row);
+}
+
+var expIndex = <%= experience.length || 1 %>;
+function addExperienceRow() {
+  var container = document.getElementById('experienceRows');
+  var row = document.createElement('div');
+  row.className = 'repeatable-row';
+  var idx = expIndex++;
+  row.innerHTML = '<button type="button" class="remove-row" onclick="this.parentElement.remove()">Remove</button>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Project Title</label><input type="text" name="exp_title" value=""></div>'
+    + '<div class="form-group"><label>Type</label><input type="text" name="exp_type" value="" placeholder="Feature, Short, Documentary..."></div>'
+    + '<div class="form-group"><label>Role</label><input type="text" name="exp_role" value=""></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Production Company</label><input type="text" name="exp_company" value=""></div>'
+    + '<div class="form-group"><label>Year</label><input type="number" name="exp_year" value="" min="1950" max="2030"></div>'
+    + '<div class="form-group" style="justify-content:flex-end;"><label style="display:flex;align-items:center;gap:6px;padding-top:6px;"><input type="checkbox" name="exp_featured" value="' + idx + '" style="accent-color:#dc2626;"> Featured</label></div>'
+    + '</div>';
+  container.appendChild(row);
+}
+</script>

@@ -1,0 +1,135 @@
+<style>
+  .trans-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .trans-header h2 { font-size: 20px; color: #f1f5f9; }
+  .lang-selectors { display: flex; gap: 12px; align-items: center; }
+  .lang-selectors label { font-size: 13px; color: #94a3b8; }
+  .lang-selectors select { padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; }
+  .lang-selectors select:focus { border-color: #dc2626; }
+  .trans-grid { background: #1e293b; border-radius: 10px; border: 1px solid #334155; overflow: hidden; }
+  .trans-row { display: grid; grid-template-columns: 200px 1fr 1fr; border-bottom: 1px solid #0f172a; }
+  .trans-row.header { background: #1e293b; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+  .trans-row.header > div { padding: 12px 16px; border-right: 1px solid #334155; }
+  .trans-cell { padding: 8px 12px; border-right: 1px solid #0f172a; display: flex; align-items: center; }
+  .trans-cell.key { font-size: 12px; color: #94a3b8; font-family: monospace; word-break: break-all; }
+  .trans-cell.ref { font-size: 13px; color: #64748b; background: #0f172a; }
+  .trans-cell textarea { width: 100%; background: transparent; border: none; color: #e2e8f0; font-size: 13px; resize: vertical; min-height: 36px; outline: none; font-family: inherit; padding: 4px; }
+  .trans-cell textarea:focus { background: rgba(220,38,38,0.05); }
+  .trans-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+  .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-save:hover { background: #b91c1c; }
+  .btn-add { padding: 8px 16px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+  .btn-add:hover { background: #475569; }
+  .status-msg { font-size: 13px; color: #059669; display: none; }
+  .empty-msg { padding: 32px; text-align: center; color: #64748b; font-size: 14px; }
+  @media (max-width: 768px) { .trans-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="trans-header">
+  <h2>Translations</h2>
+  <div class="lang-selectors">
+    <div>
+      <label>Reference:</label>
+      <select id="refLang">
+        <% langs.forEach(function(l) { %>
+          <option value="<%= l %>" <%= l === 'sv' ? 'selected' : '' %>><%= langNames[l] %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div>
+      <label>Editing:</label>
+      <select id="editLang">
+        <% langs.forEach(function(l) { %>
+          <option value="<%= l %>" <%= l === 'en' ? 'selected' : '' %>><%= langNames[l] %></option>
+        <% }); %>
+      </select>
+    </div>
+    <button class="btn-add" onclick="loadTranslations()">Load</button>
+  </div>
+</div>
+
+<div class="trans-grid" id="transGrid">
+  <div class="trans-row header">
+    <div>Key</div>
+    <div>Reference</div>
+    <div>Translation</div>
+  </div>
+  <div class="empty-msg" id="emptyMsg">Select languages and click Load to view translations.</div>
+</div>
+
+<div class="trans-actions">
+  <div>
+    <button class="btn-add" onclick="addKey()">+ Add Key</button>
+    <span class="status-msg" id="statusMsg">Saved successfully!</span>
+  </div>
+  <button class="btn-save" onclick="saveTranslations()">Save Translations</button>
+</div>
+
+<script>
+  var BASE = '<%- base %>';
+  var refData = {};
+  var editData = {};
+
+  function loadTranslations() {
+    var refLang = document.getElementById('refLang').value;
+    var editLang = document.getElementById('editLang').value;
+    Promise.all([
+      fetch(BASE + '/api/translations/' + refLang).then(function(r) { return r.json(); }),
+      fetch(BASE + '/api/translations/' + editLang).then(function(r) { return r.json(); })
+    ]).then(function(results) {
+      refData = results[0].translations || {};
+      editData = results[1].translations || {};
+      renderGrid();
+    });
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById('transGrid');
+    var allKeys = Object.assign({}, refData, editData);
+    var keys = Object.keys(allKeys).sort();
+    var rows = [];
+    rows.push('<div class="trans-row header"><div>Key</div><div>Reference</div><div>Translation</div></div>');
+    if (keys.length === 0) {
+      rows.push('<div class="empty-msg">No translations found. Add keys below.</div>');
+    }
+    keys.forEach(function(k) {
+      var row = '<div class="trans-row">';
+      row += '<div class="trans-cell key">' + escHtml(k) + '</div>';
+      row += '<div class="trans-cell ref">' + escHtml(refData[k] || '') + '</div>';
+      row += '<div class="trans-cell"><textarea data-key="' + escAttr(k) + '">' + escHtml(editData[k] || '') + '</textarea></div>';
+      row += '</div>';
+      rows.push(row);
+    });
+    grid.innerHTML = rows.join('');
+  }
+
+  function addKey() {
+    var key = prompt('Enter translation key (e.g. nav.home):');
+    if (!key) return;
+    editData[key] = '';
+    renderGrid();
+    var ta = document.querySelector('textarea[data-key="' + key + '"]');
+    if (ta) ta.focus();
+  }
+
+  function saveTranslations() {
+    var editLang = document.getElementById('editLang').value;
+    var translations = {};
+    document.querySelectorAll('#transGrid textarea[data-key]').forEach(function(ta) {
+      translations[ta.getAttribute('data-key')] = ta.value;
+    });
+    fetch(BASE + '/api/translations/' + editLang, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ translations: translations })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (d.success) {
+        var msg = document.getElementById('statusMsg');
+        msg.style.display = 'inline';
+        setTimeout(function() { msg.style.display = 'none'; }, 3000);
+      }
+    });
+  }
+
+  function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function escAttr(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+</script>

@@ -1,0 +1,135 @@
+<style>
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .section-header h2 { font-size: 20px; color: #f1f5f9; }
+  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+  .table-wrap { background: #1e293b; border-radius: 10px; border: 1px solid #334155; overflow-x: auto; margin-bottom: 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px 16px; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
+  td { padding: 12px 16px; font-size: 14px; color: #cbd5e1; border-bottom: 1px solid #0f172a; }
+  tr:hover td { background: #0f172a; }
+  .btn { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; color: #fff; }
+  .btn-primary { background: #dc2626; }
+  .btn-primary:hover { background: #b91c1c; }
+  .btn-secondary { background: #334155; color: #e2e8f0; }
+  .btn-secondary:hover { background: #475569; }
+  .btn-danger { background: #7f1d1d; color: #fca5a5; }
+  .btn-danger:hover { background: #991b1b; }
+  .actions-cell form { display: inline; }
+  .actions-cell .btn { margin-right: 4px; margin-bottom: 4px; }
+  .badge-active { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #064e3b; color: #6ee7b7; }
+  .badge-inactive { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #7f1d1d; color: #fca5a5; }
+  .url-cell { font-family: monospace; font-size: 12px; color: #94a3b8; }
+  .edit-inline { display: none; }
+  .edit-inline.active { display: table-row; }
+  .edit-inline td { background: #0f172a; }
+  .edit-inline input, .edit-inline select { padding: 6px 10px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; color: #e2e8f0; font-size: 13px; outline: none; }
+  .add-form { background: #1e293b; border-radius: 10px; padding: 24px; border: 1px solid #334155; }
+  .add-form h3 { font-size: 16px; color: #f1f5f9; margin-bottom: 16px; }
+  .form-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+  .form-group input { padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; min-width: 160px; }
+  .form-group input:focus { border-color: #dc2626; }
+</style>
+
+<div class="section-header">
+  <h2>Menu Items (<%= menuItems.length %>)</h2>
+</div>
+
+<% if (success) { %>
+  <div class="success-banner">Menu updated successfully.</div>
+<% } %>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Label (SV)</th>
+        <th>Label (EN)</th>
+        <th>URL</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (menuItems.length === 0) { %>
+        <tr><td colspan="6" style="text-align:center;color:#64748b;padding:32px;">No menu items yet.</td></tr>
+      <% } %>
+      <% menuItems.forEach(function(item) { %>
+        <tr>
+          <td><%= item.sort_order %></td>
+          <td><strong><%= item.label_sv %></strong></td>
+          <td><%= item.label_en || '-' %></td>
+          <td class="url-cell"><%= item.url %></td>
+          <td>
+            <span class="<%= item.is_active ? 'badge-active' : 'badge-inactive' %>"><%= item.is_active ? 'Active' : 'Hidden' %></span>
+          </td>
+          <td class="actions-cell">
+            <button type="button" class="btn btn-secondary" onclick="toggleEdit(<%= item.id %>)">Edit</button>
+            <form method="POST" action="<%= base %>/menu">
+              <input type="hidden" name="action" value="move_up">
+              <input type="hidden" name="id" value="<%= item.id %>">
+              <button type="submit" class="btn btn-secondary">&uarr;</button>
+            </form>
+            <form method="POST" action="<%= base %>/menu">
+              <input type="hidden" name="action" value="move_down">
+              <input type="hidden" name="id" value="<%= item.id %>">
+              <button type="submit" class="btn btn-secondary">&darr;</button>
+            </form>
+            <form method="POST" action="<%= base %>/menu" onsubmit="return confirm('Delete this menu item?')">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="id" value="<%= item.id %>">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        <tr class="edit-inline" id="edit_<%= item.id %>">
+          <td colspan="6">
+            <form method="POST" action="<%= base %>/menu" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <input type="hidden" name="action" value="update">
+              <input type="hidden" name="id" value="<%= item.id %>">
+              <input type="text" name="label_sv" value="<%= item.label_sv %>" placeholder="Label (SV)" style="flex:1;min-width:120px;">
+              <input type="text" name="label_en" value="<%= item.label_en || '' %>" placeholder="Label (EN)" style="flex:1;min-width:120px;">
+              <input type="text" name="url" value="<%= item.url %>" placeholder="URL" style="flex:1;min-width:120px;">
+              <label style="display:flex;align-items:center;gap:4px;color:#94a3b8;font-size:12px;">
+                <input type="checkbox" name="is_active" value="1" <%= item.is_active ? 'checked' : '' %> style="accent-color:#dc2626;"> Active
+              </label>
+              <button type="submit" class="btn btn-primary">Save</button>
+              <button type="button" class="btn btn-secondary" onclick="toggleEdit(<%= item.id %>)">Cancel</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="add-form">
+  <h3>Add Menu Item</h3>
+  <form method="POST" action="<%= base %>/menu">
+    <input type="hidden" name="action" value="add">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Label (Swedish) *</label>
+        <input type="text" name="label_sv" required>
+      </div>
+      <div class="form-group">
+        <label>Label (English)</label>
+        <input type="text" name="label_en">
+      </div>
+      <div class="form-group">
+        <label>URL *</label>
+        <input type="text" name="url" required placeholder="/">
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Add Item</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function toggleEdit(id) {
+  var row = document.getElementById('edit_' + id);
+  if (row) row.classList.toggle('active');
+}
+</script>

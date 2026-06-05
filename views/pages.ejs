@@ -1,0 +1,88 @@
+<style>
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .section-header h2 { font-size: 20px; color: #f1f5f9; }
+  .table-wrap { background: #1e293b; border-radius: 10px; border: 1px solid #334155; overflow-x: auto; margin-bottom: 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px 16px; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
+  td { padding: 12px 16px; font-size: 14px; color: #cbd5e1; border-bottom: 1px solid #0f172a; }
+  tr:hover td { background: #0f172a; }
+  .btn { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; color: #fff; }
+  .btn-primary { background: #dc2626; }
+  .btn-primary:hover { background: #b91c1c; }
+  .btn-info { background: #1d4ed8; }
+  .btn-info:hover { background: #1e40af; }
+  .btn-danger { background: #7f1d1d; color: #fca5a5; }
+  .btn-danger:hover { background: #991b1b; }
+  .actions-cell form { display: inline; }
+  .actions-cell .btn { margin-right: 4px; }
+  .slug-cell { font-family: monospace; font-size: 12px; color: #94a3b8; }
+  .updated { font-size: 12px; color: #64748b; }
+  .add-form { background: #1e293b; border-radius: 10px; padding: 24px; border: 1px solid #334155; }
+  .add-form h3 { font-size: 16px; color: #f1f5f9; margin-bottom: 16px; }
+  .form-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+  .form-group input { padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; min-width: 180px; }
+  .form-group input:focus { border-color: #dc2626; }
+</style>
+
+<div class="section-header">
+  <h2>CMS Pages (<%= pages.length %>)</h2>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Slug</th>
+        <th>Title (SV)</th>
+        <th>Title (EN)</th>
+        <th>Last Updated</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (pages.length === 0) { %>
+        <tr><td colspan="5" style="text-align:center;color:#64748b;padding:32px;">No pages yet.</td></tr>
+      <% } %>
+      <% pages.forEach(function(p) { %>
+        <tr>
+          <td class="slug-cell">/<%= p.slug %></td>
+          <td><strong><%= p.title_sv || '-' %></strong></td>
+          <td><%= p.title_en || '-' %></td>
+          <td class="updated"><%= p.updated_at ? new Date(p.updated_at).toLocaleString() : '-' %></td>
+          <td class="actions-cell">
+            <a href="<%= base %>/pages/<%= p.id %>" class="btn btn-info">Edit</a>
+            <form method="POST" action="<%= base %>/pages" onsubmit="return confirm('Delete this page?')">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="id" value="<%= p.id %>">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="add-form">
+  <h3>Add New Page</h3>
+  <form method="POST" action="<%= base %>/pages">
+    <input type="hidden" name="action" value="add">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Slug *</label>
+        <input type="text" name="slug" required placeholder="e.g. om-oss">
+      </div>
+      <div class="form-group">
+        <label>Title (Swedish)</label>
+        <input type="text" name="title_sv" placeholder="Sidtitel">
+      </div>
+      <div class="form-group">
+        <label>Title (English)</label>
+        <input type="text" name="title_en" placeholder="Page title">
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Add Page</button>
+    </div>
+  </form>
+</div>

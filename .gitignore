@@ -1,0 +1,1 @@
+node_modules/\ndata/*.db\ndata/*.db-*\n.env

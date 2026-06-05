@@ -1,0 +1,54 @@
+<style>
+  .settings-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 600px; }
+  .settings-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 24px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+  .form-group input, .form-group select { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .form-group input:focus, .form-group select:focus { border-color: #dc2626; }
+  .form-group .hint { font-size: 11px; color: #475569; margin-top: 4px; }
+  .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-save:hover { background: #b91c1c; }
+</style>
+
+<div class="settings-card">
+  <h2>Site Settings</h2>
+  <form method="POST" action="<%= base %>/settings">
+    <div class="form-group">
+      <label>Site Name</label>
+      <input type="text" name="site_name" value="<%= settings.site_name || '' %>">
+    </div>
+    <div class="form-group">
+      <label>Membership Fee</label>
+      <input type="text" name="membership_fee" value="<%= settings.membership_fee || '' %>">
+      <div class="hint">Annual membership fee amount</div>
+    </div>
+    <div class="form-group">
+      <label>Currency</label>
+      <select name="currency">
+        <option value="SEK" <%= settings.currency === 'SEK' ? 'selected' : '' %>>SEK - Swedish Krona</option>
+        <option value="EUR" <%= settings.currency === 'EUR' ? 'selected' : '' %>>EUR - Euro</option>
+        <option value="USD" <%= settings.currency === 'USD' ? 'selected' : '' %>>USD - US Dollar</option>
+        <option value="NOK" <%= settings.currency === 'NOK' ? 'selected' : '' %>>NOK - Norwegian Krone</option>
+        <option value="DKK" <%= settings.currency === 'DKK' ? 'selected' : '' %>>DKK - Danish Krone</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Swish Number</label>
+      <input type="text" name="swish_number" value="<%= settings.swish_number || '' %>" placeholder="e.g. 1234567890">
+      <div class="hint">Swish payment number for membership fees</div>
+    </div>
+    <div class="form-group">
+      <label>Default Language</label>
+      <select name="default_language">
+        <option value="sv" <%= settings.default_language === 'sv' ? 'selected' : '' %>>Svenska</option>
+        <option value="en" <%= settings.default_language === 'en' ? 'selected' : '' %>>English</option>
+        <option value="no" <%= settings.default_language === 'no' ? 'selected' : '' %>>Norsk</option>
+        <option value="da" <%= settings.default_language === 'da' ? 'selected' : '' %>>Dansk</option>
+        <option value="fi" <%= settings.default_language === 'fi' ? 'selected' : '' %>>Suomi</option>
+        <option value="de" <%= settings.default_language === 'de' ? 'selected' : '' %>>Deutsch</option>
+        <option value="ar" <%= settings.default_language === 'ar' ? 'selected' : '' %>>Arabic</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-save">Save Settings</button>
+  </form>
+</div>

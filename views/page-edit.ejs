@@ -1,0 +1,62 @@
+<style>
+  .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
+  .back-link:hover { color: #dc2626; }
+  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+  .page-edit-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 900px; }
+  .page-edit-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 6px; }
+  .page-edit-card .slug-info { font-size: 13px; color: #64748b; margin-bottom: 24px; font-family: monospace; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+  .form-group input { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
+  .form-group textarea { width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; font-family: inherit; resize: vertical; min-height: 180px; }
+  .form-group input:focus, .form-group textarea:focus { border-color: #dc2626; }
+  .form-group .hint { font-size: 11px; color: #475569; margin-top: 4px; }
+  .lang-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #334155; }
+  .lang-section h3 { font-size: 15px; color: #dc2626; margin-bottom: 16px; }
+  .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-save:hover { background: #b91c1c; }
+  .btn-secondary { padding: 10px 24px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 12px; }
+  .btn-secondary:hover { background: #475569; }
+</style>
+
+<a href="<%= base %>/pages" class="back-link">&larr; Back to Pages</a>
+
+<% if (success) { %>
+  <div class="success-banner">Page saved successfully.</div>
+<% } %>
+
+<div class="page-edit-card">
+  <h2>Edit Page</h2>
+  <div class="slug-info">Slug: /<%= page.slug %></div>
+
+  <form method="POST" action="<%= base %>/pages/<%= page.id %>">
+    <div class="lang-section">
+      <h3>Swedish (SV)</h3>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title_sv" value="<%= page.title_sv || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea name="content_sv" rows="10"><%= page.content_sv || '' %></textarea>
+        <div class="hint">HTML is supported for rich content</div>
+      </div>
+    </div>
+
+    <div class="lang-section">
+      <h3>English (EN)</h3>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title_en" value="<%= page.title_en || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea name="content_en" rows="10"><%= page.content_en || '' %></textarea>
+        <div class="hint">HTML is supported for rich content</div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-save">Save Page</button>
+    <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
+  </form>
+</div>
