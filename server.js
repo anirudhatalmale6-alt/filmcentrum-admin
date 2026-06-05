@@ -800,18 +800,20 @@ app.get(BASE.replace('/admin', '') + '/profile', memberAuth, function(req, res) 
   if (!member) return res.redirect(BASE.replace('/admin', '') + '/login');
   var branches = db.prepare('SELECT * FROM film_branches ORDER BY sort_order').all();
   var memberBranches = db.prepare('SELECT branch_id FROM member_branches WHERE member_id = ?').all(member.id).map(function(b) { return b.branch_id; });
-  res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Min Profil - FilmCentrum</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#e2e8f0;padding:32px}.container{max-width:700px;margin:0 auto}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}.header h1{font-size:22px;color:#f1f5f9}.header a{color:#64748b;text-decoration:none;font-size:13px}.header a:hover{color:#dc2626}.card{background:#1e293b;border-radius:10px;padding:28px;border:1px solid #334155;margin-bottom:24px}.card h2{font-size:18px;color:#dc2626;margin-bottom:20px}.form-group{margin-bottom:16px}.form-group label{display:block;font-size:13px;color:#94a3b8;margin-bottom:6px}.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:14px;outline:none}.form-group input:focus,.form-group textarea:focus{border-color:#dc2626}.form-group textarea{resize:vertical;min-height:80px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn{padding:10px 24px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}.btn:hover{background:#b91c1c}.btn-secondary{background:#334155}.btn-secondary:hover{background:#475569}.success{background:#064e3b;color:#6ee7b7;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px}.error{background:#7f1d1d;color:#fca5a5;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px}.hint{font-size:11px;color:#475569;margin-top:4px}</style></head><body><div class="container"><div class="header"><h1>Min Profil</h1><a href="' + BASE.replace('/admin', '') + '/logout-member">Logga ut</a></div>' + (req.query.saved === '1' ? '<div class="success">Profil sparad!</div>' : '') + (req.query.pw === '1' ? '<div class="success">Losenord andrat!</div>' : '') + (req.query.pwerr ? '<div class="error">' + (req.query.pwerr === 'mismatch' ? 'Losenorden matchar inte' : req.query.pwerr === 'wrong' ? 'Fel nuvarande losenord' : 'Losenord maste vara minst 4 tecken') + '</div>' : '') + '<div class="card"><h2>Profilinformation</h2><form method="POST" action="' + BASE.replace('/admin', '') + '/profile"><div class="form-row"><div class="form-group"><label>Namn</label><input type="text" name="name" value="' + (member.name || '').replace(/"/g, '&quot;') + '" required></div><div class="form-group"><label>E-post</label><input type="email" name="email" value="' + (member.email || '').replace(/"/g, '&quot;') + '" required></div></div><div class="form-row"><div class="form-group"><label>Telefon</label><input type="text" name="phone" value="' + (member.phone || '').replace(/"/g, '&quot;') + '"></div><div class="form-group"><label>Stad</label><input type="text" name="city" value="' + (member.city || '').replace(/"/g, '&quot;') + '"></div></div><div class="form-group"><label>Rubrik</label><input type="text" name="headline" value="' + (member.headline || '').replace(/"/g, '&quot;') + '" placeholder="t.ex. Regissor, Fotograf, Producent"></div><div class="form-group"><label>Biografi</label><textarea name="biography" rows="4">' + (member.biography || '') + '</textarea></div><div class="form-row"><div class="form-group"><label>Webbplats</label><input type="text" name="website" value="' + (member.website || '').replace(/"/g, '&quot;') + '"></div><div class="form-group"><label>Showreel URL</label><input type="text" name="showreel_url" value="' + (member.showreel_url || '').replace(/"/g, '&quot;') + '"></div></div><div class="form-group"><label>Profil-URL (slug)</label><input type="text" name="profile_slug" value="' + (member.profile_slug || '').replace(/"/g, '&quot;') + '" placeholder="t.ex. anna-svensson"><div class="hint">Din profil-URL: /filmcentrum/members/' + (member.profile_slug || 'ditt-namn') + '</div></div><button type="submit" class="btn">Spara profil</button></form></div><div class="card"><h2>Byt losenord</h2><form method="POST" action="' + BASE.replace('/admin', '') + '/change-password"><div class="form-group"><label>Nuvarande losenord</label><input type="password" name="current_password" required></div><div class="form-row"><div class="form-group"><label>Nytt losenord</label><input type="password" name="new_password" required minlength="4"></div><div class="form-group"><label>Bekrafta nytt losenord</label><input type="password" name="confirm_password" required minlength="4"></div></div><button type="submit" class="btn btn-secondary">Byt losenord</button></form></div></div></body></html>');
-});
-
-// Member profile save
-app.post(BASE.replace('/admin', '') + '/profile', memberAuth, function(req, res) {
-  var b = req.body;
-  db.prepare("UPDATE members SET name = ?, email = ?, phone = ?, city = ?, headline = ?, biography = ?, website = ?, showreel_url = ?, profile_slug = ? WHERE id = ?").run(
-    b.name || '', b.email || '', b.phone || '', b.city || '', b.headline || '', b.biography || '', b.website || '', b.showreel_url || '', b.profile_slug || '', req.session.memberId
-  );
-  req.session.memberName = b.name;
-  req.session.memberEmail = b.email;
-  res.redirect(BASE.replace('/admin', '') + '/profile?saved=1');
+  var education = db.prepare('SELECT * FROM member_education WHERE member_id = ? ORDER BY start_year DESC').all(member.id);
+  var experience = db.prepare('SELECT * FROM member_experience WHERE member_id = ? ORDER BY year DESC').all(member.id);
+  res.render('member-profile', {
+    layout: false,
+    portalBase: BASE.replace('/admin', ''),
+    member: member,
+    branches: branches,
+    memberBranches: memberBranches,
+    education: education,
+    experience: experience,
+    saved: req.query.saved === '1',
+    pwOk: req.query.pw === '1',
+    pwErr: req.query.pwerr || null
+  });
 });
 
 // Member password change

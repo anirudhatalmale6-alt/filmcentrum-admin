@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Min Profil - FilmCentrum</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#e2e8f0;padding:24px 16px}
+    .container{max-width:800px;margin:0 auto}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    .header h1{font-size:22px;color:#f1f5f9}
+    .header a{color:#64748b;text-decoration:none;font-size:13px}
+    .header a:hover{color:#dc2626}
+    .card{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155;margin-bottom:20px}
+    .card h2{font-size:17px;color:#dc2626;margin-bottom:18px}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:500}
+    .form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#dc2626}
+    .form-group textarea{resize:vertical;min-height:70px;font-family:inherit}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .btn{padding:10px 24px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
+    .btn:hover{background:#b91c1c}
+    .btn-secondary{background:#334155;font-weight:500}
+    .btn-secondary:hover{background:#475569}
+    .success{background:#064e3b;color:#6ee7b7;padding:10px 16px;border-radius:6px;margin-bottom:16px;font-size:13px}
+    .error{background:#7f1d1d;color:#fca5a5;padding:10px 16px;border-radius:6px;margin-bottom:16px;font-size:13px}
+    .hint{font-size:11px;color:#475569;margin-top:3px}
+    .branch-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .branch-tag{display:flex;align-items:center;gap:4px;padding:5px 10px;background:#0f172a;border:1px solid #334155;border-radius:16px;font-size:12px;color:#94a3b8;cursor:pointer}
+    .branch-tag input{accent-color:#dc2626}
+    .branch-tag:has(input:checked){border-color:#dc2626;color:#e2e8f0;background:#1a1a2e}
+    .section-sep{border-top:1px solid #334155;margin:18px 0;padding-top:18px}
+    @media(max-width:600px){.form-row,.form-row-3{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Min Profil</h1>
+    <a href="<%= portalBase %>/logout-member">Logga ut</a>
+  </div>
+
+  <% if (saved) { %><div class="success">Profil sparad!</div><% } %>
+  <% if (pwOk) { %><div class="success">Losenord andrat!</div><% } %>
+  <% if (pwErr) { %><div class="error"><%= pwErr === 'mismatch' ? 'Losenorden matchar inte' : pwErr === 'wrong' ? 'Fel nuvarande losenord' : 'Losenord maste vara minst 4 tecken' %></div><% } %>
+
+  <form method="POST" action="<%= portalBase %>/profile">
+
+  <div class="card">
+    <h2>Grundlaggande information</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Namn *</label><input type="text" name="name" value="<%= member.name || '' %>" required></div>
+      <div class="form-group"><label>Artistnamn / Stage Name</label><input type="text" name="stage_name" value="<%= member.stage_name || '' %>"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>E-post *</label><input type="email" name="email" value="<%= member.email || '' %>" required></div>
+      <div class="form-group"><label>Telefon</label><input type="text" name="phone" value="<%= member.phone || '' %>"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Stad</label><input type="text" name="city" value="<%= member.city || '' %>"></div>
+      <div class="form-group"><label>Land</label>
+        <select name="country">
+          <option value="SE" <%= member.country === 'SE' ? 'selected' : '' %>>Sverige</option>
+          <option value="NO" <%= member.country === 'NO' ? 'selected' : '' %>>Norge</option>
+          <option value="DK" <%= member.country === 'DK' ? 'selected' : '' %>>Danmark</option>
+          <option value="FI" <%= member.country === 'FI' ? 'selected' : '' %>>Finland</option>
+          <option value="DE" <%= member.country === 'DE' ? 'selected' : '' %>>Tyskland</option>
+          <option value="GB" <%= member.country === 'GB' ? 'selected' : '' %>>Storbritannien</option>
+          <option value="US" <%= member.country === 'US' ? 'selected' : '' %>>USA</option>
+          <option value="OTHER" <%= !['SE','NO','DK','FI','DE','GB','US'].includes(member.country) && member.country ? 'selected' : '' %>>Annat</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Sprak (kommaseparerade)</label><input type="text" name="languages_spoken" value="<%= member.languages_spoken || '' %>" placeholder="t.ex. Svenska, Engelska, Franska"></div>
+  </div>
+
+  <div class="card">
+    <h2>Professionell information</h2>
+    <div class="form-group"><label>Rubrik / Titel</label><input type="text" name="headline" value="<%= member.headline || '' %>" placeholder="t.ex. Dokumentarfilmare, Regissor, Fotograf"></div>
+    <div class="form-group"><label>Biografi</label><textarea name="biography" rows="5" placeholder="Beratta om dig sjalv och ditt arbete..."><%= member.biography || '' %></textarea></div>
+    <div class="form-group"><label>Filmtyp / Specialisering</label><input type="text" name="film_type" value="<%= member.film_type || '' %>" placeholder="t.ex. Dokumentar, Kortfilm, Spelfilm"></div>
+    <div class="form-group"><label>Fardigdigheter (kommaseparerade)</label><input type="text" name="skills" value="<%= member.skills || '' %>" placeholder="t.ex. Adobe Premiere, DaVinci Resolve, ARRI Alexa"></div>
+    <div class="form-group"><label>Utrustning (kommaseparerade)</label><input type="text" name="equipment" value="<%= member.equipment || '' %>" placeholder="t.ex. RED Komodo, Sennheiser MKH 416"></div>
+    <div class="form-group"><label>Utmarkelser / Priser</label><input type="text" name="awards" value="<%= member.awards || '' %>" placeholder="t.ex. Guldbagge 2023, Berlin Film Festival"></div>
+  </div>
+
+  <div class="card">
+    <h2>Filmgrenar</h2>
+    <p style="font-size:12px;color:#64748b;margin-bottom:10px;">Valj de filmgrenar du arbetar inom</p>
+    <div class="branch-grid">
+      <% branches.forEach(function(b) { %>
+        <label class="branch-tag">
+          <input type="checkbox" name="branch_ids" value="<%= b.id %>" <%= memberBranches.indexOf(b.id) !== -1 ? 'checked' : '' %>>
+          <%= b.name_sv || b.name %>
+        </label>
+      <% }); %>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Lankar & Media</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Webbplats</label><input type="url" name="website" value="<%= member.website || '' %>" placeholder="https://"></div>
+      <div class="form-group"><label>IMDb</label><input type="url" name="imdb_link" value="<%= member.imdb_link || '' %>" placeholder="https://imdb.com/name/..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Showreel URL</label><input type="url" name="showreel_url" value="<%= member.showreel_url || '' %>" placeholder="https://vimeo.com/... eller youtube.com/..."></div>
+      <div class="form-group"><label>Sociala medier</label><input type="text" name="social_media" value="<%= member.social_media || '' %>" placeholder="Instagram, LinkedIn, etc."></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Profil-URL</h2>
+    <div class="form-group">
+      <label>Valj din profil-URL</label>
+      <input type="text" name="profile_slug" value="<%= member.profile_slug || '' %>" placeholder="t.ex. anna-svensson">
+      <div class="hint">Din profil visas pa: /filmcentrum/members/<%= member.profile_slug || 'ditt-namn' %></div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn" style="width:100%;padding:14px;">Spara profil</button>
+  </form>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>Byt losenord</h2>
+    <form method="POST" action="<%= portalBase %>/change-password">
+      <div class="form-group"><label>Nuvarande losenord</label><input type="password" name="current_password" required></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nytt losenord</label><input type="password" name="new_password" required minlength="4"></div>
+        <div class="form-group"><label>Bekrafta nytt losenord</label><input type="password" name="confirm_password" required minlength="4"></div>
+      </div>
+      <button type="submit" class="btn btn-secondary">Byt losenord</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
