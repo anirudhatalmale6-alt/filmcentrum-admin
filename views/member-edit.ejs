@@ -288,6 +288,21 @@
 
   <!-- SUBMIT -->
   <div class="form-actions">
+
+    <div class="section-divider"></div>
+    <h3 class="section-title">Member Password</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Set / Reset Password</label>
+        <input type="password" name="member_password" placeholder="Leave blank to keep current">
+        <div class="hint">Set a password so this member can log in to their profile</div>
+      </div>
+    </div>
+    <% if (member.password_hash) { %>
+      <div style="font-size:12px;color:#6ee7b7;margin-bottom:12px;">This member has a password set.</div>
+    <% } else { %>
+      <div style="font-size:12px;color:#fca5a5;margin-bottom:12px;">No password set. Member cannot log in yet.</div>
+    <% } %>
     <button type="submit" class="btn btn-primary">Save Member Profile</button>
     <a href="<%= base %>/members" class="btn btn-secondary">Cancel</a>
   </div>
