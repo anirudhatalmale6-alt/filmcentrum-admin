@@ -2,21 +2,35 @@
   .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
   .back-link:hover { color: #dc2626; }
   .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
-  .page-edit-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 900px; }
+  .page-edit-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 960px; }
   .page-edit-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 6px; }
   .page-edit-card .slug-info { font-size: 13px; color: #64748b; margin-bottom: 24px; font-family: monospace; }
   .form-group { margin-bottom: 20px; }
   .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
   .form-group input { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
-  .form-group textarea { width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; font-family: inherit; resize: vertical; min-height: 180px; }
-  .form-group input:focus, .form-group textarea:focus { border-color: #dc2626; }
-  .form-group .hint { font-size: 11px; color: #475569; margin-top: 4px; }
+  .form-group input:focus { border-color: #dc2626; }
   .lang-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #334155; }
   .lang-section h3 { font-size: 15px; color: #dc2626; margin-bottom: 16px; }
   .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
   .btn-save:hover { background: #b91c1c; }
   .btn-secondary { padding: 10px 24px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 12px; }
   .btn-secondary:hover { background: #475569; }
+  .editor-toolbar { display: flex; flex-wrap: wrap; gap: 2px; background: #1a2332; border: 1px solid #334155; border-bottom: none; border-radius: 6px 6px 0 0; padding: 6px 8px; }
+  .editor-toolbar button { background: none; border: 1px solid transparent; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; min-width: 28px; }
+  .editor-toolbar button:hover { background: #334155; color: #e2e8f0; }
+  .editor-toolbar .sep { width: 1px; background: #334155; margin: 0 4px; }
+  .rich-editor { width: 100%; min-height: 250px; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 0 0 6px 6px; color: #e2e8f0; font-size: 14px; font-family: inherit; outline: none; line-height: 1.6; overflow-y: auto; }
+  .rich-editor:focus { border-color: #dc2626; }
+  .rich-editor h1, .rich-editor h2, .rich-editor h3 { color: #f1f5f9; margin: 12px 0 8px; }
+  .rich-editor a { color: #60a5fa; }
+  .rich-editor ul, .rich-editor ol { padding-left: 24px; margin: 8px 0; }
+  .rich-editor blockquote { border-left: 3px solid #dc2626; padding-left: 12px; color: #94a3b8; margin: 8px 0; }
+  .rich-editor img { max-width: 100%; border-radius: 4px; }
+  .mode-toggle { display: flex; gap: 0; margin-bottom: 0; }
+  .mode-toggle button { padding: 5px 14px; font-size: 12px; border: 1px solid #334155; background: #1a2332; color: #64748b; cursor: pointer; }
+  .mode-toggle button:first-child { border-radius: 4px 0 0 4px; }
+  .mode-toggle button:last-child { border-radius: 0 4px 4px 0; }
+  .mode-toggle button.active { background: #dc2626; color: #fff; border-color: #dc2626; }
 </style>
 
 <a href="<%= base %>/pages" class="back-link">&larr; Back to Pages</a>
@@ -29,7 +43,7 @@
   <h2>Edit Page</h2>
   <div class="slug-info">Slug: /<%= page.slug %></div>
 
-  <form method="POST" action="<%= base %>/pages/<%= page.id %>">
+  <form method="POST" action="<%= base %>/pages/<%= page.id %>" id="pageForm">
     <div class="lang-section">
       <h3>Swedish (SV)</h3>
       <div class="form-group">
@@ -38,8 +52,31 @@
       </div>
       <div class="form-group">
         <label>Content</label>
-        <textarea name="content_sv" rows="10"><%= page.content_sv || '' %></textarea>
-        <div class="hint">HTML is supported for rich content</div>
+        <div class="mode-toggle" id="mode_sv">
+          <button type="button" class="active" onclick="setMode('sv','visual')">Visual</button>
+          <button type="button" onclick="setMode('sv','html')">HTML</button>
+        </div>
+        <div class="editor-toolbar" id="toolbar_sv">
+          <button type="button" onclick="fmt('sv','bold')" title="Bold"><b>B</b></button>
+          <button type="button" onclick="fmt('sv','italic')" title="Italic"><i>I</i></button>
+          <button type="button" onclick="fmt('sv','underline')" title="Underline"><u>U</u></button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmtBlock('sv','H2')" title="Heading 2">H2</button>
+          <button type="button" onclick="fmtBlock('sv','H3')" title="Heading 3">H3</button>
+          <button type="button" onclick="fmtBlock('sv','P')" title="Paragraph">P</button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmt('sv','insertUnorderedList')" title="Bullet list">&#8226;</button>
+          <button type="button" onclick="fmt('sv','insertOrderedList')" title="Numbered list">1.</button>
+          <div class="sep"></div>
+          <button type="button" onclick="insertLink('sv')" title="Insert link">Link</button>
+          <button type="button" onclick="insertImage('sv')" title="Insert image">Img</button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmt('sv','justifyLeft')" title="Align left">&#8676;</button>
+          <button type="button" onclick="fmt('sv','justifyCenter')" title="Center">&#8596;</button>
+          <button type="button" onclick="fmt('sv','justifyRight')" title="Align right">&#8677;</button>
+        </div>
+        <div contenteditable="true" class="rich-editor" id="editor_sv"><%= page.content_sv || '' %></div>
+        <textarea name="content_sv" id="hidden_sv" style="display:none;"><%= page.content_sv || '' %></textarea>
       </div>
     </div>
 
@@ -51,8 +88,31 @@
       </div>
       <div class="form-group">
         <label>Content</label>
-        <textarea name="content_en" rows="10"><%= page.content_en || '' %></textarea>
-        <div class="hint">HTML is supported for rich content</div>
+        <div class="mode-toggle" id="mode_en">
+          <button type="button" class="active" onclick="setMode('en','visual')">Visual</button>
+          <button type="button" onclick="setMode('en','html')">HTML</button>
+        </div>
+        <div class="editor-toolbar" id="toolbar_en">
+          <button type="button" onclick="fmt('en','bold')" title="Bold"><b>B</b></button>
+          <button type="button" onclick="fmt('en','italic')" title="Italic"><i>I</i></button>
+          <button type="button" onclick="fmt('en','underline')" title="Underline"><u>U</u></button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmtBlock('en','H2')" title="Heading 2">H2</button>
+          <button type="button" onclick="fmtBlock('en','H3')" title="Heading 3">H3</button>
+          <button type="button" onclick="fmtBlock('en','P')" title="Paragraph">P</button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmt('en','insertUnorderedList')" title="Bullet list">&#8226;</button>
+          <button type="button" onclick="fmt('en','insertOrderedList')" title="Numbered list">1.</button>
+          <div class="sep"></div>
+          <button type="button" onclick="insertLink('en')" title="Insert link">Link</button>
+          <button type="button" onclick="insertImage('en')" title="Insert image">Img</button>
+          <div class="sep"></div>
+          <button type="button" onclick="fmt('en','justifyLeft')" title="Align left">&#8676;</button>
+          <button type="button" onclick="fmt('en','justifyCenter')" title="Center">&#8596;</button>
+          <button type="button" onclick="fmt('en','justifyRight')" title="Align right">&#8677;</button>
+        </div>
+        <div contenteditable="true" class="rich-editor" id="editor_en"><%= page.content_en || '' %></div>
+        <textarea name="content_en" id="hidden_en" style="display:none;"><%= page.content_en || '' %></textarea>
       </div>
     </div>
 
@@ -60,3 +120,59 @@
     <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
   </form>
 </div>
+
+<script>
+var modes = { sv: 'visual', en: 'visual' };
+
+function fmt(lang, cmd) {
+  document.getElementById('editor_' + lang).focus();
+  document.execCommand(cmd, false, null);
+}
+
+function fmtBlock(lang, tag) {
+  document.getElementById('editor_' + lang).focus();
+  document.execCommand('formatBlock', false, '<' + tag + '>');
+}
+
+function insertLink(lang) {
+  var url = prompt('Enter URL:', 'https://');
+  if (url) { document.getElementById('editor_' + lang).focus(); document.execCommand('createLink', false, url); }
+}
+
+function insertImage(lang) {
+  var url = prompt('Enter image URL:', 'https://');
+  if (url) { document.getElementById('editor_' + lang).focus(); document.execCommand('insertImage', false, url); }
+}
+
+function setMode(lang, mode) {
+  var editor = document.getElementById('editor_' + lang);
+  var toolbar = document.getElementById('toolbar_' + lang);
+  var btns = document.getElementById('mode_' + lang).querySelectorAll('button');
+  modes[lang] = mode;
+  if (mode === 'html') {
+    var html = editor.innerHTML;
+    editor.innerText = html;
+    toolbar.style.display = 'none';
+    btns[0].classList.remove('active');
+    btns[1].classList.add('active');
+  } else {
+    var text = editor.innerText;
+    editor.innerHTML = text;
+    toolbar.style.display = 'flex';
+    btns[0].classList.add('active');
+    btns[1].classList.remove('active');
+  }
+}
+
+document.getElementById('pageForm').addEventListener('submit', function() {
+  ['sv', 'en'].forEach(function(lang) {
+    var editor = document.getElementById('editor_' + lang);
+    var hidden = document.getElementById('hidden_' + lang);
+    if (modes[lang] === 'html') {
+      hidden.value = editor.innerText;
+    } else {
+      hidden.value = editor.innerHTML;
+    }
+  });
+});
+</script>

@@ -575,6 +575,28 @@ app.post(BASE + '/settings', auth, function(req, res) {
 });
 
 // ============================================================
+// PASSWORD CHANGE
+// ============================================================
+app.get(BASE + "/password", auth, function(req, res) {
+  res.render("password", { base: BASE, success: req.query.changed === "1", error: null });
+});
+app.post(BASE + "/password", auth, function(req, res) {
+  var user = db.prepare("SELECT * FROM admin_users WHERE id = ?").get(req.session.adminId);
+  if (!user || !bcrypt.compareSync(req.body.current_password, user.password_hash)) {
+    return res.render("password", { base: BASE, success: false, error: "Current password is incorrect" });
+  }
+  if (req.body.new_password !== req.body.confirm_password) {
+    return res.render("password", { base: BASE, success: false, error: "New passwords do not match" });
+  }
+  if (req.body.new_password.length < 6) {
+    return res.render("password", { base: BASE, success: false, error: "Password must be at least 6 characters" });
+  }
+  var hash = bcrypt.hashSync(req.body.new_password, 10);
+  db.prepare("UPDATE admin_users SET password_hash = ? WHERE id = ?").run(hash, req.session.adminId);
+  res.redirect(BASE + "/password?changed=1");
+});
+
+// ============================================================
 // PUBLIC API ROUTES (no auth)
 // ============================================================
 app.get(BASE + '/api/public/translations/:lang', function(req, res) {
