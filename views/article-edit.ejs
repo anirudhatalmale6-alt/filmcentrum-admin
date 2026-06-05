@@ -1,0 +1,108 @@
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
+<link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.css">
+<style>
+  .back-link{display:inline-block;margin-bottom:16px;color:#94a3b8;text-decoration:none;font-size:13px}
+  .back-link:hover{color:#dc2626}
+  .success-banner{background:#064e3b;color:#6ee7b7;padding:12px 20px;border-radius:8px;margin-bottom:16px;font-size:14px}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:500}
+  .form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .form-group input:focus,.form-group textarea:focus{border-color:#dc2626}
+  .form-group textarea{resize:vertical;min-height:60px;font-family:inherit}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .card{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155;margin-bottom:16px}
+  .card h2{font-size:17px;color:#dc2626;margin-bottom:16px}
+  .lang-tabs{display:flex;gap:0;margin-bottom:0}
+  .lang-tab{padding:8px 20px;font-size:13px;font-weight:600;border:1px solid #334155;background:#1a2332;color:#64748b;cursor:pointer;border-bottom:none}
+  .lang-tab:first-child{border-radius:6px 0 0 0}.lang-tab:last-child{border-radius:0 6px 0 0}
+  .lang-tab.active{background:#dc2626;color:#fff;border-color:#dc2626}
+  .editor-container{border:1px solid #334155;border-radius:0 0 8px 8px;overflow:hidden;margin-bottom:16px}
+  .btn-save{padding:10px 32px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-save:hover{background:#b91c1c}
+  .btn-secondary{padding:10px 20px;background:#334155;color:#e2e8f0;border:none;border-radius:6px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;margin-left:8px}
+  .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#e2e8f0;cursor:pointer}
+  .checkbox-label input{accent-color:#dc2626}
+</style>
+
+<a href="<%= base %>/articles" class="back-link">&larr; Back to Articles</a>
+
+<% if (success) { %><div class="success-banner">Article saved.</div><% } %>
+
+<form method="POST" action="<%= base %>/articles" id="articleForm">
+  <% if (!isNew) { %><input type="hidden" name="id" value="<%= article.id %>"><% } %>
+
+  <div class="card">
+    <h2><%= isNew ? 'New Article' : 'Edit Article' %></h2>
+    <div class="form-row">
+      <div class="form-group"><label>Title (SV)</label><input type="text" name="title_sv" value="<%= article.title_sv || '' %>" required></div>
+      <div class="form-group"><label>Title (EN)</label><input type="text" name="title_en" value="<%= article.title_en || '' %>"></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Slug</label><input type="text" name="slug" value="<%= article.slug || '' %>" placeholder="auto-generated from title"></div>
+      <div class="form-group"><label>Category</label>
+        <select name="category">
+          <option value="news" <%= article.category==='news'?'selected':'' %>>News</option>
+          <option value="event" <%= article.category==='event'?'selected':'' %>>Event</option>
+          <option value="press" <%= article.category==='press'?'selected':'' %>>Press Release</option>
+          <option value="workshop" <%= article.category==='workshop'?'selected':'' %>>Workshop</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Publish Date</label><input type="date" name="published_at" value="<%= article.published_at ? article.published_at.split(' ')[0] || article.published_at.split('T')[0] : '' %>"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Excerpt (SV)</label><textarea name="excerpt_sv" rows="2"><%= article.excerpt_sv || '' %></textarea></div>
+      <div class="form-group"><label>Excerpt (EN)</label><textarea name="excerpt_en" rows="2"><%= article.excerpt_en || '' %></textarea></div>
+    </div>
+    <div class="form-group"><label>Cover Image URL</label><input type="text" name="image" value="<%= article.image || '' %>" placeholder="https://..."></div>
+    <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <%= article.is_published ? 'checked' : '' %>> Published</label>
+  </div>
+
+  <div class="card">
+    <h2>Content</h2>
+    <div class="lang-tabs">
+      <div class="lang-tab active" onclick="switchArtLang('sv')">Svenska</div>
+      <div class="lang-tab" onclick="switchArtLang('en')">English</div>
+    </div>
+    <div id="art-editor-sv" class="editor-container" style="height:420px;"></div>
+    <div id="art-editor-en" class="editor-container" style="height:420px;display:none;"></div>
+    <textarea name="content_sv" id="art_hidden_sv" style="display:none;"><%= article.content_sv || '' %></textarea>
+    <textarea name="content_en" id="art_hidden_en" style="display:none;"><%= article.content_en || '' %></textarea>
+  </div>
+
+  <button type="submit" class="btn-save" onclick="saveArtEditors()">Save Article</button>
+  <a href="<%= base %>/articles" class="btn-secondary">Cancel</a>
+</form>
+
+<script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
+<script src="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.js"></script>
+<script>
+var artEditors = {};
+function initArtEditor(lang) {
+  var content = document.getElementById('art_hidden_' + lang).value || '';
+  artEditors[lang] = grapesjs.init({
+    container: '#art-editor-' + lang, height: '420px', width: 'auto', storageManager: false,
+    plugins: ['gjs-preset-webpage'],
+    pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
+    components: content
+  });
+}
+initArtEditor('sv'); initArtEditor('en');
+
+function switchArtLang(lang) {
+  document.querySelectorAll('.lang-tab').forEach(function(t,i){ t.classList.toggle('active',(i===0&&lang==='sv')||(i===1&&lang==='en')); });
+  document.getElementById('art-editor-sv').style.display = lang==='sv'?'block':'none';
+  document.getElementById('art-editor-en').style.display = lang==='en'?'block':'none';
+  if(artEditors[lang]) artEditors[lang].refresh();
+}
+
+function saveArtEditors() {
+  ['sv','en'].forEach(function(lang) {
+    if(artEditors[lang]) {
+      var html=artEditors[lang].getHtml(); var css=artEditors[lang].getCss();
+      document.getElementById('art_hidden_'+lang).value = css ? '<style>'+css+'</style>'+html : html;
+    }
+  });
+}
+document.getElementById('articleForm').addEventListener('submit', function(){ saveArtEditors(); });
+</script>

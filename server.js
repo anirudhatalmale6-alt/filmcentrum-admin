@@ -765,6 +765,56 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 // ============================================================
 // ============================================================
 // PUBLIC MEMBERS DIRECTORY
+
+// ============================================================
+// NEWS / ARTICLES
+// ============================================================
+app.get(BASE + '/articles', auth, function(req, res) {
+  var articles = db.prepare('SELECT * FROM articles ORDER BY published_at DESC').all();
+  res.render('articles', { base: BASE, articles: articles });
+});
+
+app.get(BASE + '/articles/new', auth, function(req, res) {
+  res.render('article-edit', { base: BASE, article: { id: null, title_sv: '', title_en: '', slug: '', excerpt_sv: '', excerpt_en: '', content_sv: '', content_en: '', image: '', category: 'news', is_published: 0 }, isNew: true, success: false });
+});
+
+app.get(BASE + '/articles/:id', auth, function(req, res) {
+  var article = db.prepare('SELECT * FROM articles WHERE id = ?').get(req.params.id);
+  if (!article) return res.redirect(BASE + '/articles');
+  res.render('article-edit', { base: BASE, article: article, isNew: false, success: req.query.saved === '1' });
+});
+
+app.post(BASE + '/articles', auth, function(req, res) {
+  var b = req.body;
+  if (b._method === 'delete' && b.id) {
+    db.prepare('DELETE FROM articles WHERE id = ?').run(b.id);
+    return res.redirect(BASE + '/articles');
+  }
+  var slug = (b.slug || b.title_sv || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  if (b.id) {
+    db.prepare("UPDATE articles SET title_sv=?, title_en=?, slug=?, excerpt_sv=?, excerpt_en=?, content_sv=?, content_en=?, image=?, category=?, is_published=?, published_at=?, updated_at=datetime('now') WHERE id=?").run(
+      b.title_sv||'', b.title_en||'', slug, b.excerpt_sv||'', b.excerpt_en||'', b.content_sv||'', b.content_en||'', b.image||'', b.category||'news', b.is_published?1:0, b.published_at||null, b.id
+    );
+    res.redirect(BASE + '/articles/' + b.id + '?saved=1');
+  } else {
+    var r = db.prepare("INSERT INTO articles (title_sv, title_en, slug, excerpt_sv, excerpt_en, content_sv, content_en, image, category, is_published, published_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)").run(
+      b.title_sv||'', b.title_en||'', slug, b.excerpt_sv||'', b.excerpt_en||'', b.content_sv||'', b.content_en||'', b.image||'', b.category||'news', b.is_published?1:0, b.published_at||null
+    );
+    res.redirect(BASE + '/articles/' + r.lastInsertRowid + '?saved=1');
+  }
+});
+
+// Public news API
+app.get(BASE + '/api/public/articles', function(req, res) {
+  var articles = db.prepare("SELECT id, title_sv, title_en, slug, excerpt_sv, excerpt_en, image, category, published_at FROM articles WHERE is_published = 1 ORDER BY published_at DESC").all();
+  res.json({ success: true, articles: articles });
+});
+
+app.get(BASE + '/api/public/articles/:slug', function(req, res) {
+  var article = db.prepare("SELECT * FROM articles WHERE slug = ? AND is_published = 1").get(req.params.slug);
+  if (!article) return res.status(404).json({ success: false, error: 'Not found' });
+  res.json({ success: true, article: article });
+});
 // ============================================================
 app.get(BASE.replace("/admin", "") + "/members", function(req, res) {
   var members = db.prepare("SELECT m.*, GROUP_CONCAT(COALESCE(fb.name_sv, fb.name)) as branch_names FROM members m LEFT JOIN member_branches mb ON mb.member_id = m.id LEFT JOIN film_branches fb ON fb.id = mb.branch_id WHERE m.is_public = 1 AND m.approved = 1 GROUP BY m.id ORDER BY m.name").all();

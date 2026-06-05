@@ -1,0 +1,48 @@
+<style>
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+  .section-header h2{font-size:20px;color:#f1f5f9}
+  .btn{padding:8px 16px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;color:#fff}
+  .btn-primary{background:#dc2626}.btn-primary:hover{background:#b91c1c}
+  .btn-info{background:#1d4ed8}.btn-info:hover{background:#1e40af}
+  .btn-danger{background:#7f1d1d;color:#fca5a5}.btn-danger:hover{background:#991b1b}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  .table-wrap{background:#1e293b;border-radius:10px;border:1px solid #334155;overflow-x:auto;margin-bottom:32px}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:12px 16px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #334155}
+  td{padding:12px 16px;font-size:14px;color:#cbd5e1;border-bottom:1px solid #0f172a}
+  tr:hover td{background:#0f172a}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-published{background:#064e3b;color:#6ee7b7}
+  .badge-draft{background:#78350f;color:#fcd34d}
+  .actions-cell form{display:inline}
+  .actions-cell .btn{margin-right:4px}
+</style>
+
+<div class="section-header">
+  <h2>News & Articles (<%= articles.length %>)</h2>
+  <a href="<%= base %>/articles/new" class="btn btn-primary">New Article</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Published</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% if(articles.length===0){%><tr><td colspan="5" style="text-align:center;color:#64748b;padding:32px;">No articles yet.</td></tr><%}%>
+      <% articles.forEach(function(a){%>
+        <tr>
+          <td><strong><a href="<%= base %>/articles/<%= a.id %>" style="color:#e2e8f0;text-decoration:none;"><%= a.title_sv || a.title_en || 'Untitled' %></a></strong><br><span style="font-size:11px;color:#64748b;font-family:monospace;">/<%= a.slug %></span></td>
+          <td><%= a.category %></td>
+          <td><span class="badge <%= a.is_published ? 'badge-published' : 'badge-draft' %>"><%= a.is_published ? 'Published' : 'Draft' %></span></td>
+          <td style="font-size:12px;color:#64748b;"><%= a.published_at ? new Date(a.published_at).toLocaleDateString() : '-' %></td>
+          <td class="actions-cell">
+            <a href="<%= base %>/articles/<%= a.id %>" class="btn btn-info btn-sm">Edit</a>
+            <form method="POST" action="<%= base %>/articles" onsubmit="return confirm('Delete?')">
+              <input type="hidden" name="_method" value="delete"><input type="hidden" name="id" value="<%= a.id %>">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <%})%>
+    </tbody>
+  </table>
+</div>
