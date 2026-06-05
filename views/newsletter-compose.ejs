@@ -1,0 +1,127 @@
+<style>
+  .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
+  .back-link:hover { color: #dc2626; }
+  .compose-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 800px; }
+  .compose-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 24px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+  .form-group input, .form-group select { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
+  .form-group input:focus { border-color: #dc2626; }
+  .editor-toolbar { display: flex; flex-wrap: wrap; gap: 2px; background: #1a2332; border: 1px solid #334155; border-bottom: none; border-radius: 6px 6px 0 0; padding: 6px 8px; }
+  .editor-toolbar button { background: none; border: 1px solid transparent; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; min-width: 28px; }
+  .editor-toolbar button:hover { background: #334155; color: #e2e8f0; }
+  .editor-toolbar .sep { width: 1px; background: #334155; margin: 0 4px; }
+  .rich-editor { width: 100%; min-height: 300px; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 0 0 6px 6px; color: #e2e8f0; font-size: 14px; font-family: inherit; outline: none; line-height: 1.6; overflow-y: auto; }
+  .rich-editor:focus { border-color: #dc2626; }
+  .template-select { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .template-btn { padding: 8px 16px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer; }
+  .template-btn:hover { border-color: #dc2626; color: #e2e8f0; }
+  .btn-send { padding: 12px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-send:hover { background: #b91c1c; }
+  .btn-preview { padding: 12px 24px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; margin-left: 12px; }
+  .btn-preview:hover { background: #475569; }
+  .stats-bar { display: flex; gap: 16px; margin-bottom: 20px; }
+  .stat-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px 16px; text-align: center; flex: 1; }
+  .stat-item .num { font-size: 24px; font-weight: 700; color: #dc2626; }
+  .stat-item .label { font-size: 11px; color: #64748b; text-transform: uppercase; }
+  .preview-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+  .preview-modal.show { display: flex; }
+  .preview-content { background: #fff; color: #333; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; border-radius: 8px; padding: 32px; }
+  .preview-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 28px; cursor: pointer; }
+</style>
+
+<a href="<%= base %>/newsletter" class="back-link">&larr; Back to Subscribers</a>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="num"><%= stats.active %></div><div class="label">Active Subscribers</div></div>
+  <div class="stat-item"><div class="num"><%= stats.total %></div><div class="label">Total</div></div>
+</div>
+
+<div class="compose-card">
+  <h2>Compose Newsletter</h2>
+
+  <div class="form-group">
+    <label>Template</label>
+    <div class="template-select">
+      <button type="button" class="template-btn" onclick="loadTemplate('blank')">Blank</button>
+      <button type="button" class="template-btn" onclick="loadTemplate('news')">News Update</button>
+      <button type="button" class="template-btn" onclick="loadTemplate('event')">Event Invite</button>
+      <button type="button" class="template-btn" onclick="loadTemplate('welcome')">Welcome</button>
+      <button type="button" class="template-btn" onclick="loadTemplate('member')">Member Update</button>
+    </div>
+  </div>
+
+  <form method="POST" action="<%= base %>/newsletter/send" id="composeForm">
+    <div class="form-group">
+      <label>Subject</label>
+      <input type="text" name="subject" id="nlSubject" required placeholder="Newsletter subject line...">
+    </div>
+
+    <div class="form-group">
+      <label>Content</label>
+      <div class="editor-toolbar">
+        <button type="button" onclick="nlFmt('bold')"><b>B</b></button>
+        <button type="button" onclick="nlFmt('italic')"><i>I</i></button>
+        <button type="button" onclick="nlFmt('underline')"><u>U</u></button>
+        <div class="sep"></div>
+        <button type="button" onclick="nlBlock('H2')">H2</button>
+        <button type="button" onclick="nlBlock('H3')">H3</button>
+        <button type="button" onclick="nlBlock('P')">P</button>
+        <div class="sep"></div>
+        <button type="button" onclick="nlFmt('insertUnorderedList')">&#8226;</button>
+        <button type="button" onclick="nlFmt('insertOrderedList')">1.</button>
+        <div class="sep"></div>
+        <button type="button" onclick="nlLink()">Link</button>
+        <button type="button" onclick="nlImg()">Img</button>
+      </div>
+      <div contenteditable="true" class="rich-editor" id="nlEditor"></div>
+      <textarea name="content" id="nlHidden" style="display:none;"></textarea>
+    </div>
+
+    <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
+    <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
+  </form>
+</div>
+
+<div class="preview-modal" id="previewModal">
+  <span class="preview-close" onclick="closePreview()">&times;</span>
+  <div class="preview-content" id="previewBody"></div>
+</div>
+
+<script>
+var templates = {
+  blank: { subject: '', content: '' },
+  news: { subject: 'FilmCentrum Nyhetsbrev', content: '<h2>Senaste nytt fran FilmCentrum</h2><p>Hej!</p><p>Har ar de senaste nyheterna fran FilmCentrum Riks.</p><h3>Nyheter</h3><ul><li>Nyhet 1</li><li>Nyhet 2</li></ul><p>Med vanliga halsningar,<br>FilmCentrum Riks</p>' },
+  event: { subject: 'Inbjudan: ', content: '<h2>Du ar inbjuden!</h2><p>Hej,</p><p>Vi vill bjuda in dig till ett spannande evenemang.</p><h3>Detaljer</h3><p><strong>Datum:</strong> </p><p><strong>Tid:</strong> </p><p><strong>Plats:</strong> </p><p>Varmt valkommen!</p>' },
+  welcome: { subject: 'Valkommen till FilmCentrum!', content: '<h2>Valkommen som medlem!</h2><p>Hej och valkommen till FilmCentrum Riks!</p><p>Vi ar glada att du har blivit en del av Sveriges storsta filmkooperativ.</p><h3>Vad du kan gora nu</h3><ul><li>Skapa din profil</li><li>Utforska medlemskatalogen</li><li>Delta i kommande evenemang</li></ul><p>Har du fragor? Kontakta oss!</p>' },
+  member: { subject: 'Uppdatering for medlemmar', content: '<h2>Medlemsuppdatering</h2><p>Hej medlemmar!</p><p>Har kommer viktiga uppdateringar.</p><h3>Aktuellt</h3><p></p><p>Med vanliga halsningar,<br>FilmCentrum Riks</p>' }
+};
+
+function loadTemplate(name) {
+  var t = templates[name];
+  if (t) {
+    document.getElementById('nlSubject').value = t.subject;
+    document.getElementById('nlEditor').innerHTML = t.content;
+  }
+}
+
+function nlFmt(cmd) { document.getElementById('nlEditor').focus(); document.execCommand(cmd, false, null); }
+function nlBlock(tag) { document.getElementById('nlEditor').focus(); document.execCommand('formatBlock', false, '<' + tag + '>'); }
+function nlLink() { var url = prompt('URL:', 'https://'); if (url) { document.getElementById('nlEditor').focus(); document.execCommand('createLink', false, url); } }
+function nlImg() { var url = prompt('Image URL:', 'https://'); if (url) { document.getElementById('nlEditor').focus(); document.execCommand('insertImage', false, url); } }
+
+function showPreview() {
+  document.getElementById('previewBody').innerHTML = '<h1 style="color:#dc2626;font-size:20px;margin-bottom:8px;">' + (document.getElementById('nlSubject').value || 'No subject') + '</h1><hr style="border-color:#eee;margin:16px 0;">' + document.getElementById('nlEditor').innerHTML;
+  document.getElementById('previewModal').classList.add('show');
+}
+function closePreview() { document.getElementById('previewModal').classList.remove('show'); }
+
+function confirmSend() {
+  document.getElementById('nlHidden').value = document.getElementById('nlEditor').innerHTML;
+  return confirm('Send this newsletter to all active subscribers?');
+}
+
+document.getElementById('composeForm').addEventListener('submit', function() {
+  document.getElementById('nlHidden').value = document.getElementById('nlEditor').innerHTML;
+});
+</script>

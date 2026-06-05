@@ -1,0 +1,86 @@
+<style>
+  .settings-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 700px; margin-bottom: 24px; }
+  .settings-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 24px; }
+  .settings-card h3 { font-size: 16px; color: #dc2626; margin-bottom: 16px; margin-top: 24px; border-top: 1px solid #334155; padding-top: 16px; }
+  .settings-card h3:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+  .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
+  .form-group textarea { resize: vertical; min-height: 80px; font-family: monospace; font-size: 12px; }
+  .form-group input:focus, .form-group textarea:focus { border-color: #dc2626; }
+  .form-group .hint { font-size: 11px; color: #475569; margin-top: 4px; }
+  .btn-save { padding: 10px 24px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-save:hover { background: #b91c1c; }
+  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+  .code-preview { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: #94a3b8; margin-top: 8px; white-space: pre-wrap; word-break: break-all; }
+</style>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="success-banner">SEO & Analytics settings saved.</div>
+<% } %>
+
+<div class="settings-card">
+  <h2>SEO & Analytics</h2>
+  <form method="POST" action="<%= base %>/seo">
+    <h3>Meta Tags</h3>
+    <div class="form-group">
+      <label>Site Title</label>
+      <input type="text" name="seo_title" value="<%= settings.seo_title || '' %>" placeholder="FilmCentrum Riks - Sveriges filmkooperativ">
+      <div class="hint">Shown in browser tab and search results</div>
+    </div>
+    <div class="form-group">
+      <label>Meta Description</label>
+      <textarea name="seo_description" rows="3" placeholder="En forening av filmare for filmare..."><%= settings.seo_description || '' %></textarea>
+      <div class="hint">150-160 characters recommended for search results</div>
+    </div>
+    <div class="form-group">
+      <label>Meta Keywords</label>
+      <input type="text" name="seo_keywords" value="<%= settings.seo_keywords || '' %>" placeholder="filmcentrum, filmkooperativ, svensk film, filmare">
+    </div>
+
+    <h3>Open Graph (Social Media)</h3>
+    <div class="form-group">
+      <label>OG Title</label>
+      <input type="text" name="og_title" value="<%= settings.og_title || '' %>" placeholder="FilmCentrum Riks">
+    </div>
+    <div class="form-group">
+      <label>OG Description</label>
+      <textarea name="og_description" rows="2" placeholder="En forening av filmare for filmare"><%= settings.og_description || '' %></textarea>
+    </div>
+    <div class="form-group">
+      <label>OG Image URL</label>
+      <input type="text" name="og_image" value="<%= settings.og_image || '' %>" placeholder="https://skylarkmedia.se/filmcentrum/fc-team.jpg">
+    </div>
+
+    <h3>Google Analytics</h3>
+    <div class="form-group">
+      <label>GA Measurement ID</label>
+      <input type="text" name="ga_id" value="<%= settings.ga_id || '' %>" placeholder="G-XXXXXXXXXX">
+      <div class="hint">Google Analytics 4 measurement ID (starts with G-)</div>
+    </div>
+
+    <h3>Sitemap & Robots</h3>
+    <div class="form-group">
+      <label>Canonical URL</label>
+      <input type="text" name="canonical_url" value="<%= settings.canonical_url || '' %>" placeholder="https://skylarkmedia.se/filmcentrum/">
+    </div>
+    <div class="form-group">
+      <label>Robots Meta</label>
+      <select name="robots_meta">
+        <option value="index, follow" <%= (settings.robots_meta || 'index, follow') === 'index, follow' ? 'selected' : '' %>>Index, Follow (recommended)</option>
+        <option value="noindex, follow" <%= settings.robots_meta === 'noindex, follow' ? 'selected' : '' %>>Noindex, Follow</option>
+        <option value="index, nofollow" <%= settings.robots_meta === 'index, nofollow' ? 'selected' : '' %>>Index, Nofollow</option>
+        <option value="noindex, nofollow" <%= settings.robots_meta === 'noindex, nofollow' ? 'selected' : '' %>>Noindex, Nofollow</option>
+      </select>
+    </div>
+
+    <h3>Structured Data</h3>
+    <div class="form-group">
+      <label>Organization Schema (JSON-LD)</label>
+      <textarea name="schema_json" rows="6" placeholder='{"@context":"https://schema.org","@type":"Organization",...}'><%= settings.schema_json || '' %></textarea>
+      <div class="hint">JSON-LD structured data for search engines</div>
+    </div>
+
+    <button type="submit" class="btn-save">Save SEO Settings</button>
+  </form>
+</div>

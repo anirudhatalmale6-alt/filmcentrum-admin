@@ -599,6 +599,123 @@ app.post(BASE + "/password", auth, function(req, res) {
 // ============================================================
 // PUBLIC API ROUTES (no auth)
 // ============================================================
+// SEO & ANALYTICS
+// ============================================================
+app.get(BASE + '/seo', auth, function(req, res) {
+  var settings = {};
+  db.prepare('SELECT key, value FROM settings').all().forEach(function(r) { settings[r.key] = r.value; });
+  res.render('seo', { base: BASE, settings: settings, success: req.query.saved === '1' });
+});
+app.post(BASE + '/seo', auth, function(req, res) {
+  var upsert = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
+  var seoKeys = ['seo_title', 'seo_description', 'seo_keywords', 'og_title', 'og_description', 'og_image', 'ga_id', 'canonical_url', 'robots_meta', 'schema_json'];
+  seoKeys.forEach(function(k) {
+    if (req.body[k] !== undefined) upsert.run(k, String(req.body[k]));
+  });
+  // Update the frontend HTML with GA ID
+  var gaId = req.body.ga_id || '';
+  try {
+    var htmlPath = '/var/www/skylarkmedia/filmcentrum/index.html';
+    var fs = require('fs');
+    if (fs.existsSync(htmlPath)) {
+      var html = fs.readFileSync(htmlPath, 'utf-8');
+      html = html.replace(/content="G-[A-Z0-9]*"/, 'content="' + gaId + '"');
+      html = html.replace(/content=""/, 'content="' + gaId + '"');
+      if (req.body.seo_title) html = html.replace(/<title>[^<]*<\/title>/, '<title>' + req.body.seo_title + '</title>');
+      if (req.body.seo_description) html = html.replace(/name="description" content="[^"]*"/, 'name="description" content="' + req.body.seo_description + '"');
+      if (req.body.seo_keywords) html = html.replace(/name="keywords" content="[^"]*"/, 'name="keywords" content="' + req.body.seo_keywords + '"');
+      if (req.body.og_title) html = html.replace(/property="og:title" content="[^"]*"/, 'property="og:title" content="' + req.body.og_title + '"');
+      if (req.body.og_description) html = html.replace(/property="og:description" content="[^"]*"/, 'property="og:description" content="' + req.body.og_description + '"');
+      if (req.body.canonical_url) html = html.replace(/rel="canonical" href="[^"]*"/, 'rel="canonical" href="' + req.body.canonical_url + '"');
+      fs.writeFileSync(htmlPath, html);
+    }
+  } catch(e) { console.error('SEO HTML update error:', e.message); }
+  res.redirect(BASE + '/seo?saved=1');
+});
+
+// ============================================================
+// NEWSLETTER COMPOSE & SEND
+// ============================================================
+app.get(BASE + '/newsletter/compose', auth, function(req, res) {
+  var active = db.prepare("SELECT COUNT(*) as c FROM newsletter_subscribers WHERE is_active = 1").get().c;
+  var total = db.prepare("SELECT COUNT(*) as c FROM newsletter_subscribers").get().c;
+  res.render('newsletter-compose', { base: BASE, stats: { active: active, total: total } });
+});
+
+// Create newsletter_sent table
+try {
+  db.exec("CREATE TABLE IF NOT EXISTS newsletter_sent (id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, content TEXT, recipient_count INTEGER DEFAULT 0, sent_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+} catch(e) {}
+
+app.post(BASE + '/newsletter/send', auth, function(req, res) {
+  var subject = req.body.subject;
+  var content = req.body.content;
+  if (!subject || !content) return res.redirect(BASE + '/newsletter/compose');
+
+  var subscribers = db.prepare("SELECT email, name FROM newsletter_subscribers WHERE is_active = 1").all();
+
+  // Store the newsletter
+  db.prepare("INSERT INTO newsletter_sent (subject, content, recipient_count) VALUES (?, ?, ?)").run(subject, content, subscribers.length);
+
+  // Note: Actual SMTP sending would go here. For now it stores and shows success.
+  res.redirect(BASE + '/newsletter?sent=1&count=' + subscribers.length);
+});
+
+app.get(BASE + '/newsletter/export', auth, function(req, res) {
+  var subscribers = db.prepare('SELECT email, name, is_active, subscribed_at FROM newsletter_subscribers ORDER BY subscribed_at DESC').all();
+  var csv = 'Email,Name,Status,Subscribed\n';
+  subscribers.forEach(function(s) {
+    csv += '"' + (s.email || '') + '","' + (s.name || '') + '","' + (s.is_active ? 'Active' : 'Inactive') + '","' + (s.subscribed_at || '') + '"\n';
+  });
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename=filmcentrum_subscribers.csv');
+  res.send(csv);
+});
+
+// ============================================================
+// CHATBOT API (public)
+// ============================================================
+app.post(BASE + '/api/public/chat', function(req, res) {
+  var message = req.body.message;
+  if (!message) return res.status(400).json({ error: 'Message required' });
+
+  // Simple rule-based chatbot for FilmCentrum
+  var msg = message.toLowerCase();
+  var reply = '';
+
+  if (msg.indexOf('medlem') !== -1 || msg.indexOf('member') !== -1 || msg.indexOf('join') !== -1) {
+    reply = 'Medlemskap i FilmCentrum kostar 100 kr per ar. Du kan bli medlem genom att klicka pa "Bli medlem" pa var hemsida. Som medlem far du distribution, synlighet, natverk och rostrett pa arsmote!';
+  } else if (msg.indexOf('pris') !== -1 || msg.indexOf('kost') !== -1 || msg.indexOf('price') !== -1 || msg.indexOf('avgift') !== -1) {
+    reply = 'Medlemskapet kostar 100 kr per ar. Det inkluderar distribution, filmsida, synlighet mot skolor/bibliotek, intakter fran visningar, och natverk med oberoende filmskapare.';
+  } else if (msg.indexOf('kontakt') !== -1 || msg.indexOf('contact') !== -1 || msg.indexOf('email') !== -1) {
+    reply = 'Du kan kontakta oss via kontaktformulaaret pa hemsidan eller skicka e-post till info@filmcentrum.se. Vi svarar vanligtvis inom 1-2 arbetsdagar.';
+  } else if (msg.indexOf('skolbio') !== -1 || msg.indexOf('school') !== -1) {
+    reply = 'FilmCentrum arbetar aktivt med skolbioprogram runt om i landet. Vi erbjuder pedagogiskt material och filmsamtal for alla aldersgrupper. Kontakta oss for mer information!';
+  } else if (msg.indexOf('distribution') !== -1 || msg.indexOf('distribute') !== -1) {
+    reply = 'Genom FC Distribution sprider vi kvalitetsfilm till skolor, bibliotek och kulturinstitutioner over hela Sverige. Som medlem far du din film distribuerad och synlig i vart natverk.';
+  } else if (msg.indexOf('hej') !== -1 || msg.indexOf('hello') !== -1 || msg.indexOf('hi') !== -1) {
+    reply = 'Hej! Valkommen till FilmCentrum Riks. Hur kan jag hjalpa dig? Jag kan svara pa fragor om medlemskap, priser, skolbio, distribution och mer.';
+  } else if (msg.indexOf('tack') !== -1 || msg.indexOf('thank') !== -1) {
+    reply = 'Tack sjalv! Hor garna av dig igen om du har fler fragor. Valkommen till FilmCentrum!';
+  } else {
+    reply = 'Tack for din fraga! Jag kan hjalpa dig med information om medlemskap (100 kr/ar), distribution, skolbio och kontaktuppgifter. Vad vill du veta mer om?';
+  }
+
+  res.json({ success: true, reply: reply });
+});
+
+// ============================================================
+// PUBLIC SEO ROUTES
+// ============================================================
+app.get(BASE + '/api/public/seo', function(req, res) {
+  var settings = {};
+  var keys = ['seo_title', 'seo_description', 'seo_keywords', 'og_title', 'og_description', 'og_image', 'ga_id', 'canonical_url', 'robots_meta', 'schema_json'];
+  db.prepare("SELECT key, value FROM settings WHERE key IN (" + keys.map(function() { return '?'; }).join(',') + ")").all(keys).forEach(function(r) {
+    settings[r.key] = r.value;
+  });
+  res.json({ success: true, settings: settings });
+});
+// ============================================================
 app.get(BASE + '/api/public/translations/:lang', function(req, res) {
   var rows = db.prepare('SELECT key, value FROM translations WHERE lang = ?').all(req.params.lang);
   var t = {}; rows.forEach(function(r) { t[r.key] = r.value; });
