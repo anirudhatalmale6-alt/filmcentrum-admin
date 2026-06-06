@@ -1,0 +1,110 @@
+<style>
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+  .section-header h2{font-size:20px;color:#f1f5f9}
+  .alert-bar{padding:14px 20px;border-radius:10px;margin-bottom:16px;font-size:14px}
+  .alert-red{background:#7f1d1d;border:1px solid #991b1b;color:#fca5a5}
+  .alert-yellow{background:#78350f;border:1px solid #92400e;color:#fcd34d}
+  .alert-green{background:#064e3b;border:1px solid #065f46;color:#6ee7b7}
+  .btn{padding:8px 16px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;color:#fff}
+  .btn-primary{background:#dc2626}.btn-primary:hover{background:#b91c1c}
+  .btn-success{background:#059669}.btn-success:hover{background:#047857}
+  .btn-blue{background:#1d4ed8}.btn-blue:hover{background:#1e40af}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  .card{background:#1e293b;border-radius:10px;padding:20px;border:1px solid #334155;margin-bottom:20px}
+  .card h3{font-size:16px;color:#dc2626;margin-bottom:14px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:10px 14px;font-size:12px;color:#64748b;text-transform:uppercase;border-bottom:1px solid #334155}
+  td{padding:10px 14px;font-size:13px;color:#cbd5e1;border-bottom:1px solid #0f172a}
+  tr:hover td{background:#0f172a}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-red{background:#7f1d1d;color:#fca5a5}
+  .badge-yellow{background:#78350f;color:#fcd34d}
+  .badge-green{background:#064e3b;color:#6ee7b7}
+  .settings-form{margin-top:16px}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:4px}
+  .form-group input,.form-group textarea{width:100%;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .form-group textarea{resize:vertical;min-height:60px;font-family:inherit}
+  .actions-cell form{display:inline}.actions-cell .btn{margin-right:4px}
+</style>
+
+<div class="section-header">
+  <h2>Membership Renewals</h2>
+  <form method="POST" action="<%= base %>/renewals/send" onsubmit="return confirm('Send renewal reminders to all expiring members?')">
+    <button type="submit" class="btn btn-primary">Send Reminders Now</button>
+  </form>
+</div>
+
+<% if (success) { %><div class="alert-bar alert-green">Renewal reminders sent!</div><% } %>
+
+<% if (expired.length > 0) { %>
+<div class="alert-bar alert-red"><strong><%= expired.length %></strong> membership<%= expired.length > 1 ? 's have' : ' has' %> expired</div>
+<div class="card">
+  <h3>Expired Memberships</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Expired</th><th>Last Reminder</th><th>Actions</th></tr></thead>
+      <tbody>
+        <% expired.forEach(function(m) { %>
+        <tr>
+          <td><strong><%= m.name %></strong></td>
+          <td><%= m.email %></td>
+          <td><span class="badge badge-red"><%= m.membership_expires ? new Date(m.membership_expires).toLocaleDateString('sv-SE') : '-' %></span></td>
+          <td style="font-size:11px;color:#64748b;"><%= m.last_reminder_sent ? new Date(m.last_reminder_sent).toLocaleDateString('sv-SE') : 'Never' %></td>
+          <td class="actions-cell">
+            <form method="POST" action="<%= base %>/members/<%= m.id %>/renew"><button type="submit" class="btn btn-sm btn-success">Renew +1 Year</button></form>
+            <a href="<%= base %>/members/<%= m.id %>" class="btn btn-sm btn-blue">View</a>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<% if (expiringSoon.length > 0) { %>
+<div class="alert-bar alert-yellow"><strong><%= expiringSoon.length %></strong> membership<%= expiringSoon.length > 1 ? 's' : '' %> expiring within <%= days %> days</div>
+<div class="card">
+  <h3>Expiring Soon</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Expires</th><th>Last Reminder</th><th>Actions</th></tr></thead>
+      <tbody>
+        <% expiringSoon.forEach(function(m) { %>
+        <tr>
+          <td><strong><%= m.name %></strong></td>
+          <td><%= m.email %></td>
+          <td><span class="badge badge-yellow"><%= m.membership_expires ? new Date(m.membership_expires).toLocaleDateString('sv-SE') : '-' %></span></td>
+          <td style="font-size:11px;color:#64748b;"><%= m.last_reminder_sent ? new Date(m.last_reminder_sent).toLocaleDateString('sv-SE') : 'Never' %></td>
+          <td class="actions-cell">
+            <form method="POST" action="<%= base %>/members/<%= m.id %>/renew"><button type="submit" class="btn btn-sm btn-success">Renew +1 Year</button></form>
+            <a href="<%= base %>/members/<%= m.id %>" class="btn btn-sm btn-blue">View</a>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<% if (expired.length === 0 && expiringSoon.length === 0) { %>
+<div class="alert-bar alert-green">All memberships are up to date. No renewals needed.</div>
+<% } %>
+
+<div class="card">
+  <h3>Renewal Settings</h3>
+  <form method="POST" action="<%= base %>/renewals/settings" class="settings-form">
+    <div class="form-group">
+      <label>Remind members X days before expiry</label>
+      <input type="number" name="days" value="<%= days %>" min="7" max="90">
+    </div>
+    <div class="form-group">
+      <label>Reminder message template (use {name} and {date})</label>
+      <textarea name="message" rows="3"><%= msgTemplate %></textarea>
+    </div>
+    <button type="submit" class="btn btn-blue">Save Settings</button>
+  </form>
+</div>

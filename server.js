@@ -813,6 +813,65 @@ app.get(BASE.replace('/admin', '') + '/verify/:id/:ref', function(req, res) {
 
 // ============================================================
 // MEMBERSHIP APPLICATION + SWISH PAYMENT
+
+// ============================================================
+// MEMBERSHIP RENEWAL REMINDERS
+// ============================================================
+// Check and send renewal reminders (called by cron or manually)
+app.get(BASE + '/api/renewal-check', auth, function(req, res) {
+  var days = parseInt(db.prepare("SELECT value FROM settings WHERE key = 'renewal_reminder_days'").get().value) || 30;
+  var msgTemplate = (db.prepare("SELECT value FROM settings WHERE key = 'renewal_reminder_message'").get() || {}).value || 'Your membership expires on {date}. Please renew.';
+  
+  var expiring = db.prepare("SELECT * FROM members WHERE membership_expires IS NOT NULL AND membership_expires < datetime('now', '+' || ? || ' days') AND payment_status = 'paid' AND (last_reminder_sent IS NULL OR last_reminder_sent < datetime('now', '-7 days'))", [String(days)]).all();
+  
+  // For now, log the reminders (actual email sending needs SMTP config)
+  var sent = 0;
+  expiring.forEach(function(m) {
+    var msg = msgTemplate.replace('{name}', m.name).replace('{date}', m.membership_expires ? new Date(m.membership_expires).toLocaleDateString('sv-SE') : '');
+    db.prepare("INSERT INTO renewal_reminders (member_id, type) VALUES (?, 'reminder')").run(m.id);
+    db.prepare("UPDATE members SET last_reminder_sent = datetime('now') WHERE id = ?").run(m.id);
+    sent++;
+  });
+  
+  res.json({ success: true, checked: expiring.length, sent: sent, days: days });
+});
+
+// Admin: view expiring memberships
+app.get(BASE + '/renewals', auth, function(req, res) {
+  var days = parseInt((db.prepare("SELECT value FROM settings WHERE key = 'renewal_reminder_days'").get() || {}).value) || 30;
+  var expiring = db.prepare("SELECT m.*, CASE WHEN m.membership_expires < datetime('now') THEN 'expired' WHEN m.membership_expires < datetime('now', '+30 days') THEN 'expiring' ELSE 'active' END as renewal_status FROM members m WHERE m.membership_expires IS NOT NULL ORDER BY m.membership_expires ASC").all();
+  var expired = expiring.filter(function(m) { return m.renewal_status === 'expired'; });
+  var expiringSoon = expiring.filter(function(m) { return m.renewal_status === 'expiring'; });
+  var msgTemplate = (db.prepare("SELECT value FROM settings WHERE key = 'renewal_reminder_message'").get() || {}).value || '';
+  res.render('renewals', { base: BASE, expired: expired, expiringSoon: expiringSoon, days: days, msgTemplate: msgTemplate, success: req.query.sent === '1' });
+});
+
+// Admin: manually trigger renewal reminders
+app.post(BASE + '/renewals/send', auth, function(req, res) {
+  var days = parseInt((db.prepare("SELECT value FROM settings WHERE key = 'renewal_reminder_days'").get() || {}).value) || 30;
+  var expiring = db.prepare("SELECT * FROM members WHERE membership_expires IS NOT NULL AND membership_expires < datetime('now', '+' || ? || ' days') AND payment_status = 'paid'").all(String(days));
+  
+  expiring.forEach(function(m) {
+    db.prepare("INSERT INTO renewal_reminders (member_id, type) VALUES (?, 'manual_reminder')").run(m.id);
+    db.prepare("UPDATE members SET last_reminder_sent = datetime('now') WHERE id = ?").run(m.id);
+  });
+  
+  res.redirect(BASE + '/renewals?sent=1&count=' + expiring.length);
+});
+
+// Admin: update renewal settings
+app.post(BASE + '/renewals/settings', auth, function(req, res) {
+  var upsert = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
+  if (req.body.days) upsert.run('renewal_reminder_days', req.body.days);
+  if (req.body.message) upsert.run('renewal_reminder_message', req.body.message);
+  res.redirect(BASE + '/renewals');
+});
+
+// Admin: renew a member (extend 1 year)
+app.post(BASE + '/members/:id/renew', auth, function(req, res) {
+  db.prepare("UPDATE members SET membership_expires = datetime(COALESCE(membership_expires, 'now'), '+1 year'), renewed_at = datetime('now'), payment_status = 'paid' WHERE id = ?").run(req.params.id);
+  res.redirect(BASE + '/members/' + req.params.id + '?saved=1');
+});
 // ============================================================
 app.post(BASE + '/api/public/members/apply', function(req, res) {
   var b = req.body;
