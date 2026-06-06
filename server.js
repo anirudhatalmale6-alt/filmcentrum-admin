@@ -1234,6 +1234,19 @@ app.get(BASE.replace("/admin", "") + "/members", function(req, res) {
   res.render("members-directory", { layout: false, members: members, branches: branches });
 });
 
+app.get(BASE.replace("/admin", "") + "/members/:slug", function(req, res) {
+  var slug = req.params.slug;
+  var member = null;
+  if (/^\d+$/.test(slug)) {
+    member = db.prepare("SELECT * FROM members WHERE id = ? AND is_public = 1 AND approved = 1").get(slug);
+  } else {
+    member = db.prepare("SELECT * FROM members WHERE profile_slug = ? AND is_public = 1 AND approved = 1").get(slug);
+  }
+  if (!member) return res.redirect(BASE.replace("/admin", "") + "/members");
+  var media = db.prepare("SELECT * FROM member_media WHERE member_id = ? ORDER BY sort_order").all(member.id);
+  res.render("member-detail", { layout: false, member: member, media: media });
+});
+
 // MEMBER PORTAL (login + profile + password change)
 
 // ============================================================
