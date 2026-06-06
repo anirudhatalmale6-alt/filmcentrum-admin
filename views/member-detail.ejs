@@ -17,36 +17,64 @@
     .logo-text{font-family:'Special Elite','Courier New',monospace;color:#c0392b;font-size:1.125rem;font-weight:700;letter-spacing:0.025em}
     .main-nav{display:none;align-items:center;gap:4px}
     @media(min-width:1024px){.main-nav{display:flex}}
-    .main-nav a{color:#374151;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 12px;border-radius:6px;transition:color 0.15s,background-color 0.15s;white-space:nowrap}
+    .main-nav a{color:#374151;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 12px;border-radius:6px;white-space:nowrap}
     .main-nav a:hover{color:#c0392b;background:#f9fafb}
     .header-actions{display:flex;align-items:center;gap:12px}
     .fc-dist-btn{display:none;background:#c0392b;color:#fff;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 16px;border-radius:6px}
     @media(min-width:768px){.fc-dist-btn{display:inline-flex}}
     .mobile-menu-btn{display:block;padding:8px;color:#4b5563;background:none;border:none;cursor:pointer}
     @media(min-width:1024px){.mobile-menu-btn{display:none}}
-    .container{max-width:800px;margin:0 auto;padding:32px 24px}
+    .mobile-nav{display:none;border-top:1px solid #e5e7eb;padding:16px 0}
+    .mobile-nav.show{display:block}
+    @media(min-width:1024px){.mobile-nav{display:none!important}}
+    .mobile-nav a{display:block;padding:8px 12px;font-size:1rem;font-weight:500;color:#374151;text-decoration:none;border-radius:6px}
+    .mobile-nav a:hover{background:#f9fafb;color:#c0392b}
+
+    .portfolio-hero{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:48px 24px;text-align:center;color:#fff}
+    .portfolio-photo{width:140px;height:140px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.2);margin:0 auto 16px;display:block}
+    .portfolio-photo-ph{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#c0392b,#e74c3c);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:56px;color:#fff;font-weight:700}
+    .portfolio-name{font-family:'Playfair Display',serif;font-size:32px;margin-bottom:4px}
+    .portfolio-headline{color:#c0392b;font-size:16px;font-weight:500;margin-bottom:4px}
+    .portfolio-location{color:#94a3b8;font-size:14px}
+    .portfolio-url{color:#64748b;font-size:12px;margin-top:8px;font-family:monospace}
+
+    .container{max-width:900px;margin:0 auto;padding:32px 24px}
     .back{display:inline-block;color:#64748b;text-decoration:none;font-size:14px;margin-bottom:20px}
     .back:hover{color:#c0392b}
-    .profile-card{background:#fff;border-radius:16px;padding:40px;border:1px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.04)}
-    .profile-top{display:flex;gap:24px;align-items:center;margin-bottom:24px}
-    .profile-photo{width:100px;height:100px;border-radius:50%;object-fit:cover}
-    .profile-photo-placeholder{width:100px;height:100px;border-radius:50%;background:#c0392b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700}
-    .profile-name{font-size:28px;font-weight:700;font-family:'Playfair Display',serif}
-    .profile-headline{color:#c0392b;font-size:16px;font-weight:500;margin-top:4px}
-    .profile-location{color:#64748b;font-size:14px;margin-top:4px}
-    .profile-section{margin-top:24px;padding-top:20px;border-top:1px solid #f1f5f9}
-    .profile-section h3{font-size:16px;font-weight:600;color:#1e293b;margin-bottom:12px}
-    .profile-section p{color:#475569;line-height:1.7;font-size:15px}
-    .profile-tags{display:flex;flex-wrap:wrap;gap:6px}
-    .profile-tag{padding:4px 12px;background:#fef2f2;color:#c0392b;border-radius:16px;font-size:13px;font-weight:500}
-    .profile-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
-    .profile-links a{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#f1f5f9;border-radius:8px;color:#1e293b;text-decoration:none;font-size:13px;font-weight:500;transition:background 0.15s}
-    .profile-links a:hover{background:#e2e8f0}
-    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:12px}
-    .gallery img{width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover}
+
+    .section{background:#fff;border-radius:16px;padding:32px;border:1px solid #e2e8f0;margin-bottom:20px}
+    .section h2{font-family:'Playfair Display',serif;font-size:22px;color:#1e293b;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section h2 .icon{font-size:24px}
+    .section p{color:#475569;line-height:1.7;font-size:15px}
+
+    .tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{padding:6px 14px;background:#fef2f2;color:#c0392b;border-radius:20px;font-size:13px;font-weight:500}
+
+    .edu-item,.exp-item{padding:16px;background:#f8fafc;border-radius:12px;margin-bottom:12px;border-left:3px solid #c0392b}
+    .edu-item h4,.exp-item h4{font-size:16px;color:#1e293b;margin-bottom:4px}
+    .edu-item .meta,.exp-item .meta{font-size:13px;color:#64748b}
+    .exp-item .role-tag{color:#c0392b;font-size:14px;font-weight:500}
+    .exp-item .desc{font-size:14px;color:#475569;margin-top:6px;line-height:1.6}
+
+    .links-grid{display:flex;flex-wrap:wrap;gap:10px}
+    .link-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:#f1f5f9;border-radius:10px;color:#1e293b;text-decoration:none;font-size:14px;font-weight:500;transition:all 0.15s}
+    .link-btn:hover{background:#c0392b;color:#fff}
+
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+    .gallery img{width:100%;border-radius:12px;aspect-ratio:1;object-fit:cover;cursor:pointer;transition:transform 0.2s}
+    .gallery img:hover{transform:scale(1.03)}
+    .gallery .caption{font-size:11px;color:#64748b;text-align:center;margin-top:4px}
+
+    .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+    .contact-item{display:flex;align-items:center;gap:10px;padding:12px;background:#f8fafc;border-radius:10px}
+    .contact-item .icon{font-size:20px}
+    .contact-item .label{font-size:12px;color:#64748b}
+    .contact-item .value{font-size:14px;color:#1e293b;font-weight:500}
+    .contact-item a{color:#c0392b;text-decoration:none}
+
     .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
     .footer a{color:#dc2626;text-decoration:none}
-    @media(max-width:600px){.profile-top{flex-direction:column;text-align:center}.profile-card{padding:24px}}
+    @media(max-width:600px){.section{padding:20px}.portfolio-name{font-size:24px}.gallery{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
@@ -59,230 +87,168 @@
       <nav class="main-nav">
         <a href="/filmcentrum/">Hem</a>
         <a href="/filmcentrum/om-oss">Om oss</a>
-        <a href="/filmcentrum/styrelse">Styrelse</a>
-        <a href="/filmcentrum/styrelse">Styrelse</a>
-      <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
-        <a href="/filmcentrum/medlemskap">Medlemskap</a>
+        <a href="/filmcentrum/members">Medlemskatalog</a>
         <a href="/filmcentrum/nyheter">Nyheter</a>
         <a href="/filmcentrum/kontakt">Kontakta oss</a>
         <a href="/filmcentrum/login">Logga in</a>
-        <a href="/fai/">Festival AI</a>
-        <a href="/filmcentrum/kalender">Kalender</a>
       </nav>
       <div class="header-actions">
         <a href="/fc/" class="fc-dist-btn">FC Distribution</a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.mobile-nav').classList.toggle('show')" aria-label="Meny">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
       </div>
     </div>
+    <div class="mobile-nav">
+      <a href="/filmcentrum/">Hem</a>
+      <a href="/filmcentrum/om-oss">Om oss</a>
+      <a href="/filmcentrum/members">Medlemskatalog</a>
+      <a href="/filmcentrum/nyheter">Nyheter</a>
+      <a href="/filmcentrum/kontakt">Kontakta oss</a>
+      <a href="/filmcentrum/login">Logga in</a>
+    </div>
+  </div>
+
+  <div class="portfolio-hero">
+    <% if (member.profile_photo) { %>
+      <img src="<%= member.profile_photo %>" class="portfolio-photo" alt="<%= member.name %>">
+    <% } else { %>
+      <div class="portfolio-photo-ph"><%= (member.name || 'M').charAt(0) %></div>
+    <% } %>
+    <div class="portfolio-name"><%= member.name %></div>
+    <% if (member.headline || member.profession) { %><div class="portfolio-headline"><%= member.headline || member.profession %></div><% } %>
+    <% if (member.city) { %><div class="portfolio-location"><%= member.city %><% if (member.country && member.country !== 'SE') { %>, <%= member.country %><% } %></div><% } %>
+    <div class="portfolio-url">filmcentrum.se/members/<%= member.profile_slug || member.id %></div>
   </div>
 
   <div class="container">
     <a href="/filmcentrum/members" class="back">&larr; Tillbaka till medlemskatalogen</a>
-    <div class="profile-card">
-      <div class="profile-top">
-        <% if (member.profile_photo) { %>
-          <img src="<%= member.profile_photo %>" class="profile-photo" alt="">
-        <% } else { %>
-          <div class="profile-photo-placeholder"><%= (member.name || 'M').charAt(0) %></div>
-        <% } %>
-        <div>
-          <div class="profile-name"><%= member.name %></div>
-          <% if (member.headline || member.profession) { %><div class="profile-headline"><%= member.headline || member.profession %></div><% } %>
-          <% if (member.city) { %><div class="profile-location"><%= member.city %><% if (member.country && member.country !== 'SE') { %>, <%= member.country %><% } %></div><% } %>
-        </div>
-      </div>
 
-      <% if (member.biography) { %>
-      <div class="profile-section">
-        <h3>Om</h3>
-        <p><%= member.biography %></p>
-      </div>
-      <% } %>
-
-      <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
-      <div class="profile-section">
-        <h3>Filmgrenar</h3>
-        <div class="profile-tags">
-          <% branches.forEach(function(b) { %><span class="profile-tag"><%= b.name_sv || b.name %><% if (b.is_primary) { %> (primat)<% } %></span><% }); %>
-        </div>
-      </div>
-      <% } %>
-
-      <% if (member.film_type) { %>
-      <div class="profile-section">
-        <h3>Filmtyp</h3>
-        <p><%= member.film_type %></p>
-      </div>
-      <% } %>
-
-      <% if (member.profession) { %>
-      <div class="profile-section">
-        <h3>Profession</h3>
-        <p><%= member.profession %></p>
-      </div>
-      <% } %>
-
-      <% if (member.primary_roles) { %>
-      <div class="profile-section">
-        <h3>Roller</h3>
-        <p><%= member.primary_roles %></p>
-      </div>
-      <% } %>
-
-      <% if (member.skills || member.technical_skills) { %>
-      <div class="profile-section">
-        <h3>Kompetenser</h3>
-        <div class="profile-tags">
-          <% if (member.skills) { member.skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="profile-tag"><%= s.trim() %></span><% } }); } %>
-          <% if (member.technical_skills) { member.technical_skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="profile-tag"><%= s.trim() %></span><% } }); } %>
-        </div>
-      </div>
-      <% } %>
-
-      <% if (typeof education !== 'undefined' && education.length > 0) { %>
-      <div class="profile-section">
-        <h3>Utbildning</h3>
-        <% education.forEach(function(e) { %>
-          <div style="margin-bottom:12px;padding:12px;background:#f8fafc;border-radius:8px;">
-            <div style="font-weight:600;"><%= e.institution %></div>
-            <% if (e.qualification || e.field_of_study) { %><div style="color:#475569;font-size:14px;"><%= e.qualification %><% if (e.field_of_study) { %> - <%= e.field_of_study %><% } %></div><% } %>
-            <% if (e.start_year) { %><div style="color:#94a3b8;font-size:13px;"><%= e.start_year %><% if (e.end_year) { %> - <%= e.end_year %><% } %></div><% } %>
-          </div>
-        <% }); %>
-      </div>
-      <% } %>
-
-      <% if (typeof experience !== 'undefined' && experience.length > 0) { %>
-      <div class="profile-section">
-        <h3>Erfarenhet / Filmer</h3>
-        <% experience.forEach(function(ex) { %>
-          <div style="margin-bottom:12px;padding:12px;background:#f8fafc;border-radius:8px;">
-            <div style="font-weight:600;"><%= ex.project_title %></div>
-            <% if (ex.role) { %><div style="color:#c0392b;font-size:14px;"><%= ex.role %></div><% } %>
-            <% if (ex.project_type || ex.production_company) { %><div style="color:#475569;font-size:14px;"><%= ex.project_type || '' %><% if (ex.production_company) { %> - <%= ex.production_company %><% } %></div><% } %>
-            <% if (ex.year) { %><div style="color:#94a3b8;font-size:13px;"><%= ex.year %></div><% } %>
-            <% if (ex.description) { %><div style="color:#475569;font-size:14px;margin-top:4px;"><%= ex.description %></div><% } %>
-            <% if (ex.link) { %><a href="<%= ex.link %>" target="_blank" style="color:#1d4ed8;font-size:13px;">Visa &rarr;</a><% } %>
-          </div>
-        <% }); %>
-      </div>
-      <% } %>
-
-      <% if (member.awards) { %>
-      <div class="profile-section">
-        <h3>Utmarkelser</h3>
-        <p><%= member.awards %></p>
-      </div>
-      <% } %>
-
-      <% if (member.festival_selections) { %>
-      <div class="profile-section">
-        <h3>Festivalurval</h3>
-        <p><%= member.festival_selections %></p>
-      </div>
-      <% } %>
-
-      <% if (member.notable_credits) { %>
-      <div class="profile-section">
-        <h3>Namnvarda produktioner</h3>
-        <p><%= member.notable_credits %></p>
-      </div>
-      <% } %>
-
-      <% if (member.equipment) { %>
-      <div class="profile-section">
-        <h3>Utrustning</h3>
-        <p><%= member.equipment %></p>
-      </div>
-      <% } %>
-
-      <% if (member.languages_spoken) { %>
-      <div class="profile-section">
-        <h3>Sprak</h3>
-        <p><%= member.languages_spoken %></p>
-      </div>
-      <% } %>
-
-      <% if (member.years_experience || member.career_stage) { %>
-      <div class="profile-section">
-        <h3>Karriar</h3>
-        <% if (member.years_experience) { %><p>Erfarenhet: <%= member.years_experience %> ar</p><% } %>
-        <% if (member.career_stage) { %><p>Karriarsteg: <%= member.career_stage %></p><% } %>
-        <% if (member.availability) { %><p>Tillganglighet: <%= member.availability %></p><% } %>
-      </div>
-      <% } %>
-
-      <% if (member.guild_memberships || member.associations) { %>
-      <div class="profile-section">
-        <h3>Medlemskap & Foreningar</h3>
-        <% if (member.guild_memberships) { %><p><%= member.guild_memberships %></p><% } %>
-        <% if (member.associations) { %><p><%= member.associations %></p><% } %>
-      </div>
-      <% } %>
-
-      <div class="profile-links">
-        <% if (member.website) { %><a href="<%= member.website %>" target="_blank">Webbplats</a><% } %>
-        <% if (member.imdb_link) { %><a href="<%= member.imdb_link %>" target="_blank">IMDb</a><% } %>
-        <% if (member.showreel_url) { %><a href="<%= member.showreel_url %>" target="_blank">Showreel</a><% } %>
-        <% if (member.social_media) { %><a href="<%= member.social_media %>" target="_blank">Sociala medier</a><% } %>
-        <% if (member.instagram) { %><a href="<%= member.instagram %>" target="_blank">Instagram</a><% } %>
-        <% if (member.linkedin) { %><a href="<%= member.linkedin %>" target="_blank">LinkedIn</a><% } %>
-        <% if (member.twitter) { %><a href="<%= member.twitter %>" target="_blank">Twitter</a><% } %>
-        <% if (member.vimeo_channel) { %><a href="<%= member.vimeo_channel %>" target="_blank">Vimeo</a><% } %>
-        <% if (member.youtube_channel) { %><a href="<%= member.youtube_channel %>" target="_blank">YouTube</a><% } %>
-      </div>
-
-      <% if (typeof media !== 'undefined' && media.length > 0) { %>
-      <div class="profile-section">
-        <h3>Galleri</h3>
-        <div class="gallery">
-          <% media.forEach(function(img) { %>
-            <img src="<%= img.url %>" alt="<%= img.caption || '' %>">
-          <% }); %>
-        </div>
-      </div>
-      <% } %>
-
-      <% if (member.phone || member.email) { %>
-      <div class="profile-section">
-        <h3>Kontakt</h3>
-        <% if (member.email) { %><p>E-post: <a href="mailto:<%= member.email %>" style="color:#c0392b"><%= member.email %></a></p><% } %>
-        <% if (member.phone) { %><p>Telefon: <%= member.phone %></p><% } %>
-        <% if (member.city) { %><p>Stad: <%= member.city %><% if (member.country) { %>, <%= member.country %><% } %></p><% } %>
-      </div>
-      <% } %>
+    <% if (member.biography) { %>
+    <div class="section">
+      <h2><span class="icon">&#128100;</span> Om mig</h2>
+      <p><%= member.biography %></p>
     </div>
+    <% } %>
+
+    <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
+    <div class="section">
+      <h2><span class="icon">&#127909;</span> Filmgrenar</h2>
+      <div class="tags">
+        <% branches.forEach(function(b) { %><span class="tag"><%= b.name_sv || b.name %></span><% }); %>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (member.skills || member.technical_skills) { %>
+    <div class="section">
+      <h2><span class="icon">&#9881;</span> Kompetenser</h2>
+      <div class="tags">
+        <% if (member.skills) { member.skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="tag"><%= s.trim() %></span><% } }); } %>
+        <% if (member.technical_skills) { member.technical_skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="tag"><%= s.trim() %></span><% } }); } %>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (typeof education !== 'undefined' && education.length > 0) { %>
+    <div class="section">
+      <h2><span class="icon">&#127891;</span> Utbildning</h2>
+      <% education.forEach(function(e) { %>
+        <div class="edu-item">
+          <h4><%= e.institution %></h4>
+          <% if (e.qualification || e.field_of_study) { %><div class="meta"><%= e.qualification || '' %><% if (e.field_of_study) { %> - <%= e.field_of_study %><% } %></div><% } %>
+          <% if (e.start_year) { %><div class="meta"><%= e.start_year %><% if (e.end_year) { %> - <%= e.end_year %><% } %></div><% } %>
+        </div>
+      <% }); %>
+    </div>
+    <% } %>
+
+    <% if (typeof experience !== 'undefined' && experience.length > 0) { %>
+    <div class="section">
+      <h2><span class="icon">&#127916;</span> Filmproduktioner</h2>
+      <% experience.forEach(function(ex) { %>
+        <div class="exp-item">
+          <h4><%= ex.project_title %></h4>
+          <% if (ex.role) { %><div class="role-tag"><%= ex.role %></div><% } %>
+          <% if (ex.project_type || ex.production_company) { %><div class="meta"><%= ex.project_type || '' %><% if (ex.production_company) { %> | <%= ex.production_company %><% } %></div><% } %>
+          <% if (ex.year) { %><div class="meta"><%= ex.year %></div><% } %>
+          <% if (ex.description) { %><div class="desc"><%= ex.description %></div><% } %>
+          <% if (ex.link) { %><a href="<%= ex.link %>" target="_blank" style="color:#c0392b;font-size:13px;font-weight:500;display:inline-block;margin-top:6px;">Visa film &rarr;</a><% } %>
+        </div>
+      <% }); %>
+    </div>
+    <% } %>
+
+    <% if (member.awards) { %>
+    <div class="section">
+      <h2><span class="icon">&#127942;</span> Utmarkelser</h2>
+      <p><%= member.awards %></p>
+    </div>
+    <% } %>
+
+    <% if (member.festival_selections) { %>
+    <div class="section">
+      <h2><span class="icon">&#127915;</span> Festivalurval</h2>
+      <p><%= member.festival_selections %></p>
+    </div>
+    <% } %>
+
+    <% if (member.equipment) { %>
+    <div class="section">
+      <h2><span class="icon">&#128248;</span> Utrustning</h2>
+      <p><%= member.equipment %></p>
+    </div>
+    <% } %>
+
+    <% if (member.languages_spoken) { %>
+    <div class="section">
+      <h2><span class="icon">&#127760;</span> Sprak</h2>
+      <div class="tags">
+        <% member.languages_spoken.split(',').forEach(function(l) { if(l.trim()) { %><span class="tag"><%= l.trim() %></span><% } }); %>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (typeof media !== 'undefined' && media.length > 0) { %>
+    <div class="section">
+      <h2><span class="icon">&#128247;</span> Galleri & Filmaffischer</h2>
+      <div class="gallery">
+        <% media.forEach(function(img) { %>
+          <div>
+            <img src="<%= img.url %>" alt="<%= img.caption || '' %>" onclick="this.requestFullscreen && this.requestFullscreen()">
+            <% if (img.caption) { %><div class="caption"><%= img.caption %></div><% } %>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+
+    <div class="section">
+      <h2><span class="icon">&#128279;</span> Lankar</h2>
+      <div class="links-grid">
+        <% if (member.website) { %><a href="<%= member.website %>" target="_blank" class="link-btn">&#127760; Webbplats</a><% } %>
+        <% if (member.imdb_link) { %><a href="<%= member.imdb_link %>" target="_blank" class="link-btn">&#127909; IMDb</a><% } %>
+        <% if (member.showreel_url) { %><a href="<%= member.showreel_url %>" target="_blank" class="link-btn">&#9654; Showreel</a><% } %>
+        <% if (member.social_media) { %><a href="<%= member.social_media %>" target="_blank" class="link-btn">&#128172; Social</a><% } %>
+        <% if (member.instagram) { %><a href="<%= member.instagram %>" target="_blank" class="link-btn">&#128247; Instagram</a><% } %>
+        <% if (member.linkedin) { %><a href="<%= member.linkedin %>" target="_blank" class="link-btn">&#128188; LinkedIn</a><% } %>
+        <% if (member.vimeo_channel) { %><a href="<%= member.vimeo_channel %>" target="_blank" class="link-btn">&#9654; Vimeo</a><% } %>
+        <% if (member.youtube_channel) { %><a href="<%= member.youtube_channel %>" target="_blank" class="link-btn">&#9654; YouTube</a><% } %>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="icon">&#128231;</span> Kontakt</h2>
+      <div class="contact-grid">
+        <% if (member.email) { %><div class="contact-item"><span class="icon">&#9993;</span><div><div class="label">E-post</div><div class="value"><a href="mailto:<%= member.email %>"><%= member.email %></a></div></div></div><% } %>
+        <% if (member.phone) { %><div class="contact-item"><span class="icon">&#128222;</span><div><div class="label">Telefon</div><div class="value"><%= member.phone %></div></div></div><% } %>
+        <% if (member.city) { %><div class="contact-item"><span class="icon">&#128205;</span><div><div class="label">Stad</div><div class="value"><%= member.city %><% if (member.country) { %>, <%= member.country %><% } %></div></div></div><% } %>
+      </div>
+    </div>
+
   </div>
 
-  <div class="footer">
-    &copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a>
-  </div>
-<script>
-(function(){
-  var cal = document.createElement('div');
-  cal.id = 'fc-events-sidebar';
-  cal.innerHTML = '<div style="position:fixed;top:100px;right:16px;width:280px;max-height:70vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.1);border:1px solid #e2e8f0;z-index:40;font-family:Inter,sans-serif;display:none;" id="evSidebar"><div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;"><strong style="font-size:14px;color:#1e293b;">Kommande evenemang</strong><span style="cursor:pointer;font-size:18px;color:#94a3b8;" onclick="document.getElementById(\'evSidebar\').style.display=\'none\';document.getElementById(\'evToggle\').style.display=\'flex\';">&times;</span></div><div id="evList" style="padding:12px 16px;"></div><div style="padding:12px 16px;border-top:1px solid #f1f5f9;text-align:center;"><a href="/fai/" style="color:#c0392b;text-decoration:none;font-size:13px;font-weight:500;">Festival AI &rarr;</a></div></div>';
-  // Auto-show sidebar on desktop
-  if(window.innerWidth > 1024) { document.getElementById('evSidebar').style.display='block'; document.getElementById('evToggle').style.display='none'; loadEvents(); }
-  cal.innerHTML += '<div id="evToggle" style="position:fixed;top:100px;right:16px;width:44px;height:44px;background:#c0392b;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(192,57,43,0.3);z-index:40;" onclick="document.getElementById(\'evSidebar\').style.display=\'block\';this.style.display=\'none\';loadEvents();"><svg width="22" height="22" fill="#fff" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg></div>';
-  document.body.appendChild(cal);
-  window.loadEvents = function() {
-    fetch('/filmcentrum/admin/api/public/events').then(function(r){return r.json()}).then(function(d){
-      var html = '';
-      if (d.events && d.events.length > 0) {
-        d.events.slice(0, 8).forEach(function(e){
-          var cat = e.category === 'festival' ? '#3b82f6' : e.category === 'workshop' ? '#10b981' : '#8b5cf6';
-          html += '<div style="padding:8px 0;border-bottom:1px solid #f8fafc;"><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:40px;text-align:center;background:#fef2f2;border-radius:6px;padding:4px;"><div style="font-size:10px;color:#c0392b;font-weight:600;">' + (e.event_date||'').substring(5,7) + '</div><div style="font-size:16px;font-weight:700;color:#1e293b;">' + (e.event_date||'').substring(8,10) + '</div></div><div><div style="font-size:13px;font-weight:600;color:#1e293b;">' + e.title + '</div><div style="font-size:11px;color:#64748b;">' + (e.location||'') + '</div><span style="display:inline-block;padding:1px 6px;background:' + cat + '20;color:' + cat + ';border-radius:8px;font-size:10px;margin-top:2px;">' + e.category + '</span></div></div></div>';
-        });
-      } else {
-        html = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Inga kommande evenemang.</p>';
-      }
-      document.getElementById('evList').innerHTML = html;
-    }).catch(function(){
-      document.getElementById('evList').innerHTML = '<p style="color:#94a3b8;font-size:13px;">Kunde inte ladda evenemang.</p>';
-    });
-  };
-})();
-</script>
-<script src="/filmcentrum/chatbot.js"></script>
+  <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a> | <a href="/filmcentrum/members">Medlemskatalog</a></div>
+  <script src="/filmcentrum/chatbot.js"></script>
 </body>
 </html>
