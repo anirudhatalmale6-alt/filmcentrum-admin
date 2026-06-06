@@ -95,12 +95,72 @@
       </div>
       <% } %>
 
-      <% if (member.skills) { %>
+      <% if (typeof branches !== 'undefined' && branches.length > 0) { %>
+      <div class="profile-section">
+        <h3>Filmgrenar</h3>
+        <div class="profile-tags">
+          <% branches.forEach(function(b) { %><span class="profile-tag"><%= b.name_sv || b.name %><% if (b.is_primary) { %> (primat)<% } %></span><% }); %>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (member.film_type) { %>
+      <div class="profile-section">
+        <h3>Filmtyp</h3>
+        <p><%= member.film_type %></p>
+      </div>
+      <% } %>
+
+      <% if (member.profession) { %>
+      <div class="profile-section">
+        <h3>Profession</h3>
+        <p><%= member.profession %></p>
+      </div>
+      <% } %>
+
+      <% if (member.primary_roles) { %>
+      <div class="profile-section">
+        <h3>Roller</h3>
+        <p><%= member.primary_roles %></p>
+      </div>
+      <% } %>
+
+      <% if (member.skills || member.technical_skills) { %>
       <div class="profile-section">
         <h3>Kompetenser</h3>
         <div class="profile-tags">
-          <% member.skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="profile-tag"><%= s.trim() %></span><% } }); %>
+          <% if (member.skills) { member.skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="profile-tag"><%= s.trim() %></span><% } }); } %>
+          <% if (member.technical_skills) { member.technical_skills.split(',').forEach(function(s) { if(s.trim()) { %><span class="profile-tag"><%= s.trim() %></span><% } }); } %>
         </div>
+      </div>
+      <% } %>
+
+      <% if (typeof education !== 'undefined' && education.length > 0) { %>
+      <div class="profile-section">
+        <h3>Utbildning</h3>
+        <% education.forEach(function(e) { %>
+          <div style="margin-bottom:12px;padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-weight:600;"><%= e.institution %></div>
+            <% if (e.qualification || e.field_of_study) { %><div style="color:#475569;font-size:14px;"><%= e.qualification %><% if (e.field_of_study) { %> - <%= e.field_of_study %><% } %></div><% } %>
+            <% if (e.start_year) { %><div style="color:#94a3b8;font-size:13px;"><%= e.start_year %><% if (e.end_year) { %> - <%= e.end_year %><% } %></div><% } %>
+          </div>
+        <% }); %>
+      </div>
+      <% } %>
+
+      <% if (typeof experience !== 'undefined' && experience.length > 0) { %>
+      <div class="profile-section">
+        <h3>Erfarenhet / Filmer</h3>
+        <% experience.forEach(function(ex) { %>
+          <div style="margin-bottom:12px;padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-weight:600;"><%= ex.project_title %></div>
+            <% if (ex.role) { %><div style="color:#c0392b;font-size:14px;"><%= ex.role %></div><% } %>
+            <% if (ex.project_type || ex.production_company) { %><div style="color:#475569;font-size:14px;"><%= ex.project_type || '' %><% if (ex.production_company) { %> - <%= ex.production_company %><% } %></div><% } %>
+            <% if (ex.year) { %><div style="color:#94a3b8;font-size:13px;"><%= ex.year %></div><% } %>
+            <% if (ex.description) { %><div style="color:#475569;font-size:14px;margin-top:4px;"><%= ex.description %></div><% } %>
+            <% if (ex.link) { %><a href="<%= ex.link %>" target="_blank" style="color:#1d4ed8;font-size:13px;">Visa &rarr;</a><% } %>
+          </div>
+        <% }); %>
       </div>
       <% } %>
 
@@ -111,10 +171,48 @@
       </div>
       <% } %>
 
+      <% if (member.festival_selections) { %>
+      <div class="profile-section">
+        <h3>Festivalurval</h3>
+        <p><%= member.festival_selections %></p>
+      </div>
+      <% } %>
+
+      <% if (member.notable_credits) { %>
+      <div class="profile-section">
+        <h3>Namnvarda produktioner</h3>
+        <p><%= member.notable_credits %></p>
+      </div>
+      <% } %>
+
+      <% if (member.equipment) { %>
+      <div class="profile-section">
+        <h3>Utrustning</h3>
+        <p><%= member.equipment %></p>
+      </div>
+      <% } %>
+
       <% if (member.languages_spoken) { %>
       <div class="profile-section">
         <h3>Sprak</h3>
         <p><%= member.languages_spoken %></p>
+      </div>
+      <% } %>
+
+      <% if (member.years_experience || member.career_stage) { %>
+      <div class="profile-section">
+        <h3>Karriar</h3>
+        <% if (member.years_experience) { %><p>Erfarenhet: <%= member.years_experience %> ar</p><% } %>
+        <% if (member.career_stage) { %><p>Karriarsteg: <%= member.career_stage %></p><% } %>
+        <% if (member.availability) { %><p>Tillganglighet: <%= member.availability %></p><% } %>
+      </div>
+      <% } %>
+
+      <% if (member.guild_memberships || member.associations) { %>
+      <div class="profile-section">
+        <h3>Medlemskap & Foreningar</h3>
+        <% if (member.guild_memberships) { %><p><%= member.guild_memberships %></p><% } %>
+        <% if (member.associations) { %><p><%= member.associations %></p><% } %>
       </div>
       <% } %>
 
@@ -123,6 +221,11 @@
         <% if (member.imdb_link) { %><a href="<%= member.imdb_link %>" target="_blank">IMDb</a><% } %>
         <% if (member.showreel_url) { %><a href="<%= member.showreel_url %>" target="_blank">Showreel</a><% } %>
         <% if (member.social_media) { %><a href="<%= member.social_media %>" target="_blank">Sociala medier</a><% } %>
+        <% if (member.instagram) { %><a href="<%= member.instagram %>" target="_blank">Instagram</a><% } %>
+        <% if (member.linkedin) { %><a href="<%= member.linkedin %>" target="_blank">LinkedIn</a><% } %>
+        <% if (member.twitter) { %><a href="<%= member.twitter %>" target="_blank">Twitter</a><% } %>
+        <% if (member.vimeo_channel) { %><a href="<%= member.vimeo_channel %>" target="_blank">Vimeo</a><% } %>
+        <% if (member.youtube_channel) { %><a href="<%= member.youtube_channel %>" target="_blank">YouTube</a><% } %>
       </div>
 
       <% if (typeof media !== 'undefined' && media.length > 0) { %>
@@ -133,6 +236,15 @@
             <img src="<%= img.url %>" alt="<%= img.caption || '' %>">
           <% }); %>
         </div>
+      </div>
+      <% } %>
+
+      <% if (member.phone || member.email) { %>
+      <div class="profile-section">
+        <h3>Kontakt</h3>
+        <% if (member.email) { %><p>E-post: <a href="mailto:<%= member.email %>" style="color:#c0392b"><%= member.email %></a></p><% } %>
+        <% if (member.phone) { %><p>Telefon: <%= member.phone %></p><% } %>
+        <% if (member.city) { %><p>Stad: <%= member.city %><% if (member.country) { %>, <%= member.country %><% } %></p><% } %>
       </div>
       <% } %>
     </div>

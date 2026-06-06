@@ -1244,7 +1244,10 @@ app.get(BASE.replace("/admin", "") + "/members/:slug", function(req, res) {
   }
   if (!member) return res.redirect(BASE.replace("/admin", "") + "/members");
   var media = db.prepare("SELECT * FROM member_media WHERE member_id = ? ORDER BY sort_order").all(member.id);
-  res.render("member-detail", { layout: false, member: member, media: media });
+  var education = db.prepare("SELECT * FROM member_education WHERE member_id = ? ORDER BY start_year DESC").all(member.id);
+  var experience = db.prepare("SELECT * FROM member_experience WHERE member_id = ? ORDER BY year DESC").all(member.id);
+  var branches = db.prepare("SELECT fb.name, fb.name_sv, mb.is_primary FROM member_branches mb JOIN film_branches fb ON fb.id = mb.branch_id WHERE mb.member_id = ?").all(member.id);
+  res.render("member-detail", { layout: false, member: member, media: media, education: education, experience: experience, branches: branches });
 });
 
 // MEMBER PORTAL (login + profile + password change)
