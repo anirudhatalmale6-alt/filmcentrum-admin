@@ -47,6 +47,25 @@
   <% if (pwOk) { %><div class="success">Losenord andrat!</div><% } %>
   <% if (pwErr) { %><div class="error"><%= pwErr === 'mismatch' ? 'Losenorden matchar inte' : pwErr === 'wrong' ? 'Fel nuvarande losenord' : 'Losenord maste vara minst 4 tecken' %></div><% } %>
 
+  <div class="card">
+    <h2>Profilbild</h2>
+    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+      <% if (member.profile_photo) { %>
+        <img src="<%= member.profile_photo %>" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dc2626;">
+      <% } else { %>
+        <div style="width:100px;height:100px;border-radius:50%;background:#334155;display:flex;align-items:center;justify-content:center;font-size:32px;color:#64748b;">?</div>
+      <% } %>
+      <form method="POST" action="<%= portalBase %>/profile/photo" enctype="multipart/form-data" style="flex:1;">
+        <div class="form-group">
+          <label>Ladda upp profilbild</label>
+          <input type="file" name="photo" accept="image/*" required style="width:100%;padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;">
+          <div style="font-size:11px;color:#475569;margin-top:4px;">Max 10MB. JPG eller PNG.</div>
+        </div>
+        <button type="submit" class="btn" style="padding:8px 20px;font-size:13px;">Ladda upp</button>
+      </form>
+    </div>
+  </div>
+
   <form method="POST" action="<%= portalBase %>/profile">
 
   <div class="card">
@@ -123,6 +142,48 @@
 
   <button type="submit" class="btn" style="width:100%;padding:14px;">Spara profil</button>
   </form>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>Filmgalleri och affischer</h2>
+    <p style="font-size:12px;color:#64748b;margin-bottom:16px;">Ladda upp filmaffischer, stillbilder, behind-the-scenes foton</p>
+    <% if (typeof media !== "undefined" && media.length > 0) { %>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+        <% media.forEach(function(m) { %>
+          <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #334155;">
+            <img src="<%= m.url %>" style="width:100%;height:120px;object-fit:cover;">
+            <% if (m.caption) { %><div style="padding:4px 8px;font-size:11px;color:#94a3b8;background:#0f172a;"><%= m.caption %></div><% } %>
+            <form method="POST" action="<%= portalBase %>/profile/media/<%= m.id %>/delete" style="position:absolute;top:4px;right:4px;">
+              <button type="submit" style="background:#dc2626;color:#fff;border:none;border-radius:4px;width:22px;height:22px;cursor:pointer;font-size:12px;">&times;</button>
+            </form>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div style="text-align:center;padding:24px;color:#475569;font-size:13px;border:1px dashed #334155;border-radius:8px;margin-bottom:16px;">Inga bilder uppladdade annu</div>
+    <% } %>
+    <form method="POST" action="<%= portalBase %>/profile/media" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Typ</label>
+          <select name="media_type" style="width:100%;padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;">
+            <option value="poster">Filmaffisch</option>
+            <option value="still">Stillbild</option>
+            <option value="behind_scenes">Behind the scenes</option>
+            <option value="photo">Foto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bildtext (valfritt)</label>
+          <input type="text" name="media_caption" placeholder="Beskriv bilden...">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:8px;">
+        <label>Valj bilder (max 10 at gangen)</label>
+        <input type="file" name="files" accept="image/*" multiple required style="width:100%;padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;">
+      </div>
+      <button type="submit" class="btn" style="padding:8px 20px;font-size:13px;margin-top:8px;">Ladda upp bilder</button>
+    </form>
+  </div>
 
   <div class="card" style="margin-top:20px;">
     <h2>Byt losenord</h2>

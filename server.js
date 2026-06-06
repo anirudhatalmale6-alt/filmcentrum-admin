@@ -991,6 +991,79 @@ app.get(BASE.replace("/admin", "") + "/members", function(req, res) {
 });
 
 // MEMBER PORTAL (login + profile + password change)
+
+// ============================================================
+// MEMBER PHOTO UPLOAD
+// ============================================================
+var memberPhotoStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    var dir = path.join(__dirname, 'public/uploads/members');
+    var fs = require('fs');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function(req, file, cb) {
+    var ext = path.extname(file.originalname) || '.jpg';
+    cb(null, 'member_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6) + ext);
+  }
+});
+var memberPhotoUpload = multer({ storage: memberPhotoStorage, limits: { fileSize: 10 * 1024 * 1024 }, fileFilter: function(req, file, cb) { if (file.mimetype.startsWith('image/')) cb(null, true); else cb(new Error('Only images'), false); } });
+
+// Admin: upload member profile photo
+app.post(BASE + '/members/:id/photo', auth, memberPhotoUpload.single('photo'), function(req, res) {
+  if (!req.file) return res.redirect(BASE + '/members/' + req.params.id);
+  var photoUrl = BASE + '/uploads/members/' + req.file.filename;
+  db.prepare('UPDATE members SET profile_photo = ? WHERE id = ?').run(photoUrl, req.params.id);
+  res.redirect(BASE + '/members/' + req.params.id + '?saved=1');
+});
+
+// Admin: upload member film media (gallery/posters)
+app.post(BASE + '/members/:id/media', auth, memberPhotoUpload.array('files', 10), function(req, res) {
+  if (!req.files || req.files.length === 0) return res.redirect(BASE + '/members/' + req.params.id);
+  var maxOrder = (db.prepare('SELECT MAX(sort_order) as m FROM member_media WHERE member_id = ?').get(req.params.id) || {}).m || 0;
+  req.files.forEach(function(f, i) {
+    var url = BASE + '/uploads/members/' + f.filename;
+    var type = req.body.media_type || 'photo';
+    var caption = req.body.media_caption || '';
+    db.prepare('INSERT INTO member_media (member_id, type, url, filename, caption, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(
+      req.params.id, type, url, f.filename, caption, maxOrder + i + 1
+    );
+  });
+  res.redirect(BASE + '/members/' + req.params.id + '?saved=1');
+});
+
+// Delete member media
+app.post(BASE + '/members/:id/media/:mediaId/delete', auth, function(req, res) {
+  db.prepare('DELETE FROM member_media WHERE id = ? AND member_id = ?').run(req.params.mediaId, req.params.id);
+  res.redirect(BASE + '/members/' + req.params.id + '?saved=1');
+});
+
+// Member portal: upload own profile photo
+app.post(BASE.replace('/admin', '') + '/profile/photo', memberAuth, memberPhotoUpload.single('photo'), function(req, res) {
+  if (!req.file) return res.redirect(BASE.replace('/admin', '') + '/profile');
+  var photoUrl = BASE + '/uploads/members/' + req.file.filename;
+  db.prepare('UPDATE members SET profile_photo = ? WHERE id = ?').run(photoUrl, req.session.memberId);
+  res.redirect(BASE.replace('/admin', '') + '/profile?saved=1');
+});
+
+// Member portal: upload own film media
+app.post(BASE.replace('/admin', '') + '/profile/media', memberAuth, memberPhotoUpload.array('files', 10), function(req, res) {
+  if (!req.files || req.files.length === 0) return res.redirect(BASE.replace('/admin', '') + '/profile');
+  var maxOrder = (db.prepare('SELECT MAX(sort_order) as m FROM member_media WHERE member_id = ?').get(req.session.memberId) || {}).m || 0;
+  req.files.forEach(function(f, i) {
+    var url = BASE + '/uploads/members/' + f.filename;
+    db.prepare('INSERT INTO member_media (member_id, type, url, filename, caption, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(
+      req.session.memberId, req.body.media_type || 'photo', url, f.filename, req.body.media_caption || '', maxOrder + i + 1
+    );
+  });
+  res.redirect(BASE.replace('/admin', '') + '/profile?saved=1');
+});
+
+// Member portal: delete own media
+app.post(BASE.replace('/admin', '') + '/profile/media/:mediaId/delete', memberAuth, function(req, res) {
+  db.prepare('DELETE FROM member_media WHERE id = ? AND member_id = ?').run(req.params.mediaId, req.session.memberId);
+  res.redirect(BASE.replace('/admin', '') + '/profile?saved=1');
+});
 // ============================================================
 function memberAuth(req, res, next) {
   if (!req.session.memberId) return res.redirect(BASE.replace('/admin', '') + '/login');
@@ -1039,7 +1112,8 @@ app.get(BASE.replace('/admin', '') + '/profile', memberAuth, function(req, res) 
     experience: experience,
     saved: req.query.saved === '1',
     pwOk: req.query.pw === '1',
-    pwErr: req.query.pwerr || null
+    pwErr: req.query.pwerr || null,
+    media: db.prepare("SELECT * FROM member_media WHERE member_id = ? ORDER BY sort_order").all(member.id)
   });
 });
 
