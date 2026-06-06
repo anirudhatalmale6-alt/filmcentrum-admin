@@ -544,7 +544,7 @@ app.post(BASE + '/menu', auth, function(req, res) {
 // ============================================================
 app.get(BASE + '/newsletter', auth, function(req, res) {
   var subscribers = db.prepare('SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC').all();
-  res.render('newsletter', { base: BASE, subscribers: subscribers, success: req.query.saved === '1' });
+  var archive = db.prepare("SELECT * FROM newsletter_sent ORDER BY sent_at DESC LIMIT 50").all(); res.render("newsletter", { base: BASE, subscribers: subscribers, archive: archive, success: req.query.sent === "1" });
 });
 
 app.post(BASE + '/newsletter', auth, function(req, res) {
@@ -783,6 +783,20 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 // PUBLIC MEMBERS DIRECTORY
 
 // ============================================================
+// PUBLIC NEWS PAGE
+// ============================================================
+app.get(BASE.replace('/admin', '') + '/nyheter', function(req, res) {
+  var articles = db.prepare("SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC").all();
+  res.render('public-news', { layout: false, articles: articles });
+});
+
+app.get(BASE.replace('/admin', '') + '/nyheter/:slug', function(req, res) {
+  var article = db.prepare("SELECT * FROM articles WHERE slug = ? AND is_published = 1").get(req.params.slug);
+  if (!article) return res.redirect(BASE.replace('/admin', '') + '/nyheter');
+  res.render('public-article', { layout: false, article: article });
+});
+
+// ============================================================
 // NEWS / ARTICLES
 
 // ============================================================
@@ -790,6 +804,52 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 
 // ============================================================
 // AUTO-SAVE API
+
+// ============================================================
+// AI WRITING ASSISTANT (Gemini)
+// ============================================================
+app.post(BASE + '/api/ai/write', auth, async function(req, res) {
+  try {
+    var action = req.body.action;
+    var text = req.body.text;
+    var prompt = req.body.prompt;
+    if (!text && !prompt) return res.status(400).json({ error: 'No text provided' });
+
+    var geminiKey = db.prepare("SELECT value FROM settings WHERE key = 'gemini_api_key'").get();
+    if (!geminiKey || !geminiKey.value) return res.status(400).json({ error: 'Gemini API key not set. Go to Settings and add it.' });
+
+    var systemPrompt = '';
+    if (action === 'improve') systemPrompt = 'You are a professional content writer. Improve the following text to be more professional, engaging, and well-structured. Keep the same language. Return only the improved HTML (use <h2>, <h3>, <p>, <strong>, <em>, <ul>, <li> tags). No explanation.';
+    else if (action === 'translate_en') systemPrompt = 'Translate the following text to English. Return only the translated HTML. No explanation.';
+    else if (action === 'translate_sv') systemPrompt = 'Translate the following text to Swedish. Return only the translated HTML. No explanation.';
+    else if (action === 'expand') systemPrompt = 'Expand and elaborate on the following text. Make it more detailed. Keep the same language. Return only HTML. No explanation.';
+    else if (action === 'summarize') systemPrompt = 'Create a concise summary. Keep the same language. Return only HTML. No explanation.';
+    else if (action === 'proofread') systemPrompt = 'Fix grammar, spelling, and punctuation errors. Keep the same language and tone. Return only the corrected HTML. No explanation.';
+    else if (action === 'generate') systemPrompt = 'You are a professional content writer for FilmCentrum Riks, a Swedish film cooperative. Write content based on the following prompt. Write in Swedish unless specified otherwise. Return well-structured HTML (use <h2>, <h3>, <p>, <strong>, <ul>, <li> tags). No explanation.';
+    else return res.status(400).json({ error: 'Unknown action' });
+
+    var inputText = action === 'generate' ? prompt : text;
+
+    var response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + geminiKey.value, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: systemPrompt + '\n\n' + inputText }] }],
+        generationConfig: { maxOutputTokens: 2000, temperature: 0.7 }
+      })
+    });
+
+    var data = await response.json();
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      var result = data.candidates[0].content.parts[0].text;
+      res.json({ success: true, result: result });
+    } else {
+      res.status(500).json({ error: 'AI returned no content', details: JSON.stringify(data).substring(0, 200) });
+    }
+  } catch(e) {
+    res.status(500).json({ error: 'AI error: ' + e.message });
+  }
+});
 // ============================================================
 app.post(BASE + '/api/pages/:id/autosave', auth, function(req, res) {
   var b = req.body;
@@ -1002,4 +1062,10 @@ app.post(BASE.replace('/admin', '') + '/change-password', memberAuth, function(r
 // ============================================================
 app.listen(PORT, '127.0.0.1', function() {
   console.log('FilmCentrum Admin running on http://127.0.0.1:' + PORT + BASE);
+});
+
+// Newsletter templates page
+app.get('/filmcentrum/admin/newsletter/templates', function(req, res) {
+  if (!req.session.adminId) return res.redirect('/filmcentrum/admin/login');
+  res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Newsletter Templates</title><link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;padding:24px}.container{max-width:900px;margin:0 auto}.back{color:#94a3b8;text-decoration:none;font-size:13px;display:inline-block;margin-bottom:16px}.back:hover{color:#dc2626}h2{font-size:20px;margin-bottom:20px}.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-bottom:24px}.tmpl-card{background:#1e293b;border-radius:10px;padding:20px;border:1px solid #334155;cursor:pointer;transition:border-color 0.2s}.tmpl-card:hover{border-color:#dc2626}.tmpl-card h3{font-size:15px;margin-bottom:6px}.tmpl-card p{font-size:12px;color:#64748b}.tmpl-card.active{border-color:#dc2626;background:#1a1a2e}.editor-wrap{background:#1e293b;border-radius:10px;padding:20px;border:1px solid #334155;margin-bottom:16px}.editor-wrap h3{font-size:16px;color:#dc2626;margin-bottom:12px}#tmplEditor{height:400px}.btn{padding:10px 24px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}.btn:hover{background:#b91c1c}.btn-gray{background:#334155}.btn-gray:hover{background:#475569}</style></head><body><div class="container"><a href="/filmcentrum/admin/newsletter" class="back">&larr; Back to Newsletter</a><h2>Newsletter Templates</h2><div class="tmpl-grid"><div class="tmpl-card active" onclick="loadTmpl(0)"><h3>News Update</h3><p>Standard newsletter with header, content, footer</p></div><div class="tmpl-card" onclick="loadTmpl(1)"><h3>Event Invitation</h3><p>Event details with date, time, location</p></div><div class="tmpl-card" onclick="loadTmpl(2)"><h3>Welcome Member</h3><p>New member welcome email</p></div><div class="tmpl-card" onclick="loadTmpl(3)"><h3>Member Update</h3><p>Membership status and news</p></div><div class="tmpl-card" onclick="loadTmpl(4)"><h3>Minimal</h3><p>Simple clean layout</p></div></div><div class="editor-wrap"><h3>Edit Template</h3><div id="tmplEditor"></div></div><button class="btn" onclick="saveTmpl()">Save as Template</button> <button class="btn btn-gray" onclick="useTmpl()">Use for Newsletter</button></div><script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script><script>var templates=[{name:"News",html:"<div style=\"max-width:600px;margin:0 auto;font-family:Arial,sans-serif;\"><div style=\"background:#dc2626;padding:24px;text-align:center;\"><h1 style=\"color:#fff;font-size:24px;margin:0;\">FilmCentrum Riks</h1><p style=\"color:#fecaca;font-size:13px;margin:4px 0 0;\">Nyhetsbrev</p></div><div style=\"padding:32px 24px;background:#fff;\"><h2 style=\"color:#1e293b;font-size:20px;\">Rubrik</h2><p style=\"color:#374151;line-height:1.7;\">Innehall har...</p></div><div style=\"padding:16px 24px;background:#f1f5f9;text-align:center;font-size:12px;color:#64748b;\">FilmCentrum Riks | filmcentrum.se</div></div>"},{name:"Event",html:"<div style=\"max-width:600px;margin:0 auto;font-family:Arial,sans-serif;\"><div style=\"background:#1a1a2e;padding:32px;text-align:center;\"><h1 style=\"color:#dc2626;font-size:28px;\">Inbjudan</h1></div><div style=\"padding:32px 24px;background:#fff;\"><h2>Evenemang</h2><p><strong>Datum:</strong> </p><p><strong>Tid:</strong> </p><p><strong>Plats:</strong> </p><p>Beskrivning...</p><a href=\"#\" style=\"display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:6px;text-decoration:none;margin-top:16px;\">Anmal dig</a></div></div>"},{name:"Welcome",html:"<div style=\"max-width:600px;margin:0 auto;font-family:Arial,sans-serif;\"><div style=\"background:#dc2626;padding:32px;text-align:center;\"><h1 style=\"color:#fff;\">Valkommen!</h1></div><div style=\"padding:32px 24px;background:#fff;\"><h2>Valkommen som medlem</h2><p>Vi ar glada att du blivit en del av FilmCentrum Riks.</p><h3>Vad du kan gora nu:</h3><ul><li>Skapa din profil</li><li>Utforska medlemskatalogen</li><li>Delta i evenemang</li></ul></div></div>"},{name:"Update",html:"<div style=\"max-width:600px;margin:0 auto;font-family:Arial,sans-serif;\"><div style=\"background:#1a1a2e;padding:20px 24px;display:flex;align-items:center;gap:12px;\"><span style=\"color:#dc2626;font-weight:700;font-size:18px;\">FC</span><span style=\"color:#94a3b8;font-size:13px;\">Medlemsuppdatering</span></div><div style=\"padding:32px 24px;background:#fff;\"><h2>Uppdatering</h2><p>Hej medlemmar!</p><p>Innehall...</p></div></div>"},{name:"Minimal",html:"<div style=\"max-width:600px;margin:0 auto;padding:32px;font-family:Arial,sans-serif;\"><h2 style=\"color:#1e293b;\">FilmCentrum</h2><p style=\"color:#374151;line-height:1.7;\">Meddelande...</p><p style=\"margin-top:24px;color:#64748b;font-size:12px;\">FilmCentrum Riks</p></div>"}];var editor=grapesjs.init({container:"#tmplEditor",height:"400px",storageManager:false,components:templates[0].html});function loadTmpl(i){document.querySelectorAll(".tmpl-card").forEach(function(c,j){c.classList.toggle("active",j===i);});editor.setComponents(templates[i].html);}function saveTmpl(){var name=prompt("Template name:");if(name){var html=editor.getHtml();templates.push({name:name,html:html});alert("Template saved!");}}function useTmpl(){var html=editor.getHtml();localStorage.setItem("nl_template",html);window.location.href="/filmcentrum/admin/newsletter/compose";}</script></body></html>');
 });

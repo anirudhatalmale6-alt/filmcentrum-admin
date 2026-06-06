@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nyheter - FilmCentrum Riks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#1a1a2e;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+    .header a.logo{color:#dc2626;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase}
+    .header nav a{color:#94a3b8;text-decoration:none;font-size:13px;margin-left:24px}
+    .header nav a:hover{color:#fff}
+    .hero{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:48px 32px;text-align:center;color:#fff}
+    .hero h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:8px}
+    .hero p{color:#94a3b8;font-size:15px}
+    .container{max-width:900px;margin:0 auto;padding:32px 24px}
+    .article-card{background:#fff;border-radius:12px;padding:28px;border:1px solid #e2e8f0;margin-bottom:20px;transition:box-shadow 0.2s}
+    .article-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+    .article-card .meta{font-size:12px;color:#64748b;margin-bottom:8px;display:flex;gap:12px}
+    .article-card .meta .cat{background:#fef2f2;color:#dc2626;padding:2px 8px;border-radius:10px;font-weight:500;font-size:11px}
+    .article-card h2{font-size:20px;margin-bottom:8px}
+    .article-card h2 a{color:#1e293b;text-decoration:none}
+    .article-card h2 a:hover{color:#dc2626}
+    .article-card .excerpt{color:#475569;font-size:14px;line-height:1.6}
+    .article-card .read-more{display:inline-block;margin-top:12px;color:#dc2626;font-size:13px;font-weight:600;text-decoration:none}
+    .article-card .read-more:hover{text-decoration:underline}
+    .no-articles{text-align:center;padding:48px;color:#64748b}
+    .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
+    .footer a{color:#dc2626;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/filmcentrum/" class="logo">FilmCentrum Riks</a>
+    <nav>
+      <a href="/filmcentrum/">Hem</a>
+      <a href="/filmcentrum/nyheter">Nyheter</a>
+      <a href="/filmcentrum/members">Medlemskatalog</a>
+      <a href="/filmcentrum/login">Logga in</a>
+    </nav>
+  </div>
+  <div class="hero"><h1>Nyheter</h1><p>Senaste nytt fran FilmCentrum Riks</p></div>
+  <div class="container">
+    <% if (articles.length === 0) { %><div class="no-articles">Inga nyheter annu.</div><% } %>
+    <% articles.forEach(function(a) { %>
+      <div class="article-card">
+        <div class="meta">
+          <span class="cat"><%= a.category %></span>
+          <span><%= a.published_at ? new Date(a.published_at).toLocaleDateString('sv-SE') : '' %></span>
+        </div>
+        <h2><a href="/filmcentrum/nyheter/<%= a.slug %>"><%= a.title_sv || a.title_en %></a></h2>
+        <% if (a.excerpt_sv) { %><p class="excerpt"><%= a.excerpt_sv %></p><% } %>
+        <a href="/filmcentrum/nyheter/<%= a.slug %>" class="read-more">Las mer &rarr;</a>
+      </div>
+    <% }); %>
+  </div>
+  <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a></div>
+</body>
+</html>

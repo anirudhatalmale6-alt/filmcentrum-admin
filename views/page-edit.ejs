@@ -347,3 +347,72 @@ function doSaveBlock() {
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 </script>
+
+<style>
+  .ai-toolbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px}
+  .ai-toolbar .ai-label{font-size:11px;color:#dc2626;font-weight:700;display:flex;align-items:center;gap:4px;margin-right:4px}
+  .ai-btn{padding:5px 12px;font-size:11px;border:1px solid #334155;border-radius:4px;cursor:pointer;color:#94a3b8;background:#1e293b}
+  .ai-btn:hover{border-color:#dc2626;color:#e2e8f0}
+  .ai-btn.loading{opacity:0.5;pointer-events:none}
+  .ai-prompt-input{flex:1;min-width:200px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
+</style>
+
+<div class="ai-toolbar">
+  <span class="ai-label">AI</span>
+  <button type="button" class="ai-btn" onclick="aiAction('improve')">Improve</button>
+  <button type="button" class="ai-btn" onclick="aiAction('expand')">Expand</button>
+  <button type="button" class="ai-btn" onclick="aiAction('summarize')">Summarize</button>
+  <button type="button" class="ai-btn" onclick="aiAction('proofread')">Proofread</button>
+  <button type="button" class="ai-btn" onclick="aiAction('translate_en')">Translate EN</button>
+  <button type="button" class="ai-btn" onclick="aiAction('translate_sv')">Translate SV</button>
+  <input type="text" class="ai-prompt-input" id="aiPrompt" placeholder="Or type a prompt: e.g. Write about membership benefits...">
+  <button type="button" class="ai-btn" onclick="aiGenerate()" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
+</div>
+
+<script>
+function aiAction(action) {
+  if (!editors[currentLang]) return;
+  var selected = editors[currentLang].getSelected();
+  var text = selected ? selected.toHTML() : editors[currentLang].getHtml();
+  if (!text || text.length < 5) { alert('Select an element or add content first'); return; }
+  
+  var btns = document.querySelectorAll('.ai-btn');
+  btns.forEach(function(b){b.classList.add('loading');});
+  
+  fetch(BASE_URL + '/api/ai/write', {
+    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+    body: JSON.stringify({ action: action, text: text })
+  }).then(function(r){return r.json();}).then(function(d) {
+    btns.forEach(function(b){b.classList.remove('loading');});
+    if (d.result) {
+      if (selected) { selected.replaceWith(d.result); }
+      else { editors[currentLang].setComponents(d.result); }
+    } else { alert(d.error || 'AI error'); }
+  }).catch(function(e) {
+    btns.forEach(function(b){b.classList.remove('loading');});
+    alert('Error: ' + e.message);
+  });
+}
+
+function aiGenerate() {
+  var prompt = document.getElementById('aiPrompt').value.trim();
+  if (!prompt) { alert('Type a prompt first'); return; }
+  
+  var btns = document.querySelectorAll('.ai-btn');
+  btns.forEach(function(b){b.classList.add('loading');});
+  
+  fetch(BASE_URL + '/api/ai/write', {
+    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+    body: JSON.stringify({ action: 'generate', prompt: prompt })
+  }).then(function(r){return r.json();}).then(function(d) {
+    btns.forEach(function(b){b.classList.remove('loading');});
+    if (d.result && editors[currentLang]) {
+      editors[currentLang].addComponents(d.result);
+      document.getElementById('aiPrompt').value = '';
+    } else { alert(d.error || 'AI error'); }
+  }).catch(function(e) {
+    btns.forEach(function(b){b.classList.remove('loading');});
+    alert('Error: ' + e.message);
+  });
+}
+</script>
