@@ -1,17 +1,22 @@
 <style>
   .board-section{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155;margin-bottom:20px}
+  .board-section h3{font-size:16px;color:#dc2626;margin-bottom:16px;border-bottom:1px solid #334155;padding-bottom:8px}
   .board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:20px}
-  .board-item{background:#0f172a;border-radius:10px;padding:16px;text-align:center;border:1px solid #334155}
+  .board-item{background:#0f172a;border-radius:10px;padding:16px;text-align:center;border:1px solid #334155;position:relative}
   .board-item img{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:8px}
   .board-item .placeholder{width:80px;height:80px;border-radius:50%;background:#334155;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:28px;color:#64748b}
   .board-item h4{font-size:14px;color:#e2e8f0;margin-bottom:2px}
   .board-item .role{font-size:12px;color:#dc2626;margin-bottom:4px}
   .board-item .desc{font-size:11px;color:#64748b}
+  .board-item .cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;margin-top:4px}
+  .cat-ordinarie{background:#064e3b;color:#6ee7b7}
+  .cat-suppleant{background:#1e3a5f;color:#60a5fa}
   .add-form{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155}
   .add-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
   .fg{display:flex;flex-direction:column}
   .fg label{font-size:12px;color:#94a3b8;margin-bottom:4px}
-  .fg input,.fg textarea{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .fg input,.fg select,.fg textarea{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .fg textarea{min-height:80px;resize:vertical;font-family:inherit}
   .btn-del{background:#7f1d1d;color:#fca5a5;border:none;padding:4px 10px;border-radius:4px;font-size:11px;cursor:pointer;margin-top:6px}
   .btn-add{padding:10px 24px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px}
   .success-msg{background:#064e3b;color:#6ee7b7;padding:12px 20px;border-radius:8px;margin-bottom:16px;font-size:14px}
@@ -20,16 +25,40 @@
 <h2 style="font-size:20px;color:#f1f5f9;margin-bottom:20px;">Board Members (Styrelse)</h2>
 <% if (typeof success !== "undefined" && success) { %><div class="success-msg">Saved.</div><% } %>
 
-<div class="board-grid">
-  <% board.forEach(function(m) { %>
-    <div class="board-item">
-      <% if (m.photo) { %><img src="<%= m.photo %>" alt=""><% } else { %><div class="placeholder"><%= (m.name||'M').charAt(0) %></div><% } %>
-      <h4><%= m.name %></h4>
-      <div class="role"><%= m.role %></div>
-      <div class="desc"><%= m.description || '' %></div>
-      <form method="POST" action="<%= base %>/board" style="display:inline"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
-    </div>
-  <% }); %>
+<% var ordinarie = board.filter(function(m){return m.category === 'ordinarie'}); %>
+<% var suppleant = board.filter(function(m){return m.category === 'suppleant'}); %>
+
+<div class="board-section">
+  <h3>Ordinarie ledamoter (<%= ordinarie.length %>)</h3>
+  <div class="board-grid">
+    <% ordinarie.forEach(function(m) { %>
+      <div class="board-item">
+        <% if (m.photo) { %><img src="<%= m.photo %>" alt=""><% } else { %><div class="placeholder"><%= (m.name||'M').charAt(0) %></div><% } %>
+        <h4><%= m.name %></h4>
+        <div class="role"><%= m.role %></div>
+        <div class="desc"><%= m.description || '' %></div>
+        <span class="cat-badge cat-ordinarie">Ordinarie</span>
+        <form method="POST" action="<%= base %>/board" style="display:block;margin-top:6px"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
+      </div>
+    <% }); %>
+  </div>
+</div>
+
+<div class="board-section">
+  <h3>Suppleanter (<%= suppleant.length %>)</h3>
+  <div class="board-grid">
+    <% suppleant.forEach(function(m) { %>
+      <div class="board-item">
+        <% if (m.photo) { %><img src="<%= m.photo %>" alt=""><% } else { %><div class="placeholder"><%= (m.name||'M').charAt(0) %></div><% } %>
+        <h4><%= m.name %></h4>
+        <div class="role"><%= m.role %></div>
+        <div class="desc"><%= m.description || '' %></div>
+        <span class="cat-badge cat-suppleant">Suppleant</span>
+        <form method="POST" action="<%= base %>/board" style="display:block;margin-top:6px"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
+      </div>
+    <% }); %>
+    <% if (suppleant.length === 0) { %><p style="color:#64748b;font-size:13px;">Inga suppleanter annu.</p><% } %>
+  </div>
 </div>
 
 <div class="add-form">
@@ -38,10 +67,21 @@
     <input type="hidden" name="action" value="add">
     <div class="add-grid">
       <div class="fg"><label>Name *</label><input type="text" name="name" required></div>
-      <div class="fg"><label>Role *</label><input type="text" name="role" required placeholder="e.g. Ordforande, Styrelseledamot"></div>
-      <div class="fg"><label>Description</label><input type="text" name="description" placeholder="e.g. Filmskapare och regissor"></div>
+      <div class="fg"><label>Role *</label><input type="text" name="role" required placeholder="e.g. Ordforande, Ledamot"></div>
+      <div class="fg"><label>Category *</label>
+        <select name="category">
+          <option value="ordinarie">Ordinarie</option>
+          <option value="suppleant">Suppleant</option>
+        </select>
+      </div>
       <div class="fg"><label>Photo</label><input type="file" name="photo" accept="image/*"></div>
+    </div>
+    <div class="add-grid" style="margin-top:14px">
+      <div class="fg"><label>Short Description</label><input type="text" name="description" placeholder="e.g. Filmskapare och regissor"></div>
       <div class="fg"><label>Sort Order</label><input type="number" name="sort_order" value="0"></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="fg"><label>Bio / CV (shown when clicked)</label><textarea name="bio" placeholder="Full biography or CV text..."></textarea></div>
     </div>
     <button type="submit" class="btn-add">Add Member</button>
   </form>

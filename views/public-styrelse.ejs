@@ -46,7 +46,6 @@
       <nav class="main-nav">
         <a href="/filmcentrum/">Hem</a>
         <a href="/filmcentrum/om-oss">Om oss</a>
-        <a href="/filmcentrum/styrelse">Styrelse</a>
         <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
         <a href="/filmcentrum/medlemskap">Medlemskap</a>
         <a href="/filmcentrum/nyheter">Nyheter</a>
@@ -65,9 +64,13 @@
     <h1 class="section-title">Var styrelse</h1>
     <p class="section-desc">Filmcentrum leds av en erfaren styrelse bestaende av filmskapare, kulturexperter, forskare och branschexperter som ar engagerade i att stodja oberoende film och filmskapare.</p>
 
+    <% var ordinarie = board.filter(function(m){return m.category === 'ordinarie'}); %>
+    <% var suppleant = board.filter(function(m){return m.category === 'suppleant'}); %>
+
+    <h3 style="font-size:20px;color:#1e293b;margin-bottom:20px;">Ordinarie ledamoter</h3>
     <div class="board-grid">
-      <% board.forEach(function(m) { %>
-        <div class="board-card">
+      <% ordinarie.forEach(function(m) { %>
+        <div class="board-card" onclick="showBio('<%= m.name %>','<%= m.role %>','<%= (m.bio || m.description || '').replace(/'/g, '') %>')" style="cursor:pointer;">
           <% if (m.photo) { %>
             <img src="<%= m.photo %>" class="board-photo" alt="<%= m.name %>">
           <% } else { %>
@@ -79,6 +82,42 @@
         </div>
       <% }); %>
     </div>
+
+    <% if (suppleant.length > 0) { %>
+    <h3 style="font-size:20px;color:#1e293b;margin:32px 0 20px;">Suppleanter</h3>
+    <div class="board-grid">
+      <% suppleant.forEach(function(m) { %>
+        <div class="board-card" onclick="showBio('<%= m.name %>','<%= m.role %>','<%= (m.bio || m.description || '').replace(/'/g, '') %>')" style="cursor:pointer;">
+          <% if (m.photo) { %>
+            <img src="<%= m.photo %>" class="board-photo" alt="<%= m.name %>">
+          <% } else { %>
+            <div class="board-photo-placeholder"><%= (m.name || 'M').charAt(0) %></div>
+          <% } %>
+          <div class="board-name"><%= m.name %></div>
+          <div class="board-role"><%= m.role %></div>
+          <% if (m.description) { %><div class="board-desc"><%= m.description %></div><% } %>
+        </div>
+      <% }); %>
+    </div>
+    <% } %>
+
+    <div id="bioModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;justify-content:center;align-items:center;" onclick="this.style.display='none'">
+      <div style="background:#fff;border-radius:16px;max-width:500px;width:90%;padding:32px;position:relative;" onclick="event.stopPropagation()">
+        <span style="position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:#94a3b8;" onclick="document.getElementById('bioModal').style.display='none'">&times;</span>
+        <h3 id="bioName" style="font-size:22px;color:#1e293b;margin-bottom:4px;"></h3>
+        <p id="bioRole" style="color:#c0392b;font-size:14px;margin-bottom:16px;"></p>
+        <p id="bioText" style="color:#475569;line-height:1.7;font-size:15px;"></p>
+      </div>
+    </div>
+
+    <script>
+    function showBio(name, role, bio) {
+      document.getElementById('bioName').textContent = name;
+      document.getElementById('bioRole').textContent = role;
+      document.getElementById('bioText').textContent = bio || 'Ingen biografi tillganglig.';
+      document.getElementById('bioModal').style.display = 'flex';
+    }
+    </script>
   </div>
 
   <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a></div>

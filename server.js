@@ -659,8 +659,8 @@ app.post(BASE + '/board', auth, mediaUpload.single('photo'), function(req, res) 
   var b = req.body;
   if (b.action === 'add' && b.name) {
     var photo = req.file ? BASE + '/uploads/' + req.file.filename : '';
-    db.prepare("INSERT INTO board_members (name, role, description, photo, sort_order) VALUES (?,?,?,?,?)").run(
-      b.name, b.role || '', b.description || '', photo, parseInt(b.sort_order) || 0
+    db.prepare("INSERT INTO board_members (name, role, description, photo, sort_order, category, bio) VALUES (?,?,?,?,?,?,?)").run(
+      b.name, b.role || '', b.description || '', photo, parseInt(b.sort_order) || 0, b.category || 'ordinarie', b.bio || ''
     );
   } else if (b.action === 'delete' && b.id) {
     db.prepare("DELETE FROM board_members WHERE id = ?").run(b.id);
