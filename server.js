@@ -1212,6 +1212,30 @@ app.get(BASE.replace('/admin', '') + '/profile', memberAuth, function(req, res) 
 });
 
 // Member password change
+
+// Member profile save
+app.post(BASE.replace('/admin', '') + '/profile', memberAuth, function(req, res) {
+  var b = req.body;
+  var id = req.session.memberId;
+  db.prepare("UPDATE members SET name = ?, email = ?, phone = ?, city = ?, country = ?, stage_name = ?, languages_spoken = ?, headline = ?, biography = ?, film_type = ?, skills = ?, equipment = ?, awards = ?, website = ?, imdb_link = ?, showreel_url = ?, social_media = ?, profile_slug = ? WHERE id = ?").run(
+    b.name || '', b.email || '', b.phone || '', b.city || '', b.country || 'SE',
+    b.stage_name || '', b.languages_spoken || '',
+    b.headline || '', b.biography || '', b.film_type || '',
+    b.skills || '', b.equipment || '', b.awards || '',
+    b.website || '', b.imdb_link || '', b.showreel_url || '', b.social_media || '',
+    b.profile_slug || '', id
+  );
+  // Update branches
+  db.prepare('DELETE FROM member_branches WHERE member_id = ?').run(id);
+  var branchIds = b.branch_ids || [];
+  if (!Array.isArray(branchIds)) branchIds = [branchIds];
+  branchIds.forEach(function(bid) {
+    db.prepare('INSERT INTO member_branches (member_id, branch_id) VALUES (?, ?)').run(id, bid);
+  });
+  req.session.memberName = b.name;
+  req.session.memberEmail = b.email;
+  res.redirect(BASE.replace('/admin', '') + '/profile?saved=1');
+});
 app.post(BASE.replace('/admin', '') + '/change-password', memberAuth, function(req, res) {
   var member = db.prepare('SELECT password_hash FROM members WHERE id = ?').get(req.session.memberId);
   if (!bcrypt.compareSync(req.body.current_password, member.password_hash)) {
