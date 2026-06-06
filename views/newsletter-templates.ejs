@@ -1,0 +1,162 @@
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
+<link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.css">
+<style>
+  .back-link{display:inline-block;margin-bottom:16px;color:#94a3b8;text-decoration:none;font-size:13px}.back-link:hover{color:#dc2626}
+  .success-banner{background:#064e3b;color:#6ee7b7;padding:12px 20px;border-radius:8px;margin-bottom:16px;font-size:14px}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .section-header h2{font-size:20px;color:#f1f5f9}
+  .preset-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .preset-btn{padding:8px 16px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#94a3b8;font-size:12px;cursor:pointer;font-weight:500}
+  .preset-btn:hover{border-color:#dc2626;color:#e2e8f0}
+  .preset-btn.active{border-color:#dc2626;color:#dc2626;background:#1a1a2e}
+  .saved-templates{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+  .saved-tmpl{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.2s}
+  .saved-tmpl:hover{border-color:#dc2626}
+  .saved-tmpl h4{font-size:13px;color:#e2e8f0;margin-bottom:4px}
+  .saved-tmpl .meta{font-size:11px;color:#475569}
+  .saved-tmpl .actions{margin-top:8px;display:flex;gap:4px}
+  .saved-tmpl .actions button,.saved-tmpl .actions input{font-size:11px}
+  .editor-wrap{background:#1e293b;border-radius:10px;padding:20px;border:1px solid #334155;margin-bottom:16px}
+  .editor-wrap h3{font-size:16px;color:#dc2626;margin-bottom:12px}
+  .editor-container{border:1px solid #334155;border-radius:8px;overflow:hidden}
+  .save-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .save-bar input{padding:8px 14px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none;min-width:200px}
+  .save-bar input:focus{border-color:#dc2626}
+  .btn{padding:8px 20px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;color:#fff}
+  .btn-primary{background:#dc2626}.btn-primary:hover{background:#b91c1c}
+  .btn-green{background:#059669}.btn-green:hover{background:#047857}
+  .btn-blue{background:#1d4ed8}.btn-blue:hover{background:#1e40af}
+  .btn-gray{background:#334155}.btn-gray:hover{background:#475569}
+  .btn-danger{background:#7f1d1d;color:#fca5a5}.btn-danger:hover{background:#991b1b}
+  .btn-sm{padding:5px 10px;font-size:11px}
+  .ai-bar{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;margin-bottom:14px}
+  .ai-bar .ai-label{font-size:11px;color:#dc2626;font-weight:700;display:flex;align-items:center;margin-right:4px}
+  .ai-btn{padding:5px 12px;font-size:11px;border:1px solid #334155;border-radius:4px;cursor:pointer;color:#94a3b8;background:#1e293b}.ai-btn:hover{border-color:#dc2626;color:#e2e8f0}
+  .ai-input{flex:1;min-width:180px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
+</style>
+
+<a href="<%= base %>/newsletter" class="back-link">&larr; Back to Newsletter</a>
+<% if (success) { %><div class="success-banner">Template saved!</div><% } %>
+
+<div class="section-header"><h2>Newsletter Templates</h2></div>
+
+<% if (templates.length > 0) { %>
+<h3 style="font-size:14px;color:#94a3b8;margin-bottom:10px;">Your Saved Templates</h3>
+<div class="saved-templates">
+  <% templates.forEach(function(t) { %>
+    <div class="saved-tmpl" onclick="loadSaved(<%= t.id %>)">
+      <h4><%= t.name %></h4>
+      <div class="meta"><%= t.updated_at ? new Date(t.updated_at).toLocaleDateString() : '' %></div>
+      <div class="actions">
+        <button class="btn btn-sm btn-blue" onclick="event.stopPropagation();loadSaved(<%= t.id %>)">Edit</button>
+        <button class="btn btn-sm btn-green" onclick="event.stopPropagation();useTmpl(<%= t.id %>)">Use</button>
+        <form method="POST" action="<%= base %>/newsletter/templates" style="display:inline;" onsubmit="event.stopPropagation();return confirm('Delete?')">
+          <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= t.id %>">
+          <button type="submit" class="btn btn-sm btn-danger">Del</button>
+        </form>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<% } %>
+
+<h3 style="font-size:14px;color:#94a3b8;margin-bottom:10px;">Start from a Preset</h3>
+<div class="preset-btns">
+  <button class="preset-btn active" onclick="loadPreset('news')">News Update</button>
+  <button class="preset-btn" onclick="loadPreset('event')">Event Invite</button>
+  <button class="preset-btn" onclick="loadPreset('welcome')">Welcome Member</button>
+  <button class="preset-btn" onclick="loadPreset('update')">Member Update</button>
+  <button class="preset-btn" onclick="loadPreset('minimal')">Minimal</button>
+</div>
+
+<div class="editor-wrap">
+  <h3>Template Editor</h3>
+  <div id="tmplEditor" class="editor-container" style="height:480px;"></div>
+</div>
+
+<div class="ai-bar">
+  <span class="ai-label">AI</span>
+  <button type="button" class="ai-btn" onclick="tmplAi('improve')">Improve</button>
+  <button type="button" class="ai-btn" onclick="tmplAi('expand')">Expand</button>
+  <button type="button" class="ai-btn" onclick="tmplAi('proofread')">Proofread</button>
+  <button type="button" class="ai-btn" onclick="tmplAi('translate_en')">EN</button>
+  <button type="button" class="ai-btn" onclick="tmplAi('translate_sv')">SV</button>
+  <input type="text" class="ai-input" id="tmplAiPrompt" placeholder="Generate: e.g. Write a welcome email for new members...">
+  <button type="button" class="ai-btn" onclick="tmplAi('generate')" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
+</div>
+
+<form method="POST" action="<%= base %>/newsletter/templates" id="saveForm">
+  <input type="hidden" name="action" value="save">
+  <input type="hidden" name="id" id="tmplId" value="">
+  <input type="hidden" name="content" id="tmplContent" value="">
+  <div class="save-bar">
+    <input type="text" name="name" id="tmplName" placeholder="Template name..." required>
+    <button type="submit" class="btn btn-primary" onclick="saveTmpl()">Save Template</button>
+    <button type="button" class="btn btn-green" onclick="useCurrent()">Use for Newsletter</button>
+  </div>
+</form>
+
+<script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
+<script src="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.js"></script>
+<script>
+var BASE_URL = '<%= base %>';
+var presets = {
+  news: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#dc2626;padding:24px;text-align:center;"><h1 style="color:#fff;font-size:24px;margin:0;">FilmCentrum Riks</h1><p style="color:#fecaca;font-size:13px;margin:4px 0 0;">Nyhetsbrev</p></div><div style="padding:32px 24px;background:#fff;"><h2 style="color:#1e293b;font-size:20px;">Rubrik</h2><p style="color:#374151;line-height:1.7;">Innehall har...</p><h3>Nyheter</h3><ul><li>Nyhet 1</li><li>Nyhet 2</li></ul></div><div style="padding:16px 24px;background:#f1f5f9;text-align:center;font-size:12px;color:#64748b;">FilmCentrum Riks | filmcentrum.se</div></div>',
+  event: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#1a1a2e;padding:32px;text-align:center;"><h1 style="color:#dc2626;font-size:28px;">Inbjudan</h1></div><div style="padding:32px 24px;background:#fff;"><h2>Evenemang</h2><p><strong>Datum:</strong> </p><p><strong>Tid:</strong> </p><p><strong>Plats:</strong> </p><p>Beskrivning...</p><a href="#" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:6px;text-decoration:none;margin-top:16px;">Anmal dig</a></div></div>',
+  welcome: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#dc2626;padding:32px;text-align:center;"><h1 style="color:#fff;">Valkommen!</h1></div><div style="padding:32px 24px;background:#fff;"><h2>Valkommen som medlem i FilmCentrum</h2><p>Vi ar glada att du blivit en del av Sveriges storsta filmkooperativ for oberoende filmskapare.</p><h3>Vad du kan gora nu:</h3><ul><li>Skapa din profil och ladda upp dina filmer</li><li>Utforska medlemskatalogen och hitta kollegor</li><li>Delta i workshops och masterclasser</li><li>Fa tillgang till manusradgivning</li></ul><p>Har du fragor? Kontakta oss pa styrelsen@filmcentrum.se</p></div><div style="padding:16px 24px;background:#f1f5f9;text-align:center;font-size:12px;color:#64748b;">FilmCentrum Riks</div></div>',
+  update: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#1a1a2e;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;"><span style="color:#dc2626;font-weight:700;font-size:18px;">FilmCentrum</span><span style="color:#94a3b8;font-size:13px;">Medlemsuppdatering</span></div><div style="padding:32px 24px;background:#fff;"><h2>Uppdatering for medlemmar</h2><p>Hej!</p><p>Har kommer viktiga uppdateringar fran FilmCentrum Riks.</p><h3>Aktuellt</h3><p>Innehall...</p><p>Med vanliga halsningar,<br>FilmCentrum Riks</p></div></div>',
+  minimal: '<div style="max-width:600px;margin:0 auto;padding:32px;font-family:Arial,sans-serif;"><h2 style="color:#1e293b;">FilmCentrum</h2><p style="color:#374151;line-height:1.7;">Meddelande...</p><hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"><p style="color:#64748b;font-size:12px;">FilmCentrum Riks | filmcentrum.se</p></div>'
+};
+
+var savedTemplates = {};
+<% templates.forEach(function(t) { %>
+savedTemplates[<%= t.id %>] = { name: "<%= (t.name || '').replace(/"/g, '\\"') %>", content: `<%- (t.content || '').replace(/`/g, '\\`') %>` };
+<% }); %>
+
+var editor = grapesjs.init({
+  container: '#tmplEditor', height: '480px', storageManager: false,
+  plugins: ['gjs-preset-webpage'],
+  pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
+  assetManager: { upload: BASE_URL + '/api/upload', uploadName: 'file', credentials: 'same-origin' },
+  components: presets.news
+});
+setTimeout(function(){ try{ editor.Panels.getButton('views','open-bl').set('active',true); }catch(e){} }, 500);
+
+function loadPreset(name) {
+  if (presets[name]) { editor.setComponents(presets[name]); document.getElementById('tmplId').value = ''; document.getElementById('tmplName').value = name.charAt(0).toUpperCase() + name.slice(1); }
+  document.querySelectorAll('.preset-btn').forEach(function(b){ b.classList.remove('active'); });
+  event.target.classList.add('active');
+}
+
+function loadSaved(id) {
+  if (savedTemplates[id]) { editor.setComponents(savedTemplates[id].content); document.getElementById('tmplId').value = id; document.getElementById('tmplName').value = savedTemplates[id].name; }
+}
+
+function saveTmpl() {
+  document.getElementById('tmplContent').value = editor.getHtml();
+}
+
+function useCurrent() {
+  var css = editor.getCss(); var html = editor.getHtml();
+  localStorage.setItem('nl_template', css ? '<style>'+css+'</style>'+html : html);
+  window.location.href = BASE_URL + '/newsletter/compose';
+}
+
+function useTmpl(id) {
+  if (savedTemplates[id]) { localStorage.setItem('nl_template', savedTemplates[id].content); window.location.href = BASE_URL + '/newsletter/compose'; }
+}
+
+function tmplAi(action) {
+  var text = action === 'generate' ? document.getElementById('tmplAiPrompt').value : editor.getHtml();
+  if (!text || text.length < 3) { alert(action === 'generate' ? 'Type a prompt' : 'Add content first'); return; }
+  document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.add('loading');});
+  fetch(BASE_URL + '/api/ai/write', {
+    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+    body: JSON.stringify({ action: action, text: action !== 'generate' ? text : undefined, prompt: action === 'generate' ? text : undefined })
+  }).then(function(r){return r.json();}).then(function(d) {
+    document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.remove('loading');});
+    if (d.result) { if (action === 'generate') { editor.addComponents(d.result); document.getElementById('tmplAiPrompt').value=''; } else { editor.setComponents(d.result); } }
+    else alert(d.error || 'AI error');
+  }).catch(function(e) { document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.remove('loading');}); alert('Error: '+e.message); });
+}
+</script>
