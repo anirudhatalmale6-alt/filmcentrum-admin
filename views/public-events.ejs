@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evenemang & Kalender - FilmCentrum Riks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#fff;box-shadow:0 1px 2px 0 rgba(0,0,0,.05);position:sticky;top:0;z-index:50}
+    .header-inner{max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+    @media(min-width:768px){.header-inner{height:80px}}
+    .logo-link{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .logo-img{height:48px;width:auto}
+    .logo-text{font-family:'Special Elite','Courier New',monospace;color:#c0392b;font-size:1.125rem;font-weight:700;letter-spacing:0.025em}
+    .main-nav{display:none;align-items:center;gap:4px}
+    @media(min-width:1024px){.main-nav{display:flex}}
+    .main-nav a{color:#374151;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 12px;border-radius:6px;transition:color 0.15s,background-color 0.15s;white-space:nowrap}
+    .main-nav a:hover{color:#c0392b;background:#f9fafb}
+    .header-actions{display:flex;align-items:center;gap:12px}
+    .fc-dist-btn{display:none;background:#c0392b;color:#fff;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 16px;border-radius:6px}
+    @media(min-width:768px){.fc-dist-btn{display:inline-flex}}
+    .hero{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:48px 32px;text-align:center;color:#fff}
+    .hero h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:8px}
+    .hero p{color:#94a3b8;font-size:15px}
+    .container{max-width:900px;margin:0 auto;padding:32px 24px}
+    .event-card{background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;margin-bottom:16px;display:flex;gap:20px;transition:box-shadow 0.2s}
+    .event-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+    .date-box{min-width:60px;text-align:center;background:#fef2f2;border-radius:10px;padding:8px;flex-shrink:0}
+    .date-box .month{font-size:12px;color:#c0392b;font-weight:600;text-transform:uppercase}
+    .date-box .day{font-size:28px;font-weight:700;color:#1e293b}
+    .event-info h3{font-size:18px;margin-bottom:4px}
+    .event-info h3 a{color:#1e293b;text-decoration:none}
+    .event-info h3 a:hover{color:#c0392b}
+    .event-meta{font-size:13px;color:#64748b;margin-bottom:6px}
+    .event-desc{font-size:14px;color:#475569;line-height:1.6}
+    .cat-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:500;margin-left:8px}
+    .cat-festival{background:#dbeafe;color:#1d4ed8}
+    .cat-event{background:#ede9fe;color:#7c3aed}
+    .cat-workshop{background:#d1fae5;color:#059669}
+    .cat-deadline{background:#fef3c7;color:#d97706}
+    .featured-star{color:#f59e0b;margin-left:4px}
+    .fai-link{display:inline-flex;align-items:center;gap:8px;background:#c0392b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:24px}
+    .fai-link:hover{background:#a93226}
+    .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
+    .footer a{color:#dc2626;text-decoration:none}
+    .months{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+    .months a{padding:4px 12px;background:#f1f5f9;border-radius:16px;font-size:12px;color:#475569;text-decoration:none;font-weight:500}
+    .months a:hover{background:#c0392b;color:#fff}
+    @media(max-width:600px){.event-card{flex-direction:column;gap:12px}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <a href="/filmcentrum/" class="logo-link">
+        <img src="/filmcentrum/fc-logo.png" alt="FC" class="logo-img">
+        <span class="logo-text">FILMCENTRUM RIKS</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/filmcentrum/">Hem</a>
+        <a href="/filmcentrum/om-oss">Om oss</a>
+        <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
+        <a href="/filmcentrum/medlemskap">Medlemskap</a>
+        <a href="/filmcentrum/nyheter">Nyheter</a>
+        <a href="/filmcentrum/kontakt">Kontakta oss</a>
+        <a href="/filmcentrum/login">Logga in</a>
+        <a href="/fc/">Filmkatalog</a>
+        <a href="/fai/">Festival AI</a>
+        <a href="/filmcentrum/events">Kalender</a>
+      </nav>
+      <div class="header-actions">
+        <a href="/fc/" class="fc-dist-btn">FC Distribution</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Evenemang & Kalender</h1>
+    <p>Filmfestivaler, workshops, deadlines och evenemang for filmskapare</p>
+  </div>
+
+  <div class="container">
+    <div style="text-align:center;margin-bottom:24px;">
+      <a href="/fai/" class="fai-link">🎬 Festival AI - Hitta festivaler for din film &rarr;</a>
+    </div>
+
+    <% if (events.length === 0) { %>
+      <p style="text-align:center;color:#64748b;padding:48px;">Inga evenemang annu.</p>
+    <% } %>
+
+    <% events.forEach(function(e) { %>
+      <div class="event-card">
+        <div class="date-box">
+          <div class="month"><%= ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'][parseInt((e.event_date||'').substring(5,7))-1] || '' %></div>
+          <div class="day"><%= (e.event_date||'').substring(8,10) %></div>
+        </div>
+        <div class="event-info">
+          <h3><% if (e.link) { %><a href="<%= e.link %>" target="_blank"><%= e.title %></a><% } else { %><%= e.title %><% } %>
+            <span class="cat-badge cat-<%= e.category %>"><%= e.category %></span>
+            <% if (e.is_featured) { %><span class="featured-star">&#9733;</span><% } %>
+          </h3>
+          <div class="event-meta"><%= e.location || '' %><% if (e.end_date && e.end_date !== e.event_date) { %> | <%= e.event_date %> - <%= e.end_date %><% } %></div>
+          <% if (e.description) { %><div class="event-desc"><%= e.description %></div><% } %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a></div>
+  <script src="/filmcentrum/chatbot.js"></script>
+</body>
+</html>
