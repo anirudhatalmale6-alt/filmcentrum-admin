@@ -170,6 +170,8 @@ function initEditor(lang) {
 }
 
 initEditor('sv'); initEditor('en');
+// Open blocks panel by default
+setTimeout(function(){ try{ editors.sv.Panels.getButton('views','open-bl').set('active',true); }catch(e){} }, 500);
 
 function switchLang(lang) {
   currentLang=lang;
