@@ -341,7 +341,7 @@ app.post(BASE + '/members/:id', auth, function(req, res) {
     headline = ?, biography = ?,
     skills = ?, awards = ?, equipment = ?,
     profile_slug = ?, is_public = ?, approved = ?, showreel_url = ?,
-    joined_at = ?, personnummer = ?
+    joined_at = ?, personnummer = ?, profession = ?
     WHERE id = ?`).run(
     b.name || '', b.email || '', b.phone || '', b.film_type || '', b.status || 'pending', b.notes || '',
     b.stage_name || '', b.website || '', b.imdb_link || '', b.social_media || '',
@@ -349,7 +349,7 @@ app.post(BASE + '/members/:id', auth, function(req, res) {
     b.headline || '', b.biography || '',
     b.skills || '', b.awards || '', b.equipment || '',
     b.profile_slug || '', b.is_public ? 1 : 0, b.approved ? 1 : 0, b.showreel_url || '',
-    b.joined_at || null, b.personnummer || '',
+    b.joined_at || null, b.personnummer || '', b.profession || '',
     id
   );
 
@@ -878,6 +878,9 @@ app.post(BASE + '/members/:id/renew', auth, function(req, res) {
 app.post(BASE + '/api/public/members/apply', function(req, res) {
   var b = req.body;
   if (!b.name || !b.email) return res.status(400).json({ error: 'Namn och e-post kravs' });
+  if (!b.personnummer) return res.status(400).json({ error: 'Personnummer kravs' });
+  if (!b.profession) return res.status(400).json({ error: 'Yrke/profession kravs' });
+  if (!b.password || b.password.length < 6) return res.status(400).json({ error: 'Losenord kravs (minst 6 tecken)' });
 
   var existing = db.prepare('SELECT id FROM members WHERE email = ?').get(b.email);
   if (existing) return res.status(400).json({ error: 'E-postadressen ar redan registrerad' });
@@ -885,9 +888,10 @@ app.post(BASE + '/api/public/members/apply', function(req, res) {
   var ref = 'FCM' + Math.random().toString(36).substring(2, 8).toUpperCase();
   var fee = db.prepare("SELECT value FROM settings WHERE key = 'membership_fee'").get();
   var amount = fee ? parseInt(fee.value) : 100;
+  var pwHash = bcrypt.hashSync(b.password, 10);
 
-  var result = db.prepare("INSERT INTO members (name, email, phone, notes, film_type, personnummer, status, payment_status, payment_ref) VALUES (?, ?, ?, ?, ?, ?, 'pending', 'unpaid', ?)").run(
-    b.name, b.email, b.phone || '', b.bio || '', b.portfolio_url || '', b.personnummer || '', ref
+  var result = db.prepare("INSERT INTO members (name, email, phone, notes, film_type, personnummer, profession, password_hash, headline, status, payment_status, payment_ref) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'unpaid', ?)").run(
+    b.name, b.email, b.phone || '', b.bio || '', b.portfolio_url || '', b.personnummer, b.profession, pwHash, b.profession, ref
   );
 
   res.json({
@@ -898,6 +902,45 @@ app.post(BASE + '/api/public/members/apply', function(req, res) {
     swish_number: '123 381 35 73',
     message: 'Ansokan mottagen! Betala ' + amount + ' kr via Swish.'
   });
+});
+
+// Server-rendered registration form
+app.get(BASE.replace('/admin', '') + '/bli-medlem', function(req, res) {
+  var fee = db.prepare("SELECT value FROM settings WHERE key = 'membership_fee'").get();
+  var amount = fee ? parseInt(fee.value) : 100;
+  var swishNr = db.prepare("SELECT value FROM settings WHERE key = 'swish_number'").get();
+  var bankgiro = db.prepare("SELECT value FROM settings WHERE key = 'bankgiro'").get();
+  res.render('register', { layout: false, amount: amount, swish: swishNr ? swishNr.value : '123 381 35 73', bankgiro: bankgiro ? bankgiro.value : '176-7102', base: BASE, error: null, success: null });
+});
+
+app.post(BASE.replace('/admin', '') + '/bli-medlem', function(req, res) {
+  var b = req.body;
+  var fee = db.prepare("SELECT value FROM settings WHERE key = 'membership_fee'").get();
+  var amount = fee ? parseInt(fee.value) : 100;
+  var swishNr = db.prepare("SELECT value FROM settings WHERE key = 'swish_number'").get();
+  var bankgiro = db.prepare("SELECT value FROM settings WHERE key = 'bankgiro'").get();
+  var sw = swishNr ? swishNr.value : '123 381 35 73';
+  var bg = bankgiro ? bankgiro.value : '176-7102';
+
+  if (!b.name || !b.email || !b.personnummer || !b.profession || !b.password) {
+    return res.render('register', { layout: false, amount: amount, swish: sw, bankgiro: bg, base: BASE, error: 'Alla obligatoriska falt maste fyllas i.', success: null });
+  }
+  if (b.password !== b.confirm_password) {
+    return res.render('register', { layout: false, amount: amount, swish: sw, bankgiro: bg, base: BASE, error: 'Losenorden matchar inte.', success: null });
+  }
+  if (b.password.length < 6) {
+    return res.render('register', { layout: false, amount: amount, swish: sw, bankgiro: bg, base: BASE, error: 'Losenordet maste vara minst 6 tecken.', success: null });
+  }
+  var existing = db.prepare('SELECT id FROM members WHERE email = ?').get(b.email);
+  if (existing) {
+    return res.render('register', { layout: false, amount: amount, swish: sw, bankgiro: bg, base: BASE, error: 'E-postadressen ar redan registrerad.', success: null });
+  }
+  var ref = 'FCM' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  var pwHash = bcrypt.hashSync(b.password, 10);
+  db.prepare("INSERT INTO members (name, email, phone, notes, film_type, personnummer, profession, password_hash, headline, status, payment_status, payment_ref) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'unpaid', ?)").run(
+    b.name, b.email, b.phone || '', b.bio || '', b.portfolio_url || '', b.personnummer, b.profession, pwHash, b.profession, ref
+  );
+  res.render('register', { layout: false, amount: amount, swish: sw, bankgiro: bg, base: BASE, error: null, success: { ref: ref, amount: amount } });
 });
 
 app.get(BASE + '/api/public/members/stats', function(req, res) {

@@ -126,6 +126,10 @@
         <input type="text" name="personnummer" value="<%= member.personnummer || '' %>" placeholder="YYYYMMDD-XXXX">
       </div>
       <div class="form-group">
+        <label>Profession / Yrke</label>
+        <input type="text" name="profession" value="<%= member.profession || '' %>" placeholder="t.ex. Regissor, Fotograf">
+      </div>
+      <div class="form-group">
         <label>Medlem sedan (Member Since)</label>
         <input type="date" name="joined_at" value="<%= member.joined_at ? member.joined_at.substring(0, 10) : '' %>">
       </div>
