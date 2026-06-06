@@ -54,6 +54,34 @@
       <input type="text" name="gemini_api_key" value="<%= settings.gemini_api_key ? settings.gemini_api_key.substring(0,8) + "..." : "" %>" placeholder="AIza...">
       <div class="hint">Get free key from aistudio.google.com/apikey - needed for AI features in page editor and newsletter</div>
     </div>
+    <div class="form-group" style="margin-top:24px;padding-top:20px;border-top:1px solid #334155;">
+      <label style="color:#dc2626;font-weight:600;">SMTP Email Settings</label>
+    </div>
+    <div class="form-group">
+      <label>SMTP Host</label>
+      <input type="text" name="smtp_host" value="<%= settings.smtp_host || '' %>" placeholder="smtp.gmail.com">
+    </div>
+    <div class="form-group">
+      <label>SMTP Port</label>
+      <input type="text" name="smtp_port" value="<%= settings.smtp_port || '587' %>" placeholder="587">
+    </div>
+    <div class="form-group">
+      <label>SMTP User / Email</label>
+      <input type="text" name="smtp_user" value="<%= settings.smtp_user || '' %>" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label>SMTP Password</label>
+      <input type="password" name="smtp_pass" value="" placeholder="Leave blank to keep current">
+      <div class="hint"><%= settings.smtp_pass ? 'Password is set' : 'No password set' %></div>
+    </div>
+    <div class="form-group">
+      <label>From Email</label>
+      <input type="text" name="smtp_from" value="<%= settings.smtp_from || '' %>" placeholder="info@filmcentrum.se">
+    </div>
+    <div class="form-group">
+      <label>From Name</label>
+      <input type="text" name="smtp_from_name" value="<%= settings.smtp_from_name || 'FilmCentrum Riks' %>" placeholder="FilmCentrum Riks">
+    </div>
     <button type="submit" class="btn-save">Save Settings</button>
   </form>
 </div>
