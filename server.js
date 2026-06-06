@@ -787,6 +787,40 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 
 // ============================================================
 // PUBLIC CMS PAGES (server-rendered)
+
+// ============================================================
+// MEMBERSHIP APPLICATION + SWISH PAYMENT
+// ============================================================
+app.post(BASE + '/api/public/members/apply', function(req, res) {
+  var b = req.body;
+  if (!b.name || !b.email) return res.status(400).json({ error: 'Namn och e-post kravs' });
+
+  var existing = db.prepare('SELECT id FROM members WHERE email = ?').get(b.email);
+  if (existing) return res.status(400).json({ error: 'E-postadressen ar redan registrerad' });
+
+  var ref = 'FCM' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  var fee = db.prepare("SELECT value FROM settings WHERE key = 'membership_fee'").get();
+  var amount = fee ? parseInt(fee.value) : 100;
+
+  var result = db.prepare("INSERT INTO members (name, email, phone, notes, film_type, status, payment_status, payment_ref) VALUES (?, ?, ?, ?, ?, 'pending', 'unpaid', ?)").run(
+    b.name, b.email, b.phone || '', b.bio || '', b.portfolio_url || '', ref
+  );
+
+  res.json({
+    success: true,
+    member_id: result.lastInsertRowid,
+    amount: amount,
+    swish_reference: ref,
+    swish_number: '123 381 35 73',
+    message: 'Ansokan mottagen! Betala ' + amount + ' kr via Swish.'
+  });
+});
+
+app.get(BASE + '/api/public/members/stats', function(req, res) {
+  var total = db.prepare('SELECT COUNT(*) as c FROM members').get().c;
+  var active = db.prepare("SELECT COUNT(*) as c FROM members WHERE status = 'active'").get().c;
+  res.json({ total: total, active: active });
+});
 // ============================================================
 app.get(BASE.replace('/admin', '') + '/openthedoors', function(req, res) {
   var page = db.prepare("SELECT * FROM pages WHERE slug = 'openthedoors'").get();
