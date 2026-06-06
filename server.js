@@ -649,6 +649,31 @@ app.post(BASE + "/password", auth, function(req, res) {
 // ============================================================
 // SEO & ANALYTICS
 // ============================================================
+// Board Members (Styrelse)
+app.get(BASE + '/board', auth, function(req, res) {
+  var board = db.prepare("SELECT * FROM board_members ORDER BY sort_order").all();
+  res.render('board', { base: BASE, board: board, success: req.query.saved === '1' });
+});
+
+app.post(BASE + '/board', auth, mediaUpload.single('photo'), function(req, res) {
+  var b = req.body;
+  if (b.action === 'add' && b.name) {
+    var photo = req.file ? BASE + '/uploads/' + req.file.filename : '';
+    db.prepare("INSERT INTO board_members (name, role, description, photo, sort_order) VALUES (?,?,?,?,?)").run(
+      b.name, b.role || '', b.description || '', photo, parseInt(b.sort_order) || 0
+    );
+  } else if (b.action === 'delete' && b.id) {
+    db.prepare("DELETE FROM board_members WHERE id = ?").run(b.id);
+  }
+  res.redirect(BASE + '/board?saved=1');
+});
+
+// Public Styrelse page
+app.get(BASE.replace("/admin", "") + "/styrelse", function(req, res) {
+  var board = db.prepare("SELECT * FROM board_members ORDER BY sort_order").all();
+  res.render('public-styrelse', { layout: false, board: board });
+});
+
 // Events Calendar
 app.get(BASE + '/events', auth, function(req, res) {
   var events = db.prepare("SELECT * FROM events ORDER BY event_date ASC").all();
@@ -658,8 +683,8 @@ app.get(BASE + '/events', auth, function(req, res) {
 app.post(BASE + '/events', auth, function(req, res) {
   var b = req.body;
   if (b.action === 'add' && b.title) {
-    db.prepare("INSERT INTO events (title, description, event_date, end_date, location, category, link, is_featured) VALUES (?,?,?,?,?,?,?,?)").run(
-      b.title, b.description || '', b.event_date, b.end_date || b.event_date, b.location || '', b.category || 'event', b.link || '', b.is_featured ? 1 : 0
+    db.prepare("INSERT INTO events (title, description, event_date, end_date, location, category, link, is_featured, fb_event_link) VALUES (?,?,?,?,?,?,?,?,?)").run(
+      b.title, b.description || '', b.event_date, b.end_date || b.event_date, b.location || '', b.category || 'event', b.link || '', b.is_featured ? 1 : 0, b.fb_event_link || ''
     );
   } else if (b.action === 'delete' && b.id) {
     db.prepare("DELETE FROM events WHERE id = ?").run(b.id);
