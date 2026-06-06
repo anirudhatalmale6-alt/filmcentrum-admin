@@ -1115,6 +1115,11 @@ app.get(BASE.replace('/admin', '') + '/events', function(req, res) {
   res.render('public-events', { layout: false, events: events });
 });
 
+app.get(BASE.replace('/admin', '') + '/kalender', function(req, res) {
+  var events = db.prepare('SELECT * FROM events ORDER BY event_date ASC').all();
+  res.render('public-events', { layout: false, events: events });
+});
+
 app.get(BASE.replace('/admin', '') + '/openthedoors', function(req, res) {
   var page = db.prepare("SELECT * FROM pages WHERE slug = 'openthedoors'").get();
   if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
