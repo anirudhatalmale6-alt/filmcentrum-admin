@@ -750,29 +750,72 @@ app.post(BASE + '/api/public/chat', chatLimiter, function(req, res) {
   var message = req.body.message;
   if (!message) return res.status(400).json({ error: 'Message required' });
 
-  // Simple rule-based chatbot for FilmCentrum
-  var msg = message.toLowerCase();
-  var reply = '';
+  // AI-powered chatbot for FilmCentrum using Gemini
+  var apiKey = db.prepare("SELECT value FROM settings WHERE key = 'gemini_api_key'").get();
 
-  if (msg.indexOf('medlem') !== -1 || msg.indexOf('member') !== -1 || msg.indexOf('join') !== -1) {
-    reply = 'Medlemskap i FilmCentrum kostar 100 kr per ar. Du kan bli medlem genom att klicka pa "Bli medlem" pa var hemsida. Som medlem far du distribution, synlighet, natverk och rostrett pa arsmote!';
-  } else if (msg.indexOf('pris') !== -1 || msg.indexOf('kost') !== -1 || msg.indexOf('price') !== -1 || msg.indexOf('avgift') !== -1) {
-    reply = 'Medlemskapet kostar 100 kr per ar. Det inkluderar distribution, filmsida, synlighet mot skolor/bibliotek, intakter fran visningar, och natverk med oberoende filmskapare.';
-  } else if (msg.indexOf('kontakt') !== -1 || msg.indexOf('contact') !== -1 || msg.indexOf('email') !== -1) {
-    reply = 'Du kan kontakta oss via kontaktformulaaret pa hemsidan eller skicka e-post till info@filmcentrum.se. Vi svarar vanligtvis inom 1-2 arbetsdagar.';
-  } else if (msg.indexOf('skolbio') !== -1 || msg.indexOf('school') !== -1) {
-    reply = 'FilmCentrum arbetar aktivt med skolbioprogram runt om i landet. Vi erbjuder pedagogiskt material och filmsamtal for alla aldersgrupper. Kontakta oss for mer information!';
-  } else if (msg.indexOf('distribution') !== -1 || msg.indexOf('distribute') !== -1) {
-    reply = 'Genom FC Distribution sprider vi kvalitetsfilm till skolor, bibliotek och kulturinstitutioner over hela Sverige. Som medlem far du din film distribuerad och synlig i vart natverk.';
-  } else if (msg.indexOf('hej') !== -1 || msg.indexOf('hello') !== -1 || msg.indexOf('hi') !== -1) {
-    reply = 'Hej! Valkommen till FilmCentrum Riks. Hur kan jag hjalpa dig? Jag kan svara pa fragor om medlemskap, priser, skolbio, distribution och mer.';
-  } else if (msg.indexOf('tack') !== -1 || msg.indexOf('thank') !== -1) {
-    reply = 'Tack sjalv! Hor garna av dig igen om du har fler fragor. Valkommen till FilmCentrum!';
-  } else {
-    reply = 'Tack for din fraga! Jag kan hjalpa dig med information om medlemskap (100 kr/ar), distribution, skolbio och kontaktuppgifter. Vad vill du veta mer om?';
+  if (!apiKey || !apiKey.value) {
+    // Fallback to rule-based if no API key
+    var msg = message.toLowerCase();
+    var reply = '';
+    if (msg.indexOf('medlem') !== -1) reply = 'Medlemskap i FilmCentrum kostar 100 kr per ar. Ansok pa var hemsida under Medlemskap.';
+    else if (msg.indexOf('kontakt') !== -1) reply = 'Kontakta oss pa info@filmcentrum.se eller via kontaktformulaaret.';
+    else if (msg.indexOf('hej') !== -1 || msg.indexOf('hello') !== -1) reply = 'Hej! Valkommen till FilmCentrum Riks. Hur kan jag hjalpa dig?';
+    else reply = 'Jag kan hjalpa dig med fragor om FilmCentrum. Fraga om medlemskap, evenemang, kontakt eller nagonting annat!';
+    return res.json({ success: true, reply: reply });
   }
 
-  res.json({ success: true, reply: reply });
+  // Gather live site data for context
+  var totalMembers = db.prepare("SELECT COUNT(*) as c FROM members").get().c;
+  var activeMembers = db.prepare("SELECT COUNT(*) as c FROM members WHERE status = 'active'").get().c;
+  var totalPages = db.prepare("SELECT COUNT(*) as c FROM pages").get().c;
+  var totalArticles = db.prepare("SELECT COUNT(*) as c FROM articles").get().c;
+  var recentNews = db.prepare("SELECT title_sv FROM articles ORDER BY created_at DESC LIMIT 5").all().map(function(a) { return a.title_sv; }).join(', ');
+  var pageList = db.prepare("SELECT title_sv, slug FROM pages ORDER BY title_sv").all().map(function(p) { return p.title_sv + ' (/' + p.slug + ')'; }).join(', ');
+
+  var siteContext = 'Du ar en hjalpsam chatbot for FilmCentrum Riks - Sveriges storsta kooperativ for oberoende filmskapare. ' +
+    'Svara pa svenska om inte anvandaren skriver pa engelska. Var vanlig, koncis och hjalpsam. ' +
+    'Fakta om FilmCentrum: ' +
+    'Medlemskap kostar 100 kr per ar. Betalning via Swish (123 381 35 73) eller BankGiro (176-7102). ' +
+    'Adress: Box 17099, 104 62 Stockholm. E-post: info@filmcentrum.se. ' +
+    'Vi har ' + totalMembers + ' medlemmar varav ' + activeMembers + ' aktiva. ' +
+    totalArticles + ' nyhetsartiklar publicerade. ' +
+    'Senaste nyheter: ' + (recentNews || 'inga') + '. ' +
+    totalPages + ' sidor pa webbplatsen: ' + pageList + '. ' +
+    'FC Distribution sprider film till skolor och bibliotek. ' +
+    'FC OpenTheDoors erbjuder masterclasses och internationella workshops (Cannes, Venedig, IDFA). ' +
+    'Radgivning: manus, festival, klipp, produktion, distribution. ' +
+    'Medlemmar far distribution, synlighet, natverk, rostrett, digitalt medlemskort med QR-kod. ' +
+    'Webbplats: skylarkmedia.se/filmcentrum/. Registrering: /filmcentrum/bli-medlem. ' +
+    'Logga in: /filmcentrum/login. Medlemskatalog: /filmcentrum/members.';
+
+  var https = require('https');
+  var url = new URL('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey.value);
+  var postData = JSON.stringify({
+    contents: [{ parts: [{ text: siteContext + ' Anvandarens fraga: ' + message }] }],
+    generationConfig: { maxOutputTokens: 300, temperature: 0.7 }
+  });
+
+  var req2 = https.request({ hostname: url.hostname, path: url.pathname + url.search, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } }, function(apiRes) {
+    var data = '';
+    apiRes.on('data', function(c) { data += c; });
+    apiRes.on('end', function() {
+      try {
+        var json = JSON.parse(data);
+        var reply = json.candidates && json.candidates[0] && json.candidates[0].content && json.candidates[0].content.parts && json.candidates[0].content.parts[0] ? json.candidates[0].content.parts[0].text : 'Jag kunde inte svara just nu. Kontakta oss pa info@filmcentrum.se.';
+        res.json({ success: true, reply: reply });
+      } catch(e) {
+        console.error('Chatbot parse error:', e.message, data.substring(0, 200));
+        res.json({ success: true, reply: 'Jag kunde inte svara just nu. Kontakta oss pa info@filmcentrum.se.' });
+      }
+    });
+  });
+  req2.on('error', function(err) {
+    console.error('Chatbot request error:', err.message);
+    res.json({ success: true, reply: 'Jag kunde inte svara just nu. Kontakta oss pa info@filmcentrum.se.' });
+  });
+  req2.write(postData);
+  req2.end();
+  return;
 });
 
 // ============================================================
