@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const ejsLayouts = require("express-ejs-layouts");
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3150;
@@ -204,6 +205,7 @@ if (menuCount === 0) {
 }
 
 app.use(helmet({ contentSecurityPolicy: false }));
+app.use(function(req, res, next) { res.setHeader('X-Content-Type-Options', 'nosniff'); res.setHeader('X-Frame-Options', 'DENY'); res.setHeader('X-XSS-Protection', '1; mode=block'); res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin'); next(); });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -216,7 +218,7 @@ app.use(session({
   store: new SQLiteStore({ dir: path.join(__dirname, 'data'), db: 'fc-sessions.db' }),
   secret: process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex'),
   resave: false, saveUninitialized: false,
-  cookie: { maxAge: 30*24*60*60*1000, path: '/', sameSite: 'lax', httpOnly: true }
+  cookie: { maxAge: 30*24*60*60*1000, path: '/', sameSite: 'lax', httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
 
 function auth(req, res, next) {
@@ -238,13 +240,14 @@ var LANG_NAMES = {sv:'Svenska',no:'Norsk',da:'Dansk',fi:'Suomi',en:'English',de:
 
 // ============================================================
 // AUTH ROUTES
+var loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: 'Too many login attempts. Please try again in 15 minutes.' });
 // ============================================================
 app.get(BASE + '/login', function(req, res) {
   if (req.session.adminId) return res.redirect(BASE + '/');
   res.render('login', { base: BASE, error: null, layout: false });
 });
 
-app.post(BASE + '/login', function(req, res) {
+app.post(BASE + '/login', loginLimiter, function(req, res) {
   var user = db.prepare('SELECT * FROM admin_users WHERE username = ? OR email = ?').get(req.body.username, req.body.username);
   if (!user || !bcrypt.compareSync(req.body.password, user.password_hash)) return res.render('login', { base: BASE, error: 'Invalid credentials', layout: false });
   req.session.adminId = user.id;
@@ -628,7 +631,7 @@ app.post(BASE + '/seo', auth, function(req, res) {
       var html = fs.readFileSync(htmlPath, 'utf-8');
       html = html.replace(/content="G-[A-Z0-9]*"/, 'content="' + gaId + '"');
       html = html.replace(/content=""/, 'content="' + gaId + '"');
-      if (req.body.seo_title) html = html.replace(/<title>[^<]*<\/title>/, '<title>' + req.body.seo_title + '</title>');
+      if (req.body.seo_title) html = html.replace(/<title>[^<]*<\/title>/, '<title>' + (req.body.seo_title || '').replace(/[<>"]/g, '') + '</title>');
       if (req.body.seo_description) html = html.replace(/name="description" content="[^"]*"/, 'name="description" content="' + req.body.seo_description + '"');
       if (req.body.seo_keywords) html = html.replace(/name="keywords" content="[^"]*"/, 'name="keywords" content="' + req.body.seo_keywords + '"');
       if (req.body.og_title) html = html.replace(/property="og:title" content="[^"]*"/, 'property="og:title" content="' + req.body.og_title + '"');
@@ -681,8 +684,9 @@ app.get(BASE + '/newsletter/export', auth, function(req, res) {
 
 // ============================================================
 // CHATBOT API (public)
+var chatLimiter = rateLimit({ windowMs: 60 * 1000, max: 30, message: JSON.stringify({ error: 'Too many requests' }) });
 // ============================================================
-app.post(BASE + '/api/public/chat', function(req, res) {
+app.post(BASE + '/api/public/chat', chatLimiter, function(req, res) {
   var message = req.body.message;
   if (!message) return res.status(400).json({ error: 'Message required' });
 
@@ -835,7 +839,7 @@ app.get(BASE.replace('/admin', '') + '/login', function(req, res) {
   res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FilmCentrum - Logga in</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#e2e8f0;display:flex;justify-content:center;align-items:center;min-height:100vh}.login-card{background:#1e293b;border-radius:12px;padding:40px;border:1px solid #334155;width:100%;max-width:400px}h2{color:#dc2626;font-size:24px;margin-bottom:8px;text-align:center}p.sub{color:#64748b;font-size:13px;text-align:center;margin-bottom:28px}.form-group{margin-bottom:18px}.form-group label{display:block;font-size:13px;color:#94a3b8;margin-bottom:6px}.form-group input{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:14px;outline:none}.form-group input:focus{border-color:#dc2626}.btn{width:100%;padding:12px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}.btn:hover{background:#b91c1c}.error{background:#7f1d1d;color:#fca5a5;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px;text-align:center}.back{display:block;text-align:center;margin-top:16px;color:#64748b;font-size:13px;text-decoration:none}.back:hover{color:#dc2626}</style></head><body><div class="login-card"><h2>FilmCentrum</h2><p class="sub">Logga in pa ditt medlemskonto</p>' + (req.query.error === '1' ? '<div class="error">Fel e-post eller losenord</div>' : '') + (req.query.changed === '1' ? '<div style="background:#064e3b;color:#6ee7b7;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px;text-align:center;">Losenord andrat!</div>' : '') + '<form method="POST" action="' + BASE.replace('/admin', '') + '/login"><div class="form-group"><label>E-post</label><input type="email" name="email" required></div><div class="form-group"><label>Losenord</label><input type="password" name="password" required></div><button type="submit" class="btn">Logga in</button></form><a href="/filmcentrum/" class="back">Tillbaka till startsidan</a></div></body></html>');
 });
 
-app.post(BASE.replace('/admin', '') + '/login', function(req, res) {
+app.post(BASE.replace('/admin', '') + '/login', loginLimiter, function(req, res) {
   var member = db.prepare('SELECT * FROM members WHERE email = ?').get(req.body.email);
   if (!member || !member.password_hash || !bcrypt.compareSync(req.body.password, member.password_hash)) {
     return res.redirect(BASE.replace('/admin', '') + '/login?error=1');
