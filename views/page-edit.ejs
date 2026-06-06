@@ -191,3 +191,159 @@ function saveEditors() {
 }
 document.getElementById('pageForm').addEventListener('submit',function(){saveEditors();});
 </script>
+
+<style>
+  .editor-toolbar-ext{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+  .autosave-status{font-size:11px;color:#64748b;margin-left:auto}
+  .status-select{padding:6px 10px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:12px}
+  .btn-sm{padding:6px 14px;font-size:12px;border:none;border-radius:6px;cursor:pointer;color:#fff}
+  .btn-blue{background:#1d4ed8}.btn-blue:hover{background:#1e40af}
+  .btn-green{background:#059669}.btn-green:hover{background:#047857}
+  .btn-gray{background:#334155}.btn-gray:hover{background:#475569}
+  .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;justify-content:center;align-items:center}
+  .modal-overlay.show{display:flex}
+  .modal-box{background:#1e293b;border-radius:12px;padding:28px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;border:1px solid #334155}
+  .modal-box h3{font-size:18px;color:#f1f5f9;margin-bottom:16px}
+  .modal-close{float:right;color:#64748b;cursor:pointer;font-size:20px;background:none;border:none}
+  .modal-close:hover{color:#dc2626}
+  .rev-list{list-style:none;padding:0}
+  .rev-list li{padding:10px 12px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#94a3b8}
+  .rev-list li:hover{background:#0f172a}
+  .block-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .block-item{padding:10px;background:#0f172a;border:1px solid #334155;border-radius:6px;cursor:pointer;font-size:12px;color:#94a3b8;text-align:center}
+  .block-item:hover{border-color:#dc2626;color:#e2e8f0}
+  .save-block-form{margin-top:16px;padding-top:16px;border-top:1px solid #334155}
+  .save-block-form input{width:100%;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;margin-bottom:8px}
+</style>
+
+<div class="editor-toolbar-ext">
+  <select name="status" class="status-select" id="pageStatus">
+    <option value="published" <%= (typeof page !== 'undefined' && page.status === 'draft') ? '' : 'selected' %>>Published</option>
+    <option value="draft" <%= (typeof page !== 'undefined' && page.status === 'draft') ? 'selected' : '' %>>Draft</option>
+  </select>
+  <button type="button" class="btn-sm btn-blue" onclick="showRevisions()">Revisions</button>
+  <button type="button" class="btn-sm btn-green" onclick="showReusableBlocks()">Reusable Blocks</button>
+  <button type="button" class="btn-sm btn-gray" onclick="saveAsBlock()">Save Selection as Block</button>
+  <span class="autosave-status" id="autosaveStatus"></span>
+</div>
+
+<div class="modal-overlay" id="revisionsModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('revisionsModal')">&times;</button>
+    <h3>Revision History</h3>
+    <ul class="rev-list" id="revisionsList"></ul>
+  </div>
+</div>
+
+<div class="modal-overlay" id="blocksModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('blocksModal')">&times;</button>
+    <h3>Reusable Blocks</h3>
+    <div class="block-list" id="reusableBlocksList"></div>
+    <div class="save-block-form" id="saveBlockForm" style="display:none;">
+      <input type="text" id="newBlockName" placeholder="Block name...">
+      <button class="btn-sm btn-green" onclick="doSaveBlock()">Save Block</button>
+      <button class="btn-sm btn-gray" onclick="document.getElementById('saveBlockForm').style.display='none'">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var BASE_URL = '<%= base %>';
+var PAGE_ID = '<%= page.id %>';
+
+// Auto-save every 30 seconds
+setInterval(function() {
+  if (!editors.sv) return;
+  var data = {
+    title_sv: document.querySelector('input[name=title_sv]').value,
+    title_en: document.querySelector('input[name=title_en]').value,
+    content_sv: editors.sv.getHtml(),
+    content_en: editors.en ? editors.en.getHtml() : ''
+  };
+  fetch(BASE_URL + '/api/pages/' + PAGE_ID + '/autosave', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'same-origin',
+    body: JSON.stringify(data)
+  }).then(function() {
+    document.getElementById('autosaveStatus').textContent = 'Auto-saved ' + new Date().toLocaleTimeString();
+  }).catch(function(){});
+}, 30000);
+
+function showRevisions() {
+  fetch(BASE_URL + '/api/pages/' + PAGE_ID + '/revisions', {credentials:'same-origin'})
+    .then(function(r){return r.json();})
+    .then(function(d) {
+      var html = '';
+      if (!d.revisions || d.revisions.length === 0) { html = '<li>No revisions yet</li>'; }
+      else {
+        d.revisions.forEach(function(rev) {
+          html += '<li><span>' + new Date(rev.created_at).toLocaleString() + ' by ' + rev.saved_by + '</span><button class="btn-sm btn-blue" onclick="restoreRevision(' + rev.id + ')">Restore</button></li>';
+        });
+      }
+      document.getElementById('revisionsList').innerHTML = html;
+      document.getElementById('revisionsModal').classList.add('show');
+    });
+}
+
+function restoreRevision(revId) {
+  if (!confirm('Restore this revision? Current content will be saved as a revision first.')) return;
+  fetch(BASE_URL + '/api/pages/' + PAGE_ID + '/revisions/' + revId + '/restore', {
+    method: 'POST', credentials: 'same-origin'
+  }).then(function(){location.reload();});
+}
+
+function showReusableBlocks() {
+  fetch(BASE_URL + '/api/reusable-blocks', {credentials:'same-origin'})
+    .then(function(r){return r.json();})
+    .then(function(d) {
+      var html = '';
+      if (!d.blocks || d.blocks.length === 0) { html = '<div style="text-align:center;color:#64748b;padding:20px;">No saved blocks yet. Select content in the editor and click "Save Selection as Block".</div>'; }
+      else {
+        d.blocks.forEach(function(b) {
+          html += '<div class="block-item" onclick="insertBlock(' + b.id + ',this)" title="Click to insert">' + b.name + '<br><span style="font-size:10px;color:#475569;">' + b.category + '</span></div>';
+        });
+      }
+      document.getElementById('reusableBlocksList').innerHTML = html;
+      document.getElementById('blocksModal').classList.add('show');
+    });
+}
+
+function insertBlock(id, el) {
+  fetch(BASE_URL + '/api/reusable-blocks', {credentials:'same-origin'})
+    .then(function(r){return r.json();})
+    .then(function(d) {
+      var block = d.blocks.find(function(b){return b.id === id;});
+      if (block && editors[currentLang]) {
+        editors[currentLang].addComponents(block.content);
+        closeModal('blocksModal');
+      }
+    });
+}
+
+function saveAsBlock() {
+  if (!editors[currentLang]) return;
+  var selected = editors[currentLang].getSelected();
+  if (!selected) { alert('Select an element in the editor first'); return; }
+  document.getElementById('saveBlockForm').style.display = 'block';
+  document.getElementById('newBlockName').focus();
+  document.getElementById('blocksModal').classList.add('show');
+}
+
+function doSaveBlock() {
+  var name = document.getElementById('newBlockName').value.trim();
+  if (!name) return;
+  var selected = editors[currentLang].getSelected();
+  var content = selected ? selected.toHTML() : '';
+  if (!content) { alert('No content selected'); return; }
+  fetch(BASE_URL + '/api/reusable-blocks', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'same-origin',
+    body: JSON.stringify({ name: name, category: 'custom', content: content })
+  }).then(function(){
+    document.getElementById('newBlockName').value = '';
+    document.getElementById('saveBlockForm').style.display = 'none';
+    showReusableBlocks();
+  });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+</script>

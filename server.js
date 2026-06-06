@@ -471,10 +471,21 @@ app.get(BASE + '/pages/:id', auth, function(req, res) {
 
 app.post(BASE + '/pages/:id', auth, function(req, res) {
   var b = req.body;
-  db.prepare("UPDATE pages SET title_sv = ?, title_en = ?, content_sv = ?, content_en = ?, updated_at = datetime('now') WHERE id = ?").run(
-    b.title_sv || '', b.title_en || '', b.content_sv || '', b.content_en || '', req.params.id
+  var id = req.params.id;
+  // Save revision before updating
+  var current = db.prepare('SELECT * FROM pages WHERE id = ?').get(id);
+  if (current && (current.content_sv || current.content_en)) {
+    db.prepare('INSERT INTO page_revisions (page_id, title_sv, title_en, content_sv, content_en, saved_by) VALUES (?, ?, ?, ?, ?, ?)').run(
+      id, current.title_sv, current.title_en, current.content_sv, current.content_en, req.session.adminUsername || 'admin'
+    );
+    // Keep only last 20 revisions per page
+    db.prepare('DELETE FROM page_revisions WHERE page_id = ? AND id NOT IN (SELECT id FROM page_revisions WHERE page_id = ? ORDER BY created_at DESC LIMIT 20)').run(id, id);
+  }
+  var status = b.status || 'published';
+  db.prepare("UPDATE pages SET title_sv = ?, title_en = ?, content_sv = ?, content_en = ?, status = ?, auto_saved = '', updated_at = datetime('now') WHERE id = ?").run(
+    b.title_sv || '', b.title_en || '', b.content_sv || '', b.content_en || '', status, id
   );
-  res.redirect(BASE + '/pages/' + req.params.id + '?saved=1');
+  res.redirect(BASE + '/pages/' + id + '?saved=1');
 });
 
 app.post(BASE + '/pages', auth, function(req, res) {
@@ -776,6 +787,68 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 
 // ============================================================
 // MEDIA UPLOAD API
+
+// ============================================================
+// AUTO-SAVE API
+// ============================================================
+app.post(BASE + '/api/pages/:id/autosave', auth, function(req, res) {
+  var b = req.body;
+  db.prepare("UPDATE pages SET auto_saved = ?, auto_saved_at = datetime('now') WHERE id = ?").run(
+    JSON.stringify({ title_sv: b.title_sv, title_en: b.title_en, content_sv: b.content_sv, content_en: b.content_en }), req.params.id
+  );
+  res.json({ success: true });
+});
+
+// ============================================================
+// REVISION HISTORY
+// ============================================================
+app.get(BASE + '/api/pages/:id/revisions', auth, function(req, res) {
+  var revisions = db.prepare('SELECT id, saved_by, created_at FROM page_revisions WHERE page_id = ? ORDER BY created_at DESC LIMIT 20').all(req.params.id);
+  res.json({ success: true, revisions: revisions });
+});
+
+app.get(BASE + '/api/pages/:id/revisions/:revId', auth, function(req, res) {
+  var rev = db.prepare('SELECT * FROM page_revisions WHERE id = ? AND page_id = ?').get(req.params.revId, req.params.id);
+  if (!rev) return res.status(404).json({ error: 'Revision not found' });
+  res.json({ success: true, revision: rev });
+});
+
+app.post(BASE + '/api/pages/:id/revisions/:revId/restore', auth, function(req, res) {
+  var rev = db.prepare('SELECT * FROM page_revisions WHERE id = ? AND page_id = ?').get(req.params.revId, req.params.id);
+  if (!rev) return res.status(404).json({ error: 'Revision not found' });
+  db.prepare("UPDATE pages SET title_sv = ?, title_en = ?, content_sv = ?, content_en = ?, updated_at = datetime('now') WHERE id = ?").run(
+    rev.title_sv, rev.title_en, rev.content_sv, rev.content_en, req.params.id
+  );
+  res.json({ success: true });
+});
+
+// ============================================================
+// REUSABLE BLOCKS
+// ============================================================
+app.get(BASE + '/api/reusable-blocks', auth, function(req, res) {
+  var blocks = db.prepare('SELECT * FROM reusable_blocks ORDER BY updated_at DESC').all();
+  res.json({ success: true, blocks: blocks });
+});
+
+app.post(BASE + '/api/reusable-blocks', auth, function(req, res) {
+  var b = req.body;
+  if (b.id) {
+    db.prepare("UPDATE reusable_blocks SET name = ?, category = ?, content = ?, is_linked = ?, updated_at = datetime('now') WHERE id = ?").run(
+      b.name || '', b.category || 'custom', b.content || '', b.is_linked ? 1 : 0, b.id
+    );
+    res.json({ success: true, id: b.id });
+  } else {
+    var r = db.prepare("INSERT INTO reusable_blocks (name, category, content, is_linked) VALUES (?, ?, ?, ?)").run(
+      b.name || '', b.category || 'custom', b.content || '', b.is_linked ? 1 : 0
+    );
+    res.json({ success: true, id: r.lastInsertRowid });
+  }
+});
+
+app.delete(BASE + '/api/reusable-blocks/:id', auth, function(req, res) {
+  db.prepare('DELETE FROM reusable_blocks WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
 // ============================================================
 var multer = require('multer');
 var mediaStorage = multer.diskStorage({
