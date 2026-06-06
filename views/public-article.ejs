@@ -8,18 +8,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
             *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1e293b}
-    .header{background:#fff;padding:8px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);position:relative;z-index:10}
-    .header .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .header .logo img{height:48px;width:auto}
-    .header .logo span{font-family:'Special Elite','Courier New',monospace;color:#c0392b;font-size:18px;font-weight:700;letter-spacing:0.025em;text-transform:uppercase}
-    .header nav{display:flex;align-items:center;gap:2px}
-    .header nav a{color:#374151;text-decoration:none;font-size:14px;font-weight:500;padding:8px 12px;border-radius:6px;transition:color 0.15s,background 0.15s;white-space:nowrap}
-    .header nav a:hover{color:#c0392b;background:#f9fafb}
-    .fc-dist-btn{background:#c0392b!important;color:#fff!important;border-radius:6px!important;padding:8px 16px!important;font-weight:600!important;font-size:13px!important}
-    .fc-dist-btn:hover{background:#a93226!important;color:#fff!important}
-    @media(max-width:1024px){.header nav{display:none}.header .mobile-menu-btn{display:block}}
-    @media(min-width:1025px){.header .mobile-menu-btn{display:none}}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#fff;box-shadow:0 1px 2px 0 rgba(0,0,0,.05);position:sticky;top:0;z-index:50}
+    .header-inner{max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+    @media(min-width:768px){.header-inner{height:80px}}
+    .logo-link{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .logo-img{height:48px;width:auto}
+    .logo-text{font-family:'Special Elite','Courier New',monospace;color:#c0392b;font-size:1.125rem;font-weight:700;letter-spacing:0.025em}
+    .main-nav{display:none;align-items:center;gap:4px}
+    @media(min-width:1024px){.main-nav{display:flex}}
+    .main-nav a{color:#374151;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 12px;border-radius:6px;transition:color 0.15s,background-color 0.15s;white-space:nowrap}
+    .main-nav a:hover{color:#c0392b;background:#f9fafb}
+    .header-actions{display:flex;align-items:center;gap:12px}
+    .fc-dist-btn{display:none;background:#c0392b;color:#fff;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 16px;border-radius:6px;transition:background 0.15s}
+    @media(min-width:768px){.fc-dist-btn{display:inline-flex}}
+    .fc-dist-btn:hover{background:#a93226}
+    .mobile-menu-btn{display:block;padding:8px;color:#4b5563;background:none;border:none;cursor:pointer}
+    .mobile-menu-btn:hover{color:#111827}
+    @media(min-width:1024px){.mobile-menu-btn{display:none}}
+    .mobile-nav{display:none;border-top:1px solid #e5e7eb;padding:16px 0}
+    .mobile-nav.show{display:block}
+    @media(min-width:1024px){.mobile-nav{display:none!important}}
+    .mobile-nav a{display:block;padding:8px 12px;font-size:1rem;font-weight:500;color:#374151;text-decoration:none;border-radius:6px}
+    .mobile-nav a:hover{background:#f9fafb;color:#c0392b}
     .container{max-width:800px;margin:0 auto;padding:40px 24px}
     .back{display:inline-block;margin-bottom:24px;color:#64748b;text-decoration:none;font-size:13px}
     .back:hover{color:#dc2626}
@@ -38,9 +49,30 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <a href="/filmcentrum/" class="logo"><img src="/filmcentrum/admin/uploads/wp/Kopia-av-Filmcentrum_logotyp_CMYK-1.png" alt="FC"><span>FILMCENTRUM RIKS</span></a>
-    <nav>
+    <div class="header">
+    <div class="header-inner">
+      <a href="/filmcentrum/" class="logo-link">
+        <img src="/filmcentrum/fc-logo.png" alt="FilmCentrum" class="logo-img">
+        <span class="logo-text">FILMCENTRUM RIKS</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/filmcentrum/">Hem</a>
+        <a href="/filmcentrum/om-oss">Om oss</a>
+        <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
+        <a href="/filmcentrum/medlemskap">Medlemskap</a>
+        <a href="/filmcentrum/nyheter">Nyheter</a>
+        <a href="/filmcentrum/kontakt">Kontakta oss</a>
+        <a href="/filmcentrum/login">Logga in</a>
+        <a href="/filmcentrum/members">Filmkatalog</a>
+      </nav>
+      <div class="header-actions">
+        <a href="/fc/" class="fc-dist-btn">FC Distribution</a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.mobile-nav').classList.toggle('show')" aria-label="Meny">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-nav">
       <a href="/filmcentrum/">Hem</a>
       <a href="/filmcentrum/om-oss">Om oss</a>
       <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
@@ -49,13 +81,9 @@
       <a href="/filmcentrum/kontakt">Kontakta oss</a>
       <a href="/filmcentrum/login">Logga in</a>
       <a href="/filmcentrum/members">Filmkatalog</a>
-      <a href="/filmcentrum/fc" class="fc-dist-btn">FC Distribution</a>
-    </nav>
-  
-  
-  
-  
+    </div>
   </div>
+
   <div class="container">
     <a href="/filmcentrum/nyheter" class="back">&larr; Tillbaka till nyheter</a>
     <div class="meta">
