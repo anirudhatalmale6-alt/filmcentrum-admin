@@ -494,7 +494,8 @@ app.post(BASE + '/pages', auth, function(req, res) {
   var b = req.body;
   if (b.action === 'add' && b.slug) {
     try {
-      db.prepare("INSERT INTO pages (slug, title_sv, title_en, category) VALUES (?, ?, ?, ?)").run(b.slug, b.title_sv || '', b.title_en || '', b.category || 'general');
+      var result = db.prepare("INSERT INTO pages (slug, title_sv, title_en, category) VALUES (?, ?, ?, ?)").run(b.slug, b.title_sv || '', b.title_en || '', b.category || 'general');
+      return res.redirect(BASE + '/pages/' + result.lastInsertRowid);
     } catch(e) {}
   } else if (b.action === 'delete' && b.id) {
     db.prepare('DELETE FROM pages WHERE id = ?').run(b.id);
