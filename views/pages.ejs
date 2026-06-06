@@ -34,6 +34,7 @@
   <table>
     <thead>
       <tr>
+        <th>Category</th>
         <th>Slug</th>
         <th>Title (SV)</th>
         <th>Title (EN)</th>
@@ -43,10 +44,11 @@
     </thead>
     <tbody>
       <% if (pages.length === 0) { %>
-        <tr><td colspan="5" style="text-align:center;color:#64748b;padding:32px;">No pages yet.</td></tr>
+        <tr><td colspan="6" style="text-align:center;color:#64748b;padding:32px;">No pages yet.</td></tr>
       <% } %>
       <% pages.forEach(function(p) { %>
         <tr>
+          <td><span style="background:#0f172a;padding:2px 8px;border-radius:10px;font-size:11px;color:#94a3b8;"><%= p.category || "general" %></span></td>
           <td class="slug-cell">/<%= p.slug %></td>
           <td><strong><%= p.title_sv || '-' %></strong></td>
           <td><%= p.title_en || '-' %></td>
@@ -77,6 +79,14 @@
       <div class="form-group">
         <label>Title (Swedish)</label>
         <input type="text" name="title_sv" placeholder="Sidtitel">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category" style="padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;min-width:180px;">
+        <% if (typeof categories !== "undefined") { categories.forEach(function(cat) { %>
+          <option value="<%= cat.slug %>"><%= cat.name %></option>
+        <% }); } %>
+        </select>
       </div>
       <div class="form-group">
         <label>Title (English)</label>

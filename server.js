@@ -185,7 +185,7 @@ var pageSeeds = [
   ['kontakt', 'Kontakt', 'Contact']
 ];
 pageSeeds.forEach(function(p) {
-  try { db.prepare("INSERT INTO pages (slug, title_sv, title_en) VALUES (?, ?, ?)").run(p[0], p[1], p[2]); } catch(e) {}
+  try { db.prepare("INSERT INTO pages (slug, title_sv, title_en, category) VALUES (?, ?, ?)").run(p[0], p[1], p[2]); } catch(e) {}
 });
 
 // Seed default menu items
@@ -459,14 +459,14 @@ app.post(BASE + '/branches', auth, function(req, res) {
 // PAGES (CMS)
 // ============================================================
 app.get(BASE + '/pages', auth, function(req, res) {
-  var pages = db.prepare('SELECT * FROM pages ORDER BY id').all();
-  res.render('pages', { base: BASE, pages: pages });
+  var pages = db.prepare("SELECT * FROM pages ORDER BY category, id").all(); var categories = db.prepare("SELECT * FROM page_categories ORDER BY sort_order").all();
+  res.render("pages", { base: BASE, pages: pages, categories: categories });
 });
 
 app.get(BASE + '/pages/:id', auth, function(req, res) {
   var page = db.prepare('SELECT * FROM pages WHERE id = ?').get(req.params.id);
   if (!page) return res.redirect(BASE + '/pages');
-  res.render('page-edit', { base: BASE, page: page, success: req.query.saved === '1' });
+  var cats = db.prepare("SELECT * FROM page_categories ORDER BY sort_order").all(); res.render("page-edit", { base: BASE, page: page, categories: cats, success: req.query.saved === '1' });
 });
 
 app.post(BASE + '/pages/:id', auth, function(req, res) {
@@ -482,8 +482,8 @@ app.post(BASE + '/pages/:id', auth, function(req, res) {
     db.prepare('DELETE FROM page_revisions WHERE page_id = ? AND id NOT IN (SELECT id FROM page_revisions WHERE page_id = ? ORDER BY created_at DESC LIMIT 20)').run(id, id);
   }
   var status = b.status || 'published';
-  db.prepare("UPDATE pages SET title_sv = ?, title_en = ?, content_sv = ?, content_en = ?, status = ?, auto_saved = '', updated_at = datetime('now') WHERE id = ?").run(
-    b.title_sv || '', b.title_en || '', b.content_sv || '', b.content_en || '', status, id
+  db.prepare("UPDATE pages SET title_sv = ?, title_en = ?, content_sv = ?, content_en = ?, category = ?, status = ?, auto_saved = '', updated_at = datetime('now') WHERE id = ?").run(
+    b.title_sv || '', b.title_en || '', b.content_sv || '', b.content_en || '', b.category || 'general', status, id
   );
   res.redirect(BASE + '/pages/' + id + '?saved=1');
 });
@@ -492,7 +492,7 @@ app.post(BASE + '/pages', auth, function(req, res) {
   var b = req.body;
   if (b.action === 'add' && b.slug) {
     try {
-      db.prepare('INSERT INTO pages (slug, title_sv, title_en) VALUES (?, ?, ?)').run(b.slug, b.title_sv || '', b.title_en || '');
+      db.prepare("INSERT INTO pages (slug, title_sv, title_en, category) VALUES (?, ?, ?, ?)").run(b.slug, b.title_sv || '', b.title_en || '', b.category || 'general');
     } catch(e) {}
   } else if (b.action === 'delete' && b.id) {
     db.prepare('DELETE FROM pages WHERE id = ?').run(b.id);
