@@ -9,12 +9,41 @@
   .welcome-section { margin-bottom: 28px; }
   .welcome-section h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 6px; }
   .welcome-section p { color: #64748b; font-size: 14px; }
+  .alert-banner { background: #78350f; border: 1px solid #92400e; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .alert-banner .text { color: #fcd34d; font-size: 14px; font-weight: 500; }
+  .alert-banner .count { background: #dc2626; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+  .alert-banner a { color: #fcd34d; text-decoration: underline; margin-left: 8px; font-size: 13px; }
+  .pending-section { background: #1e293b; border-radius: 10px; padding: 20px; border: 1px solid #334155; margin-bottom: 24px; }
+  .pending-section h3 { font-size: 16px; color: #f1f5f9; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .pending-section h3 a { font-size: 12px; color: #dc2626; text-decoration: none; }
+  .pending-list { list-style: none; padding: 0; }
+  .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #0f172a; }
+  .pending-item:last-child { border-bottom: none; }
+  .pending-item .info { }
+  .pending-item .name { font-size: 14px; color: #e2e8f0; font-weight: 500; }
+  .pending-item .email { font-size: 12px; color: #64748b; }
+  .pending-item .date { font-size: 11px; color: #475569; }
+  .pending-item .actions { display: flex; gap: 6px; }
+  .btn-sm { padding: 5px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; color: #fff; }
+  .btn-approve { background: #059669; }
+  .btn-approve:hover { background: #047857; }
+  .btn-pay { background: #1d4ed8; }
+  .btn-pay:hover { background: #1e40af; }
+  .btn-view { background: #334155; }
+  .btn-view:hover { background: #475569; }
 </style>
 
 <div class="welcome-section">
   <h2>Welcome back</h2>
   <p>Here is an overview of your FilmCentrum membership data.</p>
 </div>
+
+<% if (stats.pending_members > 0) { %>
+<div class="alert-banner">
+  <span class="text"><%= stats.pending_members %> new membership request<%= stats.pending_members > 1 ? 's' : '' %> waiting for approval<a href="<%= base %>/members">Review now</a></span>
+  <span class="count"><%= stats.pending_members %></span>
+</div>
+<% } %>
 
 <div class="stats-grid">
   <div class="stat-card accent">
@@ -33,9 +62,9 @@
     <div class="sub">Awaiting review</div>
   </div>
   <div class="stat-card">
-    <div class="label">Pending Approval</div>
-    <div class="value"><%= stats.pending_approval %></div>
-    <div class="sub">Profile not approved</div>
+    <div class="label">Paid</div>
+    <div class="value"><%= stats.paid_members %></div>
+    <div class="sub">Payment confirmed</div>
   </div>
   <div class="stat-card">
     <div class="label">Public Profiles</div>
@@ -53,8 +82,30 @@
     <div class="sub">CMS pages</div>
   </div>
   <div class="stat-card">
-    <div class="label">Paid</div>
-    <div class="value"><%= stats.paid_members %></div>
-    <div class="sub">Payment confirmed</div>
+    <div class="label">News</div>
+    <div class="value"><%= stats.total_articles || 0 %></div>
+    <div class="sub">Published articles</div>
   </div>
 </div>
+
+<% if (typeof pendingMembers !== 'undefined' && pendingMembers.length > 0) { %>
+<div class="pending-section">
+  <h3>Recent Membership Requests <a href="<%= base %>/members">View all</a></h3>
+  <ul class="pending-list">
+    <% pendingMembers.forEach(function(m) { %>
+      <li class="pending-item">
+        <div class="info">
+          <div class="name"><%= m.name %></div>
+          <div class="email"><%= m.email %></div>
+          <div class="date"><%= m.joined_at ? new Date(m.joined_at).toLocaleDateString('sv-SE') : '' %> <% if (m.payment_ref) { %> | Ref: <%= m.payment_ref %><% } %></div>
+        </div>
+        <div class="actions">
+          <form method="POST" action="<%= base %>/members/<%= m.id %>/approve" style="display:inline;"><button type="submit" class="btn-sm btn-approve">Approve</button></form>
+          <form method="POST" action="<%= base %>/members/<%= m.id %>/payment" style="display:inline;"><input type="hidden" name="method" value="swish"><button type="submit" class="btn-sm btn-pay">Mark Paid</button></form>
+          <a href="<%= base %>/members/<%= m.id %>" class="btn-sm btn-view">View</a>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+</div>
+<% } %>

@@ -273,7 +273,7 @@ app.get(BASE + '/', auth, function(req, res) {
     newsletter_subscribers: db.prepare("SELECT COUNT(*) as c FROM newsletter_subscribers WHERE is_active = 1").get().c,
     total_pages: db.prepare('SELECT COUNT(*) as c FROM pages').get().c,
   };
-  res.render('dashboard', { base: BASE, stats: stats });
+  var totalArticles = 0; try { totalArticles = db.prepare("SELECT COUNT(*) as c FROM articles WHERE is_published = 1").get().c; } catch(e) {} stats.total_articles = totalArticles; var pendingMembers = db.prepare("SELECT * FROM members WHERE status = 'pending' ORDER BY joined_at DESC LIMIT 10").all(); res.render("dashboard", { base: BASE, stats: stats, pendingMembers: pendingMembers });
 });
 
 // ============================================================
