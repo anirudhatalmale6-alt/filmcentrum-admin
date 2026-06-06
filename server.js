@@ -490,6 +490,12 @@ app.post(BASE + '/pages/:id', auth, function(req, res) {
   res.redirect(BASE + '/pages/' + id + '?saved=1');
 });
 
+app.get(BASE + '/pages/new', auth, function(req, res) {
+  var slug = 'ny-sida-' + Date.now();
+  var result = db.prepare("INSERT INTO pages (slug, title_sv, title_en, category) VALUES (?, '', '', 'general')").run(slug);
+  res.redirect(BASE + '/pages/' + result.lastInsertRowid);
+});
+
 app.post(BASE + '/pages', auth, function(req, res) {
   var b = req.body;
   if (b.action === 'add' && b.slug) {
