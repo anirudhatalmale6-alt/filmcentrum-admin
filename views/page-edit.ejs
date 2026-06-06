@@ -42,6 +42,32 @@
       </select>
     </div>
   </div>
+  <!-- Editor Controls -->
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+    <button type="submit" class="btn-save" onclick="saveEditors()">Save Page</button>
+    <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
+    <select name="status" class="status-select" id="pageStatus" style="padding:6px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:12px;">
+      <option value="published" <%= (typeof page !== 'undefined' && page.status === 'draft') ? '' : 'selected' %>>Published</option>
+      <option value="draft" <%= (typeof page !== 'undefined' && page.status === 'draft') ? 'selected' : '' %>>Draft</option>
+    </select>
+    <button type="button" class="btn-sm btn-blue" onclick="showRevisions()" style="padding:6px 14px;font-size:12px;border:none;border-radius:6px;cursor:pointer;color:#fff;background:#1d4ed8;">Revisions</button>
+    <button type="button" class="btn-sm btn-green" onclick="showReusableBlocks()" style="padding:6px 14px;font-size:12px;border:none;border-radius:6px;cursor:pointer;color:#fff;background:#059669;">Reusable Blocks</button>
+    <button type="button" class="btn-sm btn-gray" onclick="saveAsBlock()" style="padding:6px 14px;font-size:12px;border:none;border-radius:6px;cursor:pointer;color:#e2e8f0;background:#334155;">Save Selection as Block</button>
+    <span class="autosave-status" id="autosaveStatus"></span>
+  </div>
+
+  <div class="ai-toolbar" style="margin-bottom:12px;">
+    <span class="ai-label">AI</span>
+    <button type="button" class="ai-btn" onclick="aiAction('improve')">Improve</button>
+    <button type="button" class="ai-btn" onclick="aiAction('expand')">Expand</button>
+    <button type="button" class="ai-btn" onclick="aiAction('summarize')">Summarize</button>
+    <button type="button" class="ai-btn" onclick="aiAction('proofread')">Proofread</button>
+    <button type="button" class="ai-btn" onclick="aiAction('translate_en')">Translate EN</button>
+    <button type="button" class="ai-btn" onclick="aiAction('translate_sv')">Translate SV</button>
+    <input type="text" class="ai-prompt-input" id="aiPrompt" placeholder="Or type a prompt: e.g. Write about membership benefits...">
+    <button type="button" class="ai-btn" onclick="aiGenerate()" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
+  </div>
+
   <div class="lang-tabs">
     <div class="lang-tab active" onclick="switchLang('sv')">Svenska</div>
     <div class="lang-tab" onclick="switchLang('en')">English</div>
@@ -50,8 +76,6 @@
   <div id="editor-en" class="editor-container" style="height:560px;display:none;"></div>
   <textarea name="content_sv" id="hidden_sv" style="display:none;"><%= page.content_sv || '' %></textarea>
   <textarea name="content_en" id="hidden_en" style="display:none;"><%= page.content_en || '' %></textarea>
-  <button type="submit" class="btn-save" onclick="saveEditors()">Save Page</button>
-  <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
 </form>
 
 <script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
@@ -225,15 +249,6 @@ document.getElementById('pageForm').addEventListener('submit',function(){saveEdi
   .save-block-form input{width:100%;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;margin-bottom:8px}
 </style>
 
-<div class="editor-toolbar-ext">
-  <select name="status" class="status-select" id="pageStatus">
-    <option value="published" <%= (typeof page !== 'undefined' && page.status === 'draft') ? '' : 'selected' %>>Published</option>
-    <option value="draft" <%= (typeof page !== 'undefined' && page.status === 'draft') ? 'selected' : '' %>>Draft</option>
-  </select>
-  <button type="button" class="btn-sm btn-blue" onclick="showRevisions()">Revisions</button>
-  <button type="button" class="btn-sm btn-green" onclick="showReusableBlocks()">Reusable Blocks</button>
-  <button type="button" class="btn-sm btn-gray" onclick="saveAsBlock()">Save Selection as Block</button>
-  <span class="autosave-status" id="autosaveStatus"></span>
 </div>
 
 <div class="modal-overlay" id="revisionsModal">
@@ -366,16 +381,6 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
   .ai-prompt-input{flex:1;min-width:200px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
 </style>
 
-<div class="ai-toolbar">
-  <span class="ai-label">AI</span>
-  <button type="button" class="ai-btn" onclick="aiAction('improve')">Improve</button>
-  <button type="button" class="ai-btn" onclick="aiAction('expand')">Expand</button>
-  <button type="button" class="ai-btn" onclick="aiAction('summarize')">Summarize</button>
-  <button type="button" class="ai-btn" onclick="aiAction('proofread')">Proofread</button>
-  <button type="button" class="ai-btn" onclick="aiAction('translate_en')">Translate EN</button>
-  <button type="button" class="ai-btn" onclick="aiAction('translate_sv')">Translate SV</button>
-  <input type="text" class="ai-prompt-input" id="aiPrompt" placeholder="Or type a prompt: e.g. Write about membership benefits...">
-  <button type="button" class="ai-btn" onclick="aiGenerate()" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
 </div>
 
 <script>
