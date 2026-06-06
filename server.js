@@ -241,6 +241,17 @@ app.use(function(req, res, next) {
   next();
 });
 
+// Theme middleware - load theme settings for public pages
+app.use(function(req, res, next) {
+  try {
+    var rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'theme_%'").all();
+    res.locals.theme = {};
+    rows.forEach(function(r) { res.locals.theme[r.key] = r.value; });
+  } catch(e) { res.locals.theme = {}; }
+  next();
+});
+
+
 // Languages
 var LANGS = ['sv','no','da','fi','en','de','es','it','ur','hi','se_sami','ar','prs','tr'];
 var LANG_NAMES = {sv:'Svenska',no:'Norsk',da:'Dansk',fi:'Suomi',en:'English',de:'Deutsch',es:'Espanol',it:'Italiano',ur:'اردو',hi:'हिन्दी',se_sami:'Sami',ar:'العربية',prs:'دری',tr:'Turkce'};
@@ -638,6 +649,28 @@ app.post(BASE + "/password", auth, function(req, res) {
 // ============================================================
 // SEO & ANALYTICS
 // ============================================================
+// Theme Customizer
+app.get(BASE + '/theme', auth, function(req, res) {
+  var rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'theme_%'").all();
+  var theme = {};
+  rows.forEach(function(r) { theme[r.key] = r.value; });
+  res.render('theme', { base: BASE, theme: theme, success: req.query.saved === '1' });
+});
+
+app.post(BASE + '/theme', auth, function(req, res) {
+  var b = req.body;
+  // Save all theme settings
+  var keys = ['theme_site_name','theme_primary_color','theme_header_bg','theme_header_text',
+    'theme_body_font','theme_heading_font','theme_body_color','theme_menu_size','theme_menu_weight',
+    'theme_logo_height','theme_hero_bg','theme_hero_text','theme_link_color','theme_footer_bg','theme_footer_text'];
+  keys.forEach(function(k) {
+    if (b[k] !== undefined) {
+      db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)").run(k, b[k]);
+    }
+  });
+  res.redirect(BASE + '/theme?saved=1');
+});
+
 app.get(BASE + '/seo', auth, function(req, res) {
   var settings = {};
   db.prepare('SELECT key, value FROM settings').all().forEach(function(r) { settings[r.key] = r.value; });

@@ -1,0 +1,190 @@
+<style>
+  .theme-section{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155;margin-bottom:20px}
+  .theme-section h3{font-size:16px;color:#dc2626;margin-bottom:16px;border-bottom:1px solid #334155;padding-bottom:8px}
+  .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .theme-group{display:flex;flex-direction:column}
+  .theme-group label{font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:500}
+  .theme-group input,.theme-group select{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .theme-group input:focus,.theme-group select:focus{border-color:#dc2626}
+  .theme-group input[type=color]{height:40px;padding:4px;cursor:pointer}
+  .theme-group input[type=file]{padding:6px}
+  .color-preview{display:flex;align-items:center;gap:8px}
+  .color-swatch{width:32px;height:32px;border-radius:6px;border:2px solid #334155}
+  .preview-bar{background:#0f172a;border-radius:8px;padding:16px;margin-top:16px;border:1px solid #334155}
+  .preview-bar h4{color:#64748b;font-size:12px;margin-bottom:8px;text-transform:uppercase}
+  .btn-save{padding:12px 32px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px}
+  .btn-save:hover{background:#b91c1c}
+  .current-logo{max-height:60px;border-radius:6px;margin-bottom:8px;background:#fff;padding:4px}
+  .success-msg{background:#064e3b;color:#6ee7b7;padding:12px 20px;border-radius:8px;margin-bottom:16px;font-size:14px}
+</style>
+
+<h2 style="font-size:20px;color:#f1f5f9;margin-bottom:20px;">Theme Customizer</h2>
+
+<% if (success) { %><div class="success-msg">Theme settings saved successfully.</div><% } %>
+
+<form method="POST" action="<%= base %>/theme" >
+
+  <div class="theme-section">
+    <h3>Logo & Site Name</h3>
+    <div class="theme-grid">
+      <div class="theme-group">
+        <label>Current Logo</label>
+        <img src="<%= theme.theme_logo || '/filmcentrum/fc-logo.png' %>" class="current-logo" alt="Logo">
+        <label>Upload New Logo</label>
+        <input type="file" id="logoFile" accept="image/*" onchange="uploadLogo()">
+        <small style="color:#64748b;margin-top:4px;">Click to upload a new logo image</small>
+      </div>
+      <div class="theme-group">
+        <label>Site Name</label>
+        <input type="text" name="theme_site_name" value="<%= theme.theme_site_name || 'FILMCENTRUM RIKS' %>">
+      </div>
+      <div class="theme-group">
+        <label>Logo Height (px)</label>
+        <input type="number" name="theme_logo_height" value="<%= theme.theme_logo_height || '48' %>" min="24" max="80">
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-section">
+    <h3>Colors</h3>
+    <div class="theme-grid">
+      <div class="theme-group">
+        <label>Primary Color</label>
+        <div class="color-preview">
+          <input type="color" name="theme_primary_color" value="<%= theme.theme_primary_color || '#c0392b' %>">
+          <input type="text" name="theme_primary_color_hex" value="<%= theme.theme_primary_color || '#c0392b' %>" style="width:100px" oninput="this.previousElementSibling.value=this.value">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Header Background</label>
+        <div class="color-preview">
+          <input type="color" name="theme_header_bg" value="<%= theme.theme_header_bg || '#ffffff' %>">
+          <input type="text" name="theme_header_bg_hex" value="<%= theme.theme_header_bg || '#ffffff' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Header Text / Menu Color</label>
+        <div class="color-preview">
+          <input type="color" name="theme_header_text" value="<%= theme.theme_header_text || '#374151' %>">
+          <input type="text" name="theme_header_text_hex" value="<%= theme.theme_header_text || '#374151' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Body Text Color</label>
+        <div class="color-preview">
+          <input type="color" name="theme_body_color" value="<%= theme.theme_body_color || '#1e293b' %>">
+          <input type="text" name="theme_body_color_hex" value="<%= theme.theme_body_color || '#1e293b' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Link / Accent Color</label>
+        <div class="color-preview">
+          <input type="color" name="theme_link_color" value="<%= theme.theme_link_color || '#c0392b' %>">
+          <input type="text" name="theme_link_color_hex" value="<%= theme.theme_link_color || '#c0392b' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Hero/Banner Background</label>
+        <div class="color-preview">
+          <input type="color" name="theme_hero_bg" value="<%= theme.theme_hero_bg || '#1a1a2e' %>">
+          <input type="text" name="theme_hero_bg_hex" value="<%= theme.theme_hero_bg || '#1a1a2e' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Footer Background</label>
+        <div class="color-preview">
+          <input type="color" name="theme_footer_bg" value="<%= theme.theme_footer_bg || '#1a1a2e' %>">
+          <input type="text" name="theme_footer_bg_hex" value="<%= theme.theme_footer_bg || '#1a1a2e' %>" style="width:100px">
+        </div>
+      </div>
+      <div class="theme-group">
+        <label>Footer Text Color</label>
+        <div class="color-preview">
+          <input type="color" name="theme_footer_text" value="<%= theme.theme_footer_text || '#94a3b8' %>">
+          <input type="text" name="theme_footer_text_hex" value="<%= theme.theme_footer_text || '#94a3b8' %>" style="width:100px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-section">
+    <h3>Fonts & Typography</h3>
+    <div class="theme-grid">
+      <div class="theme-group">
+        <label>Body Font</label>
+        <select name="theme_body_font">
+          <% var fonts = ['Inter, sans-serif','Arial, sans-serif','Helvetica, sans-serif','Georgia, serif','Verdana, sans-serif','Times New Roman, serif','Roboto, sans-serif','Open Sans, sans-serif','Lato, sans-serif','Montserrat, sans-serif']; %>
+          <% fonts.forEach(function(f) { %>
+            <option value="<%= f %>" <%= (theme.theme_body_font || 'Inter, sans-serif') === f ? 'selected' : '' %>><%= f.split(',')[0] %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="theme-group">
+        <label>Heading / Logo Font</label>
+        <select name="theme_heading_font">
+          <% var hfonts = ['Special Elite, Courier New, monospace','Playfair Display, serif','Georgia, serif','Inter, sans-serif','Arial, sans-serif','Montserrat, sans-serif','Roboto Slab, serif']; %>
+          <% hfonts.forEach(function(f) { %>
+            <option value="<%= f %>" <%= (theme.theme_heading_font || 'Special Elite, Courier New, monospace') === f ? 'selected' : '' %>><%= f.split(',')[0] %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="theme-group">
+        <label>Menu Font Size (px)</label>
+        <input type="number" name="theme_menu_size" value="<%= theme.theme_menu_size || '14' %>" min="11" max="20">
+      </div>
+      <div class="theme-group">
+        <label>Menu Font Weight</label>
+        <select name="theme_menu_weight">
+          <option value="400" <%= theme.theme_menu_weight === '400' ? 'selected' : '' %>>Normal (400)</option>
+          <option value="500" <%= (theme.theme_menu_weight || '500') === '500' ? 'selected' : '' %>>Medium (500)</option>
+          <option value="600" <%= theme.theme_menu_weight === '600' ? 'selected' : '' %>>Semi Bold (600)</option>
+          <option value="700" <%= theme.theme_menu_weight === '700' ? 'selected' : '' %>>Bold (700)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-bar">
+    <h4>Preview will update after saving</h4>
+    <div style="background:<%= theme.theme_header_bg || '#fff' %>;padding:12px 20px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="<%= theme.theme_logo || '/filmcentrum/fc-logo.png' %>" style="height:<%= theme.theme_logo_height || '48' %>px" alt="Logo">
+        <span style="font-family:<%= theme.theme_heading_font || 'Special Elite, monospace' %>;color:<%= theme.theme_primary_color || '#c0392b' %>;font-size:18px;font-weight:700"><%= theme.theme_site_name || 'FILMCENTRUM RIKS' %></span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <span style="color:<%= theme.theme_header_text || '#374151' %>;font-size:<%= theme.theme_menu_size || '14' %>px;font-weight:<%= theme.theme_menu_weight || '500' %>">Hem</span>
+        <span style="color:<%= theme.theme_header_text || '#374151' %>;font-size:<%= theme.theme_menu_size || '14' %>px;font-weight:<%= theme.theme_menu_weight || '500' %>">Om oss</span>
+        <span style="color:<%= theme.theme_header_text || '#374151' %>;font-size:<%= theme.theme_menu_size || '14' %>px;font-weight:<%= theme.theme_menu_weight || '500' %>">Nyheter</span>
+        <span style="background:<%= theme.theme_primary_color || '#c0392b' %>;color:#fff;padding:4px 12px;border-radius:4px;font-size:13px">FC Distribution</span>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn-save">Save Theme</button>
+</form>
+<script>
+function uploadLogo() {
+  var file = document.getElementById('logoFile').files[0];
+  if (!file) return;
+  var fd = new FormData();
+  fd.append('file', file);
+  fetch('<%= base %>/api/theme-logo', { method: 'POST', credentials: 'same-origin', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) {
+        document.querySelector('.current-logo').src = d.path;
+        alert('Logo uploaded!');
+      } else { alert(d.error || 'Upload failed'); }
+    }).catch(function(e) { alert('Error: ' + e.message); });
+}
+</script>
+
+<script>
+document.querySelectorAll('input[type=color]').forEach(function(c){
+  var hex = c.nextElementSibling;
+  if(hex && hex.type==='text'){
+    c.addEventListener('input',function(){hex.value=c.value});
+    hex.addEventListener('input',function(){c.value=hex.value});
+  }
+});
+</script>
