@@ -27,7 +27,8 @@
     .hero p{color:#94a3b8;font-size:15px}
     .container{max-width:900px;margin:0 auto;padding:32px 24px}
     .event-card{background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;margin-bottom:16px;display:flex;gap:20px;transition:box-shadow 0.2s}
-    .event-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+    .event-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);border-color:#c0392b;transform:translateY(-2px)}
+    .event-card{transition:box-shadow 0.2s,border-color 0.2s,transform 0.2s}
     .date-box{min-width:60px;text-align:center;background:#fef2f2;border-radius:10px;padding:8px;flex-shrink:0}
     .date-box .month{font-size:12px;color:#c0392b;font-weight:600;text-transform:uppercase}
     .date-box .day{font-size:28px;font-weight:700;color:#1e293b}
@@ -91,22 +92,57 @@
     <% } %>
 
     <% events.forEach(function(e) { %>
-      <div class="event-card">
+      <div class="event-card" onclick="showEvent('<%= e.title.replace(/'/g, '') %>','<%= (e.description || '').replace(/'/g, '') %>','<%= e.event_date %>','<%= e.end_date || '' %>','<%= (e.location || '').replace(/'/g, '') %>','<%= e.category %>','<%= e.link || '' %>','<%= e.fb_event_link || '' %>')" style="cursor:pointer;">
         <div class="date-box">
           <div class="month"><%= ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'][parseInt((e.event_date||'').substring(5,7))-1] || '' %></div>
           <div class="day"><%= (e.event_date||'').substring(8,10) %></div>
         </div>
         <div class="event-info">
-          <h3><% if (e.link) { %><a href="<%= e.link %>" target="_blank"><%= e.title %></a><% } else { %><%= e.title %><% } %>
+          <h3><%= e.title %>
             <span class="cat-badge cat-<%= e.category %>"><%= e.category %></span>
             <% if (e.is_featured) { %><span class="featured-star">&#9733;</span><% } %>
           </h3>
           <div class="event-meta"><%= e.location || '' %><% if (e.end_date && e.end_date !== e.event_date) { %> | <%= e.event_date %> - <%= e.end_date %><% } %></div>
           <% if (e.description) { %><div class="event-desc"><%= e.description %></div><% } %>
+          <div style="margin-top:8px;">
+            <% if (e.link) { %><a href="<%= e.link %>" target="_blank" style="color:#c0392b;font-size:13px;font-weight:500;text-decoration:none;" onclick="event.stopPropagation()">Visa mer &rarr;</a><% } %>
+            <% if (e.fb_event_link) { %><a href="<%= e.fb_event_link %>" target="_blank" style="color:#1d4ed8;font-size:13px;font-weight:500;text-decoration:none;margin-left:12px;" onclick="event.stopPropagation()">Facebook &rarr;</a><% } %>
+          </div>
         </div>
       </div>
     <% }); %>
   </div>
+
+  <div id="eventModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;justify-content:center;align-items:center;padding:16px;" onclick="this.style.display='none'">
+    <div style="background:#fff;border-radius:16px;max-width:500px;width:100%;padding:32px;position:relative;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">
+      <span style="position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:#94a3b8;" onclick="document.getElementById('eventModal').style.display='none'">&times;</span>
+      <div id="emDate" style="display:inline-block;background:#fef2f2;color:#c0392b;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+      <span id="emCat" style="display:inline-block;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:500;margin-left:8px;"></span>
+      <h2 id="emTitle" style="font-size:24px;color:#1e293b;margin:12px 0 8px;font-family:'Playfair Display',serif;"></h2>
+      <p id="emLocation" style="color:#64748b;font-size:14px;margin-bottom:12px;"></p>
+      <p id="emDesc" style="color:#475569;line-height:1.7;font-size:15px;margin-bottom:16px;"></p>
+      <div id="emLinks" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+
+  <script>
+  function showEvent(title, desc, date, endDate, location, category, link, fbLink) {
+    document.getElementById('emTitle').textContent = title;
+    document.getElementById('emDesc').textContent = desc || 'Mer information kommer snart.';
+    document.getElementById('emDate').textContent = date + (endDate && endDate !== date ? ' - ' + endDate : '');
+    document.getElementById('emLocation').textContent = location ? '📍 ' + location : '';
+    var catEl = document.getElementById('emCat');
+    catEl.textContent = category;
+    catEl.style.background = category === 'festival' ? '#dbeafe' : category === 'workshop' ? '#d1fae5' : '#ede9fe';
+    catEl.style.color = category === 'festival' ? '#1d4ed8' : category === 'workshop' ? '#059669' : '#7c3aed';
+    var linksHtml = '';
+    if (link) linksHtml += '<a href="' + link + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#c0392b;color:#fff;border-radius:8px;text-decoration:none;font-weight:500;font-size:14px;">Visa mer &rarr;</a>';
+    if (fbLink) linksHtml += '<a href="' + fbLink + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#1877f2;color:#fff;border-radius:8px;text-decoration:none;font-weight:500;font-size:14px;">Facebook Event</a>';
+    if (!link && !fbLink) linksHtml = '<p style="color:#94a3b8;font-size:13px;">Ingen extern lank tillganglig.</p>';
+    document.getElementById('emLinks').innerHTML = linksHtml;
+    document.getElementById('eventModal').style.display = 'flex';
+  }
+  </script>
 
   <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a></div>
   <script src="/filmcentrum/chatbot.js"></script>
