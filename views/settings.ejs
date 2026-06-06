@@ -49,6 +49,11 @@
         <option value="ar" <%= settings.default_language === 'ar' ? 'selected' : '' %>>Arabic</option>
       </select>
     </div>
+    <div class="form-group" style="margin-top:24px;padding-top:20px;border-top:1px solid #334155;">
+      <label style="color:#dc2626;font-weight:600;">AI - Gemini API Key</label>
+      <input type="text" name="gemini_api_key" value="<%= settings.gemini_api_key ? settings.gemini_api_key.substring(0,8) + "..." : "" %>" placeholder="AIza...">
+      <div class="hint">Get free key from aistudio.google.com/apikey - needed for AI features in page editor and newsletter</div>
+    </div>
     <button type="submit" class="btn-save">Save Settings</button>
   </form>
 </div>

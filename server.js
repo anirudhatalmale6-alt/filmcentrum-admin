@@ -592,7 +592,7 @@ app.get(BASE + '/settings', auth, function(req, res) {
 });
 app.post(BASE + '/settings', auth, function(req, res) {
   var upsert = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
-  Object.entries(req.body).forEach(function([k,v]) { upsert.run(k, String(v)); });
+  Object.entries(req.body).forEach(function([k,v]) { if (k === "gemini_api_key" && v.indexOf("...") !== -1) return; upsert.run(k, String(v)); });
   res.redirect(BASE + '/settings');
 });
 
