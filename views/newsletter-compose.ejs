@@ -1,127 +1,139 @@
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
 <style>
-  .back-link { display: inline-block; margin-bottom: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
-  .back-link:hover { color: #dc2626; }
-  .compose-card { background: #1e293b; border-radius: 10px; padding: 28px; border: 1px solid #334155; max-width: 800px; }
-  .compose-card h2 { font-size: 20px; color: #f1f5f9; margin-bottom: 24px; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
-  .form-group input, .form-group select { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 14px; outline: none; }
-  .form-group input:focus { border-color: #dc2626; }
-  .editor-toolbar { display: flex; flex-wrap: wrap; gap: 2px; background: #1a2332; border: 1px solid #334155; border-bottom: none; border-radius: 6px 6px 0 0; padding: 6px 8px; }
-  .editor-toolbar button { background: none; border: 1px solid transparent; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; min-width: 28px; }
-  .editor-toolbar button:hover { background: #334155; color: #e2e8f0; }
-  .editor-toolbar .sep { width: 1px; background: #334155; margin: 0 4px; }
-  .rich-editor { width: 100%; min-height: 300px; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 0 0 6px 6px; color: #e2e8f0; font-size: 14px; font-family: inherit; outline: none; line-height: 1.6; overflow-y: auto; }
-  .rich-editor:focus { border-color: #dc2626; }
-  .template-select { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .template-btn { padding: 8px 16px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer; }
-  .template-btn:hover { border-color: #dc2626; color: #e2e8f0; }
-  .btn-send { padding: 12px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .btn-send:hover { background: #b91c1c; }
-  .btn-preview { padding: 12px 24px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; margin-left: 12px; }
-  .btn-preview:hover { background: #475569; }
-  .stats-bar { display: flex; gap: 16px; margin-bottom: 20px; }
-  .stat-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px 16px; text-align: center; flex: 1; }
-  .stat-item .num { font-size: 24px; font-weight: 700; color: #dc2626; }
-  .stat-item .label { font-size: 11px; color: #64748b; text-transform: uppercase; }
-  .preview-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-  .preview-modal.show { display: flex; }
-  .preview-content { background: #fff; color: #333; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; border-radius: 8px; padding: 32px; }
-  .preview-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 28px; cursor: pointer; }
+  .back-link{display:inline-block;margin-bottom:16px;color:#94a3b8;text-decoration:none;font-size:13px}.back-link:hover{color:#dc2626}
+  .compose-card{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155;margin-bottom:16px}
+  .compose-card h2{font-size:18px;color:#dc2626;margin-bottom:16px}
+  .form-group{margin-bottom:14px}.form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:500}
+  .form-group input,.form-group select{width:100%;padding:9px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .form-group input:focus,.form-group select:focus{border-color:#dc2626}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stats-bar{display:flex;gap:16px;margin-bottom:16px}.stat-item{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px 16px;text-align:center;flex:1}.stat-item .num{font-size:24px;font-weight:700;color:#dc2626}.stat-item .label{font-size:11px;color:#64748b;text-transform:uppercase}
+  .template-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .tmpl-btn{padding:6px 14px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#94a3b8;font-size:12px;cursor:pointer}.tmpl-btn:hover{border-color:#dc2626;color:#e2e8f0}
+  .editor-container{border:1px solid #334155;border-radius:8px;overflow:hidden;margin-bottom:14px}
+  .btn-send{padding:12px 32px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}.btn-send:hover{background:#b91c1c}
+  .btn-preview{padding:12px 24px;background:#334155;color:#e2e8f0;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-left:8px}.btn-preview:hover{background:#475569}
+  .ai-bar{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;margin-bottom:14px}
+  .ai-bar .ai-label{font-size:11px;color:#dc2626;font-weight:700;display:flex;align-items:center;margin-right:4px}
+  .ai-btn{padding:5px 12px;font-size:11px;border:1px solid #334155;border-radius:4px;cursor:pointer;color:#94a3b8;background:#1e293b}.ai-btn:hover{border-color:#dc2626;color:#e2e8f0}
+  .ai-btn.loading{opacity:0.5;pointer-events:none}
+  .ai-input{flex:1;min-width:180px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
+  .preview-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}.preview-modal.show{display:flex}
+  .preview-content{background:#fff;color:#333;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;border-radius:8px;padding:32px}
+  .preview-close{position:absolute;top:20px;right:30px;color:#fff;font-size:28px;cursor:pointer}
 </style>
 
-<a href="<%= base %>/newsletter" class="back-link">&larr; Back to Subscribers</a>
+<a href="<%= base %>/newsletter" class="back-link">&larr; Back to Newsletter</a>
 
 <div class="stats-bar">
   <div class="stat-item"><div class="num"><%= stats.active %></div><div class="label">Active Subscribers</div></div>
   <div class="stat-item"><div class="num"><%= stats.total %></div><div class="label">Total</div></div>
 </div>
 
-<div class="compose-card">
-  <h2>Compose Newsletter</h2>
-
-  <div class="form-group">
-    <label>Template</label>
-    <div class="template-select">
-      <button type="button" class="template-btn" onclick="loadTemplate('blank')">Blank</button>
-      <button type="button" class="template-btn" onclick="loadTemplate('news')">News Update</button>
-      <button type="button" class="template-btn" onclick="loadTemplate('event')">Event Invite</button>
-      <button type="button" class="template-btn" onclick="loadTemplate('welcome')">Welcome</button>
-      <button type="button" class="template-btn" onclick="loadTemplate('member')">Member Update</button>
+<form method="POST" action="<%= base %>/newsletter/send" id="composeForm">
+  <div class="compose-card">
+    <h2>Compose Newsletter</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Recipients</label>
+        <select name="recipients">
+          <option value="all_subscribers">All Active Subscribers</option>
+          <option value="paid_members">Paid Members Only</option>
+          <option value="active_members">Active Members</option>
+          <option value="pending_members">Pending Members</option>
+          <option value="all_members">All Members</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Subject</label><input type="text" name="subject" id="nlSubject" required placeholder="Newsletter subject..."></div>
     </div>
   </div>
 
-  <form method="POST" action="<%= base %>/newsletter/send" id="composeForm">
-    <div class="form-group">
-      <label>Subject</label>
-      <input type="text" name="subject" id="nlSubject" required placeholder="Newsletter subject line...">
+  <div class="compose-card">
+    <h2>Template</h2>
+    <div class="template-btns">
+      <button type="button" class="tmpl-btn" onclick="loadTmpl('news')">News Update</button>
+      <button type="button" class="tmpl-btn" onclick="loadTmpl('event')">Event Invite</button>
+      <button type="button" class="tmpl-btn" onclick="loadTmpl('welcome')">Welcome</button>
+      <button type="button" class="tmpl-btn" onclick="loadTmpl('update')">Member Update</button>
+      <button type="button" class="tmpl-btn" onclick="loadTmpl('minimal')">Minimal</button>
     </div>
+    <div id="nlEditor" class="editor-container" style="height:450px;"></div>
+    <textarea name="content" id="nlHidden" style="display:none;"></textarea>
+  </div>
 
-    <div class="form-group">
-      <label>Content</label>
-      <div class="editor-toolbar">
-        <button type="button" onclick="nlFmt('bold')"><b>B</b></button>
-        <button type="button" onclick="nlFmt('italic')"><i>I</i></button>
-        <button type="button" onclick="nlFmt('underline')"><u>U</u></button>
-        <div class="sep"></div>
-        <button type="button" onclick="nlBlock('H2')">H2</button>
-        <button type="button" onclick="nlBlock('H3')">H3</button>
-        <button type="button" onclick="nlBlock('P')">P</button>
-        <div class="sep"></div>
-        <button type="button" onclick="nlFmt('insertUnorderedList')">&#8226;</button>
-        <button type="button" onclick="nlFmt('insertOrderedList')">1.</button>
-        <div class="sep"></div>
-        <button type="button" onclick="nlLink()">Link</button>
-        <button type="button" onclick="nlImg()">Img</button>
-      </div>
-      <div contenteditable="true" class="rich-editor" id="nlEditor"></div>
-      <textarea name="content" id="nlHidden" style="display:none;"></textarea>
-    </div>
+  <div class="ai-bar">
+    <span class="ai-label">AI</span>
+    <button type="button" class="ai-btn" onclick="nlAi('improve')">Improve</button>
+    <button type="button" class="ai-btn" onclick="nlAi('expand')">Expand</button>
+    <button type="button" class="ai-btn" onclick="nlAi('proofread')">Proofread</button>
+    <button type="button" class="ai-btn" onclick="nlAi('translate_en')">EN</button>
+    <button type="button" class="ai-btn" onclick="nlAi('translate_sv')">SV</button>
+    <input type="text" class="ai-input" id="nlAiPrompt" placeholder="Generate: e.g. Write newsletter about upcoming workshop...">
+    <button type="button" class="ai-btn" onclick="nlAi('generate')" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
+  </div>
 
-    <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
-    <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
-  </form>
-</div>
+  <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
+  <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
+</form>
 
 <div class="preview-modal" id="previewModal">
   <span class="preview-close" onclick="closePreview()">&times;</span>
   <div class="preview-content" id="previewBody"></div>
 </div>
 
+<script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
+<script src="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.js"></script>
 <script>
+var BASE_URL = '<%= base %>';
 var templates = {
-  blank: { subject: '', content: '' },
-  news: { subject: 'FilmCentrum Nyhetsbrev', content: '<h2>Senaste nytt fran FilmCentrum</h2><p>Hej!</p><p>Har ar de senaste nyheterna fran FilmCentrum Riks.</p><h3>Nyheter</h3><ul><li>Nyhet 1</li><li>Nyhet 2</li></ul><p>Med vanliga halsningar,<br>FilmCentrum Riks</p>' },
-  event: { subject: 'Inbjudan: ', content: '<h2>Du ar inbjuden!</h2><p>Hej,</p><p>Vi vill bjuda in dig till ett spannande evenemang.</p><h3>Detaljer</h3><p><strong>Datum:</strong> </p><p><strong>Tid:</strong> </p><p><strong>Plats:</strong> </p><p>Varmt valkommen!</p>' },
-  welcome: { subject: 'Valkommen till FilmCentrum!', content: '<h2>Valkommen som medlem!</h2><p>Hej och valkommen till FilmCentrum Riks!</p><p>Vi ar glada att du har blivit en del av Sveriges storsta filmkooperativ.</p><h3>Vad du kan gora nu</h3><ul><li>Skapa din profil</li><li>Utforska medlemskatalogen</li><li>Delta i kommande evenemang</li></ul><p>Har du fragor? Kontakta oss!</p>' },
-  member: { subject: 'Uppdatering for medlemmar', content: '<h2>Medlemsuppdatering</h2><p>Hej medlemmar!</p><p>Har kommer viktiga uppdateringar.</p><h3>Aktuellt</h3><p></p><p>Med vanliga halsningar,<br>FilmCentrum Riks</p>' }
+  news: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#dc2626;padding:24px;text-align:center;"><h1 style="color:#fff;font-size:24px;margin:0;">FilmCentrum Riks</h1><p style="color:#fecaca;font-size:13px;margin:4px 0 0;">Nyhetsbrev</p></div><div style="padding:32px 24px;background:#fff;"><h2 style="color:#1e293b;font-size:20px;">Rubrik</h2><p style="color:#374151;line-height:1.7;">Innehall...</p></div><div style="padding:16px 24px;background:#f1f5f9;text-align:center;font-size:12px;color:#64748b;">FilmCentrum Riks | filmcentrum.se</div></div>',
+  event: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#1a1a2e;padding:32px;text-align:center;"><h1 style="color:#dc2626;font-size:28px;">Inbjudan</h1></div><div style="padding:32px 24px;background:#fff;"><h2>Evenemang</h2><p><strong>Datum:</strong> </p><p><strong>Tid:</strong> </p><p><strong>Plats:</strong> </p><p>Beskrivning...</p><a href="#" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:6px;text-decoration:none;margin-top:16px;">Anmal dig</a></div></div>',
+  welcome: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#dc2626;padding:32px;text-align:center;"><h1 style="color:#fff;">Valkommen!</h1></div><div style="padding:32px 24px;background:#fff;"><h2>Valkommen som medlem</h2><p>Vi ar glada att du blivit en del av FilmCentrum Riks.</p><h3>Vad du kan gora nu:</h3><ul><li>Skapa din profil</li><li>Utforska medlemskatalogen</li><li>Delta i evenemang</li></ul></div></div>',
+  update: '<div style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif;"><div style="background:#1a1a2e;padding:20px 24px;"><span style="color:#dc2626;font-weight:700;font-size:18px;">FC</span> <span style="color:#94a3b8;font-size:13px;">Medlemsuppdatering</span></div><div style="padding:32px 24px;background:#fff;"><h2>Uppdatering</h2><p>Hej medlemmar!</p><p>Innehall...</p></div></div>',
+  minimal: '<div style="max-width:600px;margin:0 auto;padding:32px;font-family:Arial,sans-serif;"><h2 style="color:#1e293b;">FilmCentrum</h2><p style="color:#374151;line-height:1.7;">Meddelande...</p><p style="margin-top:24px;color:#64748b;font-size:12px;">FilmCentrum Riks</p></div>'
 };
 
-function loadTemplate(name) {
-  var t = templates[name];
-  if (t) {
-    document.getElementById('nlSubject').value = t.subject;
-    document.getElementById('nlEditor').innerHTML = t.content;
-  }
+var savedTmpl = localStorage.getItem('nl_template');
+var initContent = savedTmpl || templates.news;
+if (savedTmpl) localStorage.removeItem('nl_template');
+
+var nlEditor = grapesjs.init({
+  container: '#nlEditor', height: '450px', storageManager: false,
+  plugins: ['gjs-preset-webpage'],
+  pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
+  assetManager: { upload: BASE_URL + '/api/upload', uploadName: 'file', credentials: 'same-origin' },
+  components: initContent
+});
+
+function loadTmpl(name) { if (templates[name]) nlEditor.setComponents(templates[name]); }
+
+function nlAi(action) {
+  var text = action === 'generate' ? document.getElementById('nlAiPrompt').value : nlEditor.getHtml();
+  if (!text || text.length < 3) { alert(action === 'generate' ? 'Type a prompt' : 'Add content first'); return; }
+  document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.add('loading');});
+  fetch(BASE_URL + '/api/ai/write', {
+    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+    body: JSON.stringify({ action: action, text: action !== 'generate' ? text : undefined, prompt: action === 'generate' ? text : undefined })
+  }).then(function(r){return r.json();}).then(function(d) {
+    document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.remove('loading');});
+    if (d.result) { if (action === 'generate') { nlEditor.addComponents(d.result); document.getElementById('nlAiPrompt').value=''; } else { nlEditor.setComponents(d.result); } }
+    else alert(d.error || 'AI error');
+  }).catch(function(e) { document.querySelectorAll('.ai-btn').forEach(function(b){b.classList.remove('loading');}); alert('Error: '+e.message); });
 }
 
-function nlFmt(cmd) { document.getElementById('nlEditor').focus(); document.execCommand(cmd, false, null); }
-function nlBlock(tag) { document.getElementById('nlEditor').focus(); document.execCommand('formatBlock', false, '<' + tag + '>'); }
-function nlLink() { var url = prompt('URL:', 'https://'); if (url) { document.getElementById('nlEditor').focus(); document.execCommand('createLink', false, url); } }
-function nlImg() { var url = prompt('Image URL:', 'https://'); if (url) { document.getElementById('nlEditor').focus(); document.execCommand('insertImage', false, url); } }
-
 function showPreview() {
-  document.getElementById('previewBody').innerHTML = '<h1 style="color:#dc2626;font-size:20px;margin-bottom:8px;">' + (document.getElementById('nlSubject').value || 'No subject') + '</h1><hr style="border-color:#eee;margin:16px 0;">' + document.getElementById('nlEditor').innerHTML;
+  var html = nlEditor.getHtml(); var css = nlEditor.getCss();
+  document.getElementById('previewBody').innerHTML = (css ? '<style>'+css+'</style>' : '') + html;
   document.getElementById('previewModal').classList.add('show');
 }
 function closePreview() { document.getElementById('previewModal').classList.remove('show'); }
 
 function confirmSend() {
-  document.getElementById('nlHidden').value = document.getElementById('nlEditor').innerHTML;
-  return confirm('Send this newsletter to all active subscribers?');
+  var html = nlEditor.getHtml(); var css = nlEditor.getCss();
+  document.getElementById('nlHidden').value = css ? '<style>'+css+'</style>'+html : html;
+  return confirm('Send this newsletter?');
 }
-
 document.getElementById('composeForm').addEventListener('submit', function() {
-  document.getElementById('nlHidden').value = document.getElementById('nlEditor').innerHTML;
+  var html = nlEditor.getHtml(); var css = nlEditor.getCss();
+  document.getElementById('nlHidden').value = css ? '<style>'+css+'</style>'+html : html;
 });
 </script>
