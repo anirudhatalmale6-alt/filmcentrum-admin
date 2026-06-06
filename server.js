@@ -649,6 +649,26 @@ app.post(BASE + "/password", auth, function(req, res) {
 // ============================================================
 // SEO & ANALYTICS
 // ============================================================
+// Chatbot Settings
+app.get(BASE + '/chatbot-settings', auth, function(req, res) {
+  var rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'chatbot_%'").all();
+  var cb = {};
+  rows.forEach(function(r) { cb[r.key] = r.value; });
+  res.render('chatbot-settings', { base: BASE, cb: cb, success: req.query.saved === '1' });
+});
+
+app.post(BASE + '/chatbot-settings', auth, function(req, res) {
+  var b = req.body;
+  var keys = ['chatbot_name', 'chatbot_welcome', 'chatbot_color', 'chatbot_position', 'chatbot_custom_context', 'chatbot_placeholder'];
+  keys.forEach(function(k) {
+    if (b[k] !== undefined) {
+      db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)").run(k, b[k]);
+    }
+  });
+  db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('chatbot_enabled', ?)").run(b.chatbot_enabled ? '1' : '0');
+  res.redirect(BASE + '/chatbot-settings?saved=1');
+});
+
 // Theme Customizer
 app.get(BASE + '/theme', auth, function(req, res) {
   var rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'theme_%'").all();
@@ -785,7 +805,10 @@ app.post(BASE + '/api/public/chat', chatLimiter, function(req, res) {
     'FC OpenTheDoors erbjuder masterclasses och internationella workshops (Cannes, Venedig, IDFA). ' +
     'Radgivning: manus, festival, klipp, produktion, distribution. ' +
     'Medlemmar far distribution, synlighet, natverk, rostrett, digitalt medlemskort med QR-kod. ' +
-    'Webbplats: skylarkmedia.se/filmcentrum/. Registrering: /filmcentrum/bli-medlem. ' +
+    'Webbplats: skylarkmedia.se/filmcentrum/. Registrering: /filmcentrum/bli-medlem. ';
+  var customCtx = db.prepare("SELECT value FROM settings WHERE key = 'chatbot_custom_context'").get();
+  if (customCtx && customCtx.value) siteContext += ' Extra information: ' + customCtx.value;
+  siteContext +=
     'Logga in: /filmcentrum/login. Medlemskatalog: /filmcentrum/members.';
 
   var https = require('https');
