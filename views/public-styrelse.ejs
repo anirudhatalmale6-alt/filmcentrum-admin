@@ -10,30 +10,56 @@
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
     .header{background:#fff;box-shadow:0 1px 2px 0 rgba(0,0,0,.05);position:sticky;top:0;z-index:50}
-    .header-inner{max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:80px}
+    .header-inner{max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+    @media(min-width:768px){.header-inner{height:80px}}
     .logo-link{display:flex;align-items:center;gap:12px;text-decoration:none}
     .logo-img{height:48px;width:auto}
     .logo-text{font-family:'Special Elite','Courier New',monospace;color:#c0392b;font-size:1.125rem;font-weight:700;letter-spacing:0.025em}
-    .main-nav{display:flex;align-items:center;gap:4px}
+    .main-nav{display:none;align-items:center;gap:4px}
+    @media(min-width:1024px){.main-nav{display:flex}}
     .main-nav a{color:#374151;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 12px;border-radius:6px;white-space:nowrap}
     .main-nav a:hover{color:#c0392b;background:#f9fafb}
     .header-actions{display:flex;align-items:center;gap:12px}
-    .fc-dist-btn{background:#c0392b;color:#fff;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 16px;border-radius:6px}
+    .fc-dist-btn{display:none;background:#c0392b;color:#fff;text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 16px;border-radius:6px}
+    @media(min-width:768px){.fc-dist-btn{display:inline-flex}}
+    .mobile-menu-btn{display:block;padding:8px;color:#4b5563;background:none;border:none;cursor:pointer}
+    @media(min-width:1024px){.mobile-menu-btn{display:none}}
+    .mobile-nav{display:none;border-top:1px solid #e5e7eb;padding:16px 0}
+    .mobile-nav.show{display:block}
+    @media(min-width:1024px){.mobile-nav{display:none!important}}
+    .mobile-nav a{display:block;padding:8px 12px;font-size:1rem;font-weight:500;color:#374151;text-decoration:none;border-radius:6px}
+    .mobile-nav a:hover{background:#f9fafb;color:#c0392b}
     .container{max-width:1000px;margin:0 auto;padding:48px 24px}
     .section-label{display:inline-block;padding:4px 16px;border:1px solid #e2e8f0;border-radius:20px;font-size:13px;color:#475569;margin-bottom:16px}
     .section-title{font-family:'Playfair Display',serif;font-size:32px;color:#1e293b;margin-bottom:12px}
     .section-desc{color:#64748b;font-size:15px;max-width:700px;margin:0 auto 40px;text-align:center;line-height:1.7}
+    .cat-title{font-size:22px;color:#1e293b;margin:32px 0 20px;font-family:'Playfair Display',serif}
     .board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px}
-    .board-card{background:#fff;border-radius:16px;padding:32px 24px;border:1px solid #e2e8f0;text-align:center;transition:box-shadow 0.2s}
-    .board-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.06)}
-    .board-photo{width:140px;height:140px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block}
-    .board-photo-placeholder{width:140px;height:140px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:48px;color:#94a3b8}
+    .board-card{background:#fff;border-radius:16px;padding:32px 24px;border:1px solid #e2e8f0;text-align:center;transition:box-shadow 0.2s,transform 0.2s;cursor:pointer}
+    .board-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);transform:translateY(-3px)}
+    .board-photo{width:140px;height:140px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;border:4px solid #f1f5f9}
+    .board-photo-placeholder{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#c0392b,#e74c3c);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:48px;color:#fff;font-weight:700}
     .board-name{font-size:18px;font-weight:600;color:#1e293b;margin-bottom:4px}
-    .board-role{font-size:14px;color:#c0392b;font-weight:500;margin-bottom:8px}
+    .board-role{font-size:14px;color:#c0392b;font-weight:500;margin-bottom:4px}
+    .board-title{font-size:13px;color:#64748b;margin-bottom:4px}
     .board-desc{font-size:13px;color:#64748b;line-height:1.5}
+    .board-card .view-cv{font-size:12px;color:#c0392b;margin-top:8px;font-weight:500}
+    .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;justify-content:center;align-items:center;padding:16px}
+    .modal-overlay.show{display:flex}
+    .modal-box{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:0;position:relative;max-height:85vh;overflow-y:auto}
+    .modal-close{position:absolute;top:12px;right:16px;font-size:28px;cursor:pointer;color:#94a3b8;background:none;border:none;z-index:1}
+    .modal-close:hover{color:#1e293b}
+    .modal-header{text-align:center;padding:32px 32px 16px}
+    .modal-header img{width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:12px;border:4px solid #f1f5f9}
+    .modal-header .ph{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#c0392b,#e74c3c);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:44px;color:#fff;font-weight:700}
+    .modal-body{padding:0 32px 32px}
+    .modal-body h2{font-size:24px;color:#1e293b;margin-bottom:4px;font-family:'Playfair Display',serif}
+    .modal-body .role{color:#c0392b;font-size:15px;font-weight:500;margin-bottom:4px}
+    .modal-body .title{color:#64748b;font-size:14px;margin-bottom:16px}
+    .modal-body .bio{color:#475569;font-size:15px;line-height:1.7;white-space:pre-line}
     .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
     .footer a{color:#dc2626;text-decoration:none}
-    @media(max-width:600px){.board-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.board-grid{grid-template-columns:1fr 1fr}.board-photo,.board-photo-placeholder{width:100px;height:100px;font-size:36px}}
   </style>
 </head>
 <body>
@@ -46,16 +72,33 @@
       <nav class="main-nav">
         <a href="/filmcentrum/">Hem</a>
         <a href="/filmcentrum/om-oss">Om oss</a>
+        <a href="/filmcentrum/styrelse">Styrelse</a>
         <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
         <a href="/filmcentrum/medlemskap">Medlemskap</a>
         <a href="/filmcentrum/nyheter">Nyheter</a>
         <a href="/filmcentrum/kontakt">Kontakta oss</a>
         <a href="/filmcentrum/login">Logga in</a>
-        <a href="/fc/">Filmkatalog</a>
+        <a href="/filmcentrum/kalender">Kalender</a>
+        <a href="/fai/">Festival AI</a>
       </nav>
       <div class="header-actions">
         <a href="/fc/" class="fc-dist-btn">FC Distribution</a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.mobile-nav').classList.toggle('show')" aria-label="Meny">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
       </div>
+    </div>
+    <div class="mobile-nav">
+      <a href="/filmcentrum/">Hem</a>
+      <a href="/filmcentrum/om-oss">Om oss</a>
+      <a href="/filmcentrum/styrelse">Styrelse</a>
+      <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
+      <a href="/filmcentrum/medlemskap">Medlemskap</a>
+      <a href="/filmcentrum/nyheter">Nyheter</a>
+      <a href="/filmcentrum/kontakt">Kontakta oss</a>
+      <a href="/filmcentrum/login">Logga in</a>
+      <a href="/filmcentrum/kalender">Kalender</a>
+      <a href="/fai/">Festival AI</a>
     </div>
   </div>
 
@@ -67,10 +110,10 @@
     <% var ordinarie = board.filter(function(m){return m.category === 'ordinarie'}); %>
     <% var suppleant = board.filter(function(m){return m.category === 'suppleant'}); %>
 
-    <h3 style="font-size:20px;color:#1e293b;margin-bottom:20px;">Ordinarie ledamoter</h3>
+    <h2 class="cat-title">Ordinarie ledamoter</h2>
     <div class="board-grid">
-      <% ordinarie.forEach(function(m) { %>
-        <div class="board-card" onclick="showBio('<%= m.name %>','<%= m.role %>','<%= (m.bio || m.description || '').replace(/'/g, '') %>')" style="cursor:pointer;">
+      <% ordinarie.forEach(function(m, i) { %>
+        <div class="board-card" onclick="openProfile(<%= i %>,'o')">
           <% if (m.photo) { %>
             <img src="<%= m.photo %>" class="board-photo" alt="<%= m.name %>">
           <% } else { %>
@@ -78,16 +121,18 @@
           <% } %>
           <div class="board-name"><%= m.name %></div>
           <div class="board-role"><%= m.role %></div>
+          <% if (m.title) { %><div class="board-title"><%= m.title %></div><% } %>
           <% if (m.description) { %><div class="board-desc"><%= m.description %></div><% } %>
+          <div class="view-cv">Visa profil &rarr;</div>
         </div>
       <% }); %>
     </div>
 
     <% if (suppleant.length > 0) { %>
-    <h3 style="font-size:20px;color:#1e293b;margin:32px 0 20px;">Suppleanter</h3>
+    <h2 class="cat-title">Suppleanter</h2>
     <div class="board-grid">
-      <% suppleant.forEach(function(m) { %>
-        <div class="board-card" onclick="showBio('<%= m.name %>','<%= m.role %>','<%= (m.bio || m.description || '').replace(/'/g, '') %>')" style="cursor:pointer;">
+      <% suppleant.forEach(function(m, i) { %>
+        <div class="board-card" onclick="openProfile(<%= i %>,'s')">
           <% if (m.photo) { %>
             <img src="<%= m.photo %>" class="board-photo" alt="<%= m.name %>">
           <% } else { %>
@@ -95,30 +140,45 @@
           <% } %>
           <div class="board-name"><%= m.name %></div>
           <div class="board-role"><%= m.role %></div>
+          <% if (m.title) { %><div class="board-title"><%= m.title %></div><% } %>
           <% if (m.description) { %><div class="board-desc"><%= m.description %></div><% } %>
+          <div class="view-cv">Visa profil &rarr;</div>
         </div>
       <% }); %>
     </div>
     <% } %>
+  </div>
 
-    <div id="bioModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;justify-content:center;align-items:center;" onclick="this.style.display='none'">
-      <div style="background:#fff;border-radius:16px;max-width:500px;width:90%;padding:32px;position:relative;" onclick="event.stopPropagation()">
-        <span style="position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:#94a3b8;" onclick="document.getElementById('bioModal').style.display='none'">&times;</span>
-        <h3 id="bioName" style="font-size:22px;color:#1e293b;margin-bottom:4px;"></h3>
-        <p id="bioRole" style="color:#c0392b;font-size:14px;margin-bottom:16px;"></p>
-        <p id="bioText" style="color:#475569;line-height:1.7;font-size:15px;"></p>
+  <div class="modal-overlay" id="profileModal" onclick="this.classList.remove('show')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="document.getElementById('profileModal').classList.remove('show')">&times;</button>
+      <div class="modal-header" id="pmHeader"></div>
+      <div class="modal-body">
+        <h2 id="pmName"></h2>
+        <div class="role" id="pmRole"></div>
+        <div class="title" id="pmTitle"></div>
+        <div class="bio" id="pmBio"></div>
       </div>
     </div>
-
-    <script>
-    function showBio(name, role, bio) {
-      document.getElementById('bioName').textContent = name;
-      document.getElementById('bioRole').textContent = role;
-      document.getElementById('bioText').textContent = bio || 'Ingen biografi tillganglig.';
-      document.getElementById('bioModal').style.display = 'flex';
-    }
-    </script>
   </div>
+
+  <script>
+  var boardData = {
+    o: [<% ordinarie.forEach(function(m, i) { %><%= i > 0 ? ',' : '' %>{name:"<%= (m.name||'').replace(/"/g,'') %>",role:"<%= (m.role||'').replace(/"/g,'') %>",title:"<%= (m.title||'').replace(/"/g,'') %>",desc:"<%= (m.description||'').replace(/"/g,'') %>",bio:"<%= (m.bio||'').replace(/"/g,'').replace(/\n/g,' ') %>",photo:"<%= m.photo || '' %>"}<% }); %>],
+    s: [<% suppleant.forEach(function(m, i) { %><%= i > 0 ? ',' : '' %>{name:"<%= (m.name||'').replace(/"/g,'') %>",role:"<%= (m.role||'').replace(/"/g,'') %>",title:"<%= (m.title||'').replace(/"/g,'') %>",desc:"<%= (m.description||'').replace(/"/g,'') %>",bio:"<%= (m.bio||'').replace(/"/g,'').replace(/\n/g,' ') %>",photo:"<%= m.photo || '' %>"}<% }); %>]
+  };
+  function openProfile(idx, cat) {
+    var m = boardData[cat][idx];
+    if (!m) return;
+    var h = m.photo ? '<img src="'+m.photo+'" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #f1f5f9;">' : '<div class="ph">'+m.name.charAt(0)+'</div>';
+    document.getElementById('pmHeader').innerHTML = h;
+    document.getElementById('pmName').textContent = m.name;
+    document.getElementById('pmRole').textContent = m.role;
+    document.getElementById('pmTitle').textContent = m.title || m.desc;
+    document.getElementById('pmBio').textContent = m.bio || m.desc || 'Ingen biografi tillganglig annu.';
+    document.getElementById('profileModal').classList.add('show');
+  }
+  </script>
 
   <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a></div>
   <script src="/filmcentrum/chatbot.js"></script>
