@@ -33,6 +33,14 @@
   .ai-bar .ai-label{font-size:11px;color:#dc2626;font-weight:700;display:flex;align-items:center;margin-right:4px}
   .ai-btn{padding:5px 12px;font-size:11px;border:1px solid #334155;border-radius:4px;cursor:pointer;color:#94a3b8;background:#1e293b}.ai-btn:hover{border-color:#dc2626;color:#e2e8f0}
   .ai-input{flex:1;min-width:180px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
+  .fmt-toolbar{display:flex;gap:4px;align-items:center;padding:8px 10px;background:#0f172a;border:1px solid #334155;border-radius:8px;margin-bottom:8px;flex-wrap:wrap}
+  .fmt-toolbar select{padding:4px 6px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:12px;cursor:pointer;min-width:70px}
+  .fmt-toolbar select:hover{border-color:#dc2626}
+  .fmt-btn2{padding:4px 8px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:13px;cursor:pointer;min-width:28px;text-align:center;line-height:1.2}
+  .fmt-btn2:hover{border-color:#dc2626;background:#334155}
+  .fmt-sep{width:1px;height:22px;background:#334155;margin:0 2px}
+  .fmt-color-wrap{display:flex;align-items:center;gap:2px;cursor:pointer;color:#e2e8f0;font-size:13px;font-weight:700;position:relative}
+  .fmt-color-wrap input[type=color]{width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0}
 </style>
 
 <a href="<%= base %>/newsletter" class="back-link">&larr; Back to Newsletter</a>
@@ -115,6 +123,7 @@ savedTemplates[<%= t.id %>] = { name: "<%= (t.name || '').replace(/"/g, '\\"') %
 
 var editor = grapesjs.init({
   container: '#tmplEditor', height: '480px', storageManager: false,
+  canvas: { styles: ['https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'] },
   plugins: ['gjs-preset-webpage'],
   pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
   assetManager: { upload: BASE_URL + '/api/upload', uploadName: 'file', credentials: 'same-origin' },

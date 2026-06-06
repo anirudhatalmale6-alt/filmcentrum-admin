@@ -20,6 +20,14 @@
   .ai-input{flex:1;min-width:180px;padding:5px 10px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:11px}
   .preview-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}.preview-modal.show{display:flex}
   .preview-content{background:#fff;color:#333;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;border-radius:8px;padding:32px}
+    .fmt-toolbar{display:flex;gap:4px;align-items:center;padding:8px 10px;background:#0f172a;border:1px solid #334155;border-radius:8px;margin-bottom:8px;flex-wrap:wrap}
+  .fmt-toolbar select{padding:4px 6px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:12px;cursor:pointer;min-width:70px}
+  .fmt-toolbar select:hover{border-color:#dc2626}
+  .fmt-btn2{padding:4px 8px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:13px;cursor:pointer;min-width:28px;text-align:center;line-height:1.2}
+  .fmt-btn2:hover{border-color:#dc2626;background:#334155}
+  .fmt-sep{width:1px;height:22px;background:#334155;margin:0 2px}
+  .fmt-color-wrap{display:flex;align-items:center;gap:2px;cursor:pointer;color:#e2e8f0;font-size:13px;font-weight:700;position:relative}
+  .fmt-color-wrap input[type=color]{width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0}
   .preview-close{position:absolute;top:20px;right:30px;color:#fff;font-size:28px;cursor:pointer}
 </style>
 
@@ -71,6 +79,49 @@
     <button type="button" class="ai-btn" onclick="nlAi('generate')" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
   </div>
 
+  <!-- Formatting Toolbar -->
+  <div class="fmt-toolbar" id="nlFmtToolbar">
+    <select onchange="nlApplyStyle('font-family',this.value)" title="Font">
+      <option value="">Font</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="Inter,sans-serif">Inter</option>
+      <option value="Georgia,serif">Georgia</option>
+      <option value="Helvetica,sans-serif">Helvetica</option>
+      <option value="Verdana,sans-serif">Verdana</option>
+      <option value="Times New Roman,serif">Times New Roman</option>
+    </select>
+    <select onchange="nlApplyStyle('font-size',this.value)" title="Size">
+      <option value="">Size</option>
+      <option value="12px">12</option><option value="14px">14</option><option value="16px">16</option>
+      <option value="18px">18</option><option value="20px">20</option><option value="24px">24</option>
+      <option value="28px">28</option><option value="32px">32</option><option value="36px">36</option>
+      <option value="42px">42</option><option value="48px">48</option>
+    </select>
+    <select onchange="nlApplyStyle('font-weight',this.value)" title="Weight">
+      <option value="">Weight</option>
+      <option value="300">Light</option><option value="400">Normal</option>
+      <option value="600">Semi Bold</option><option value="700">Bold</option>
+    </select>
+    <div class="fmt-sep"></div>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('font-weight','700')" title="Bold"><b>B</b></button>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('font-style','italic')" title="Italic"><i>I</i></button>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('text-decoration','underline')" title="Underline"><u>U</u></button>
+    <div class="fmt-sep"></div>
+    <label class="fmt-color-wrap" title="Text Color">A<input type="color" value="#000000" onchange="nlApplyStyle('color',this.value)"></label>
+    <label class="fmt-color-wrap" title="Background"><span style="background:#fde68a;padding:0 3px;border-radius:2px;">A</span><input type="color" value="#ffffff" onchange="nlApplyStyle('background-color',this.value)"></label>
+    <div class="fmt-sep"></div>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('text-align','left')" title="Left">&#9776;</button>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('text-align','center')" title="Center">&#9776;</button>
+    <button type="button" class="fmt-btn2" onclick="nlApplyStyle('text-align','right')" title="Right">&#9776;</button>
+    <div class="fmt-sep"></div>
+    <select onchange="nlChangeTag(this.value)" title="Tag">
+      <option value="">Tag</option>
+      <option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option><option value="p">P</option>
+    </select>
+    <button type="button" class="fmt-btn2" onclick="nlEditor.runCommand('open-assets')" title="Image">&#128247; Img</button>
+    <button type="button" class="fmt-btn2" onclick="nlAddLink()" title="Link">&#128279; Link</button>
+  </div>
+
   <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
   <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
 </form>
@@ -100,9 +151,54 @@ var nlEditor = grapesjs.init({
   container: '#nlEditor', height: '450px', storageManager: false,
   plugins: ['gjs-preset-webpage'],
   pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
+  canvas: { styles: ['https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap'] },
   assetManager: { upload: BASE_URL + '/api/upload', uploadName: 'file', credentials: 'same-origin' },
+  styleManager: {
+    sectors: [{
+      name: 'Typography', open: true,
+      properties: [
+        { name:'Font', property:'font-family', type:'select', options:[{id:'Arial,sans-serif',label:'Arial'},{id:'Inter,sans-serif',label:'Inter'},{id:'Georgia,serif',label:'Georgia'},{id:'Helvetica,sans-serif',label:'Helvetica'},{id:'Verdana,sans-serif',label:'Verdana'},{id:'Times New Roman,serif',label:'Times New Roman'}] },
+        { name:'Size', property:'font-size', type:'slider', min:10, max:72, step:1, units:['px'] },
+        { name:'Weight', property:'font-weight', type:'select', options:[{id:'300',label:'Light'},{id:'400',label:'Normal'},{id:'600',label:'Semi Bold'},{id:'700',label:'Bold'}] },
+        { name:'Color', property:'color', type:'color' },
+        { name:'Align', property:'text-align', type:'radio', options:[{id:'left',label:'L'},{id:'center',label:'C'},{id:'right',label:'R'}] }
+      ]
+    },{
+      name: 'Spacing',
+      properties: [
+        { name:'Margin', property:'margin', type:'composite', properties:[{name:'T',property:'margin-top',type:'integer',units:['px']},{name:'B',property:'margin-bottom',type:'integer',units:['px']}] },
+        { name:'Padding', property:'padding', type:'composite', properties:[{name:'T',property:'padding-top',type:'integer',units:['px']},{name:'R',property:'padding-right',type:'integer',units:['px']},{name:'B',property:'padding-bottom',type:'integer',units:['px']},{name:'L',property:'padding-left',type:'integer',units:['px']}] }
+      ]
+    },{
+      name: 'Background',
+      properties: [
+        { name:'BG Color', property:'background-color', type:'color' },
+        { name:'Radius', property:'border-radius', type:'slider', min:0, max:20, units:['px'] }
+      ]
+    }]
+  },
   components: initContent
 });
+
+function nlApplyStyle(prop, val) {
+  var sel = nlEditor.getSelected();
+  if (!sel) { alert('Select an element in the editor first'); return; }
+  sel.addStyle(prop, val);
+}
+function nlChangeTag(tag) {
+  if (!tag) return;
+  var sel = nlEditor.getSelected();
+  if (!sel) { alert('Select an element first'); return; }
+  sel.set('tagName', tag);
+}
+function nlAddLink() {
+  var sel = nlEditor.getSelected();
+  if (!sel) { alert('Select an element first'); return; }
+  var url = prompt('Enter URL:');
+  if (!url) return;
+  var text = sel.getInnerHTML ? sel.getInnerHTML() : 'Link';
+  sel.set('content', '<a href="' + url + '" target="_blank">' + text + '</a>');
+}
 
 function loadTmpl(name) { if (templates[name]) nlEditor.setComponents(templates[name]); }
 
