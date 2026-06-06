@@ -8,10 +8,13 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
-    .header{background:#ffffff;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #dc2626;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-    .header a.logo{color:#dc2626;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase}
-    .header nav a{color:#334155;text-decoration:none;font-size:13px;margin-left:24px;font-weight:500}
+    .header{background:#ffffff;padding:12px 32px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+    .header a.logo{color:#dc2626;font-family:'Inter',sans-serif;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+    .header a.logo img{height:36px;border-radius:4px}
+    .header nav{display:flex;gap:20px;align-items:center}
+    .header nav a{color:#334155;text-decoration:none;font-size:13px;font-weight:500}
     .header nav a:hover{color:#dc2626}
+    .header nav a.active{color:#dc2626}
     .hero{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:48px 32px;text-align:center;color:#fff}
     .hero h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:8px}
     .hero p{color:#94a3b8;font-size:15px}
@@ -33,17 +36,18 @@
 </head>
 <body>
   <div class="header">
-    <a href="/filmcentrum/" class="logo"><img src="/filmcentrum/admin/uploads/wp/Kopia-av-Filmcentrum_logotyp_CMYK-1.png" style="height:32px;border-radius:4px;vertical-align:middle;margin-right:8px;" alt="FC">FILMCENTRUM RIKS</a>
+    <a href="/filmcentrum/" class="logo"><img src="/filmcentrum/admin/uploads/wp/Kopia-av-Filmcentrum_logotyp_CMYK-1.png" alt="FC">FILMCENTRUM RIKS</a>
     <nav>
       <a href="/filmcentrum/">Hem</a>
       <a href="/filmcentrum/om-oss">Om oss</a>
       <a href="/filmcentrum/openthedoors">FC OpenTheDoors</a>
       <a href="/filmcentrum/medlemskap">Medlemskap</a>
       <a href="/filmcentrum/nyheter">Nyheter</a>
-      <a href="/filmcentrum/kontakt">Kontakt</a>
-      <a href="/filmcentrum/members">Medlemskatalog</a>
+      <a href="/filmcentrum/kontakt">Kontakta oss</a>
       <a href="/filmcentrum/login">Logga in</a>
+      <a href="/filmcentrum/members">Filmkatalog</a>
     </nav>
+  
   
   </div>
   <div class="hero"><h1>Nyheter</h1><p>Senaste nytt fran FilmCentrum Riks</p></div>
