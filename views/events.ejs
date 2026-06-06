@@ -1,0 +1,77 @@
+<style>
+  .ev-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .ev-header h2{font-size:20px;color:#f1f5f9}
+  .ev-table{background:#1e293b;border-radius:10px;border:1px solid #334155;overflow-x:auto;margin-bottom:24px}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:10px 14px;font-size:12px;color:#64748b;text-transform:uppercase;border-bottom:1px solid #334155}
+  td{padding:10px 14px;font-size:13px;color:#cbd5e1;border-bottom:1px solid #0f172a}
+  tr:hover td{background:#0f172a}
+  .cat-tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+  .cat-festival{background:#1e3a5f;color:#60a5fa}
+  .cat-event{background:#3b0764;color:#c084fc}
+  .cat-workshop{background:#064e3b;color:#6ee7b7}
+  .ev-form{background:#1e293b;border-radius:10px;padding:24px;border:1px solid #334155}
+  .ev-form h3{font-size:16px;color:#f1f5f9;margin-bottom:16px}
+  .ev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .ev-group{display:flex;flex-direction:column}
+  .ev-group label{font-size:12px;color:#94a3b8;margin-bottom:4px}
+  .ev-group input,.ev-group select,.ev-group textarea{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .ev-group textarea{min-height:60px;resize:vertical;font-family:inherit}
+  .btn{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:#fff;text-decoration:none;display:inline-block}
+  .btn-primary{background:#dc2626}.btn-primary:hover{background:#b91c1c}
+  .btn-danger{background:#7f1d1d;color:#fca5a5}.btn-danger:hover{background:#991b1b}
+  .btn-add{padding:10px 24px;font-size:14px;font-weight:600}
+  .featured{color:#fbbf24}
+</style>
+
+<div class="ev-header">
+  <h2>Events & Calendar</h2>
+</div>
+
+<div class="ev-table">
+  <table>
+    <thead><tr><th>Date</th><th>Title</th><th>Location</th><th>Category</th><th>Featured</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% events.forEach(function(e) { %>
+      <tr>
+        <td><%= e.event_date %><% if (e.end_date && e.end_date !== e.event_date) { %> - <%= e.end_date %><% } %></td>
+        <td><strong><%= e.title %></strong><% if (e.description) { %><br><small style="color:#64748b"><%= e.description.substring(0,60) %></small><% } %></td>
+        <td><%= e.location || '-' %></td>
+        <td><span class="cat-tag cat-<%= e.category %>"><%= e.category %></span></td>
+        <td><% if (e.is_featured) { %><span class="featured">&#9733;</span><% } %></td>
+        <td>
+          <form method="POST" action="<%= base %>/events" style="display:inline">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<%= e.id %>">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="ev-form">
+  <h3>Add Event</h3>
+  <form method="POST" action="<%= base %>/events">
+    <input type="hidden" name="action" value="add">
+    <div class="ev-grid">
+      <div class="ev-group"><label>Title *</label><input type="text" name="title" required></div>
+      <div class="ev-group"><label>Start Date *</label><input type="date" name="event_date" required></div>
+      <div class="ev-group"><label>End Date</label><input type="date" name="end_date"></div>
+      <div class="ev-group"><label>Location</label><input type="text" name="location" placeholder="Stockholm"></div>
+      <div class="ev-group"><label>Category</label>
+        <select name="category"><option value="festival">Festival</option><option value="event">Event</option><option value="workshop">Workshop</option><option value="deadline">Deadline</option></select>
+      </div>
+      <div class="ev-group"><label>Link</label><input type="url" name="link" placeholder="https://..."></div>
+    </div>
+    <div class="ev-grid" style="margin-top:14px">
+      <div class="ev-group" style="grid-column:1/-1"><label>Description</label><textarea name="description" placeholder="Short description..."></textarea></div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+      <label style="color:#94a3b8;font-size:13px;display:flex;align-items:center;gap:6px;"><input type="checkbox" name="is_featured" value="1"> Featured event</label>
+      <button type="submit" class="btn btn-primary btn-add">Add Event</button>
+    </div>
+  </form>
+</div>

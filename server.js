@@ -649,6 +649,30 @@ app.post(BASE + "/password", auth, function(req, res) {
 // ============================================================
 // SEO & ANALYTICS
 // ============================================================
+// Events Calendar
+app.get(BASE + '/events', auth, function(req, res) {
+  var events = db.prepare("SELECT * FROM events ORDER BY event_date ASC").all();
+  res.render('events', { base: BASE, events: events });
+});
+
+app.post(BASE + '/events', auth, function(req, res) {
+  var b = req.body;
+  if (b.action === 'add' && b.title) {
+    db.prepare("INSERT INTO events (title, description, event_date, end_date, location, category, link, is_featured) VALUES (?,?,?,?,?,?,?,?)").run(
+      b.title, b.description || '', b.event_date, b.end_date || b.event_date, b.location || '', b.category || 'event', b.link || '', b.is_featured ? 1 : 0
+    );
+  } else if (b.action === 'delete' && b.id) {
+    db.prepare("DELETE FROM events WHERE id = ?").run(b.id);
+  }
+  res.redirect(BASE + '/events');
+});
+
+// Public events API for calendar widget
+app.get(BASE + '/api/public/events', function(req, res) {
+  var events = db.prepare("SELECT id, title, description, event_date, end_date, location, category, link, is_featured FROM events WHERE event_date >= date('now', '-30 days') ORDER BY event_date ASC").all();
+  res.json({ success: true, events: events });
+});
+
 // Chatbot Settings
 app.get(BASE + '/chatbot-settings', auth, function(req, res) {
   var rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'chatbot_%'").all();

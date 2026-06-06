@@ -187,6 +187,31 @@ function filterMembers() {
   document.getElementById('statsBar').textContent = shown + ' medlemmar' + (q || branch || city ? ' (filtrerade)' : '');
 }
 </script>
+<script>
+(function(){
+  var cal = document.createElement('div');
+  cal.id = 'fc-events-sidebar';
+  cal.innerHTML = '<div style="position:fixed;top:100px;right:16px;width:280px;max-height:70vh;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.1);border:1px solid #e2e8f0;z-index:40;font-family:Inter,sans-serif;display:none;" id="evSidebar"><div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;"><strong style="font-size:14px;color:#1e293b;">Kommande evenemang</strong><span style="cursor:pointer;font-size:18px;color:#94a3b8;" onclick="document.getElementById(\'evSidebar\').style.display=\'none\';document.getElementById(\'evToggle\').style.display=\'flex\';">&times;</span></div><div id="evList" style="padding:12px 16px;"></div><div style="padding:12px 16px;border-top:1px solid #f1f5f9;text-align:center;"><a href="/fai/" style="color:#c0392b;text-decoration:none;font-size:13px;font-weight:500;">Festival AI &rarr;</a></div></div>';
+  cal.innerHTML += '<div id="evToggle" style="position:fixed;top:100px;right:16px;width:44px;height:44px;background:#c0392b;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(192,57,43,0.3);z-index:40;" onclick="document.getElementById(\'evSidebar\').style.display=\'block\';this.style.display=\'none\';loadEvents();"><svg width="22" height="22" fill="#fff" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg></div>';
+  document.body.appendChild(cal);
+  window.loadEvents = function() {
+    fetch('/filmcentrum/admin/api/public/events').then(function(r){return r.json()}).then(function(d){
+      var html = '';
+      if (d.events && d.events.length > 0) {
+        d.events.slice(0, 8).forEach(function(e){
+          var cat = e.category === 'festival' ? '#3b82f6' : e.category === 'workshop' ? '#10b981' : '#8b5cf6';
+          html += '<div style="padding:8px 0;border-bottom:1px solid #f8fafc;"><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:40px;text-align:center;background:#fef2f2;border-radius:6px;padding:4px;"><div style="font-size:10px;color:#c0392b;font-weight:600;">' + (e.event_date||'').substring(5,7) + '</div><div style="font-size:16px;font-weight:700;color:#1e293b;">' + (e.event_date||'').substring(8,10) + '</div></div><div><div style="font-size:13px;font-weight:600;color:#1e293b;">' + e.title + '</div><div style="font-size:11px;color:#64748b;">' + (e.location||'') + '</div><span style="display:inline-block;padding:1px 6px;background:' + cat + '20;color:' + cat + ';border-radius:8px;font-size:10px;margin-top:2px;">' + e.category + '</span></div></div></div>';
+        });
+      } else {
+        html = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Inga kommande evenemang.</p>';
+      }
+      document.getElementById('evList').innerHTML = html;
+    }).catch(function(){
+      document.getElementById('evList').innerHTML = '<p style="color:#94a3b8;font-size:13px;">Kunde inte ladda evenemang.</p>';
+    });
+  };
+})();
+</script>
 <script src="/filmcentrum/chatbot.js"></script>
 </body>
 </html>
