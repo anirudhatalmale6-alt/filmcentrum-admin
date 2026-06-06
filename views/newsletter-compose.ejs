@@ -64,8 +64,11 @@
       <button type="button" class="tmpl-btn" onclick="loadTmpl('update')">Member Update</button>
       <button type="button" class="tmpl-btn" onclick="loadTmpl('minimal')">Minimal</button>
     </div>
-    <div id="nlEditor" class="editor-container" style="height:450px;"></div>
-    <textarea name="content" id="nlHidden" style="display:none;"></textarea>
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+    <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
+    <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
   </div>
 
   <div class="ai-bar">
@@ -122,8 +125,10 @@
     <button type="button" class="fmt-btn2" onclick="nlAddLink()" title="Link">&#128279; Link</button>
   </div>
 
-  <button type="submit" class="btn-send" onclick="return confirmSend()">Send Newsletter</button>
-  <button type="button" class="btn-preview" onclick="showPreview()">Preview</button>
+  <div id="nlEditor" class="editor-container" style="height:450px;"></div>
+  <textarea name="content" id="nlHidden" style="display:none;"></textarea>
+
+
 </form>
 
 <div class="preview-modal" id="previewModal">
