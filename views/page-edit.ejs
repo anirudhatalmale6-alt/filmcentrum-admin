@@ -20,6 +20,15 @@
   .btn-save{padding:10px 32px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
   .btn-save:hover{background:#b91c1c}
   .btn-secondary{padding:10px 20px;background:#334155;color:#e2e8f0;border:none;border-radius:6px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;margin-left:8px}
+
+  .fmt-toolbar{display:flex;gap:4px;align-items:center;padding:8px 10px;background:#0f172a;border:1px solid #334155;border-radius:8px;margin-bottom:8px;flex-wrap:wrap}
+  .fmt-toolbar select{padding:4px 6px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:12px;cursor:pointer;min-width:70px}
+  .fmt-toolbar select:hover{border-color:#dc2626}
+  .fmt-btn{padding:4px 8px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#e2e8f0;font-size:13px;cursor:pointer;min-width:28px;text-align:center;line-height:1.2}
+  .fmt-btn:hover{border-color:#dc2626;background:#334155}
+  .fmt-sep{width:1px;height:22px;background:#334155;margin:0 2px}
+  .fmt-color-wrap{display:flex;align-items:center;gap:2px;cursor:pointer;color:#e2e8f0;font-size:13px;font-weight:700;position:relative}
+  .fmt-color-wrap input[type=color]{width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0}
   .gjs-one-bg{background:#1e293b!important}.gjs-two-color{color:#e2e8f0!important}.gjs-three-bg{background:#0f172a!important}.gjs-four-color,.gjs-four-color-h:hover{color:#dc2626!important}
 </style>
 
@@ -66,6 +75,77 @@
     <button type="button" class="ai-btn" onclick="aiAction('translate_sv')">Translate SV</button>
     <input type="text" class="ai-prompt-input" id="aiPrompt" placeholder="Or type a prompt: e.g. Write about membership benefits...">
     <button type="button" class="ai-btn" onclick="aiGenerate()" style="background:#dc2626;color:#fff;border-color:#dc2626">Generate</button>
+  </div>
+
+  <!-- Formatting Toolbar -->
+  <div class="fmt-toolbar" id="fmtToolbar">
+    <select id="fmtFont" onchange="applyStyle('font-family',this.value)" title="Font">
+      <option value="">Font</option>
+      <option value="Inter,sans-serif">Inter</option>
+      <option value="Playfair Display,serif">Playfair Display</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="Georgia,serif">Georgia</option>
+      <option value="Helvetica,sans-serif">Helvetica</option>
+      <option value="Verdana,sans-serif">Verdana</option>
+      <option value="Times New Roman,serif">Times New Roman</option>
+      <option value="Courier New,monospace">Courier New</option>
+    </select>
+    <select id="fmtSize" onchange="applyStyle('font-size',this.value)" title="Size">
+      <option value="">Size</option>
+      <option value="12px">12</option>
+      <option value="14px">14</option>
+      <option value="16px">16</option>
+      <option value="18px">18</option>
+      <option value="20px">20</option>
+      <option value="24px">24</option>
+      <option value="28px">28</option>
+      <option value="32px">32</option>
+      <option value="36px">36</option>
+      <option value="42px">42</option>
+      <option value="48px">48</option>
+      <option value="56px">56</option>
+      <option value="64px">64</option>
+      <option value="72px">72</option>
+    </select>
+    <select id="fmtWeight" onchange="applyStyle('font-weight',this.value)" title="Weight">
+      <option value="">Weight</option>
+      <option value="300">Light</option>
+      <option value="400">Normal</option>
+      <option value="500">Medium</option>
+      <option value="600">Semi Bold</option>
+      <option value="700">Bold</option>
+      <option value="800">Extra Bold</option>
+    </select>
+    <div class="fmt-sep"></div>
+    <button type="button" class="fmt-btn" onclick="applyStyle('font-weight','700')" title="Bold"><b>B</b></button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('font-style','italic')" title="Italic"><i>I</i></button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-decoration','underline')" title="Underline"><u>U</u></button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-decoration','line-through')" title="Strikethrough"><s>S</s></button>
+    <div class="fmt-sep"></div>
+    <label class="fmt-color-wrap" title="Text Color">
+      A<input type="color" id="fmtColor" value="#000000" onchange="applyStyle('color',this.value)">
+    </label>
+    <label class="fmt-color-wrap" title="Background Color">
+      <span style="background:#fde68a;padding:0 3px;border-radius:2px;">A</span><input type="color" id="fmtBgColor" value="#ffffff" onchange="applyStyle('background-color',this.value)">
+    </label>
+    <div class="fmt-sep"></div>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-align','left')" title="Align Left">&#9776;</button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-align','center')" title="Align Center">&#9776;</button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-align','right')" title="Align Right">&#9776;</button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-align','justify')" title="Justify">&#9776;</button>
+    <div class="fmt-sep"></div>
+    <select id="fmtHeading" onchange="changeTag(this.value)" title="Heading">
+      <option value="">Tag</option>
+      <option value="h1">H1</option>
+      <option value="h2">H2</option>
+      <option value="h3">H3</option>
+      <option value="h4">H4</option>
+      <option value="p">Paragraph</option>
+    </select>
+    <button type="button" class="fmt-btn" onclick="insertImage()" title="Insert Image">&#128247; Img</button>
+    <button type="button" class="fmt-btn" onclick="addLink()" title="Add Link">&#128279; Link</button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-transform','uppercase')" title="Uppercase">AA</button>
+    <button type="button" class="fmt-btn" onclick="applyStyle('text-transform','none')" title="Normal Case">Aa</button>
   </div>
 
   <div class="lang-tabs">
@@ -206,6 +286,33 @@ initEditor('sv'); initEditor('en');
 // Open blocks panel by default
 setTimeout(function(){ try{ editors.sv.Panels.getButton('views','open-bl').set('active',true); }catch(e){} }, 500);
 
+
+function applyStyle(prop, val) {
+  if (!editors[currentLang]) return;
+  var sel = editors[currentLang].getSelected();
+  if (!sel) { alert('Select an element in the editor first'); return; }
+  sel.addStyle(prop, val);
+}
+function changeTag(tag) {
+  if (!tag || !editors[currentLang]) return;
+  var sel = editors[currentLang].getSelected();
+  if (!sel) { alert('Select an element first'); return; }
+  var inner = sel.getInnerHTML ? sel.getInnerHTML() : sel.get('content') || '';
+  sel.set('tagName', tag);
+}
+function insertImage() {
+  if (!editors[currentLang]) return;
+  editors[currentLang].runCommand('open-assets');
+}
+function addLink() {
+  if (!editors[currentLang]) return;
+  var sel = editors[currentLang].getSelected();
+  if (!sel) { alert('Select an element first'); return; }
+  var url = prompt('Enter URL:');
+  if (!url) return;
+  var text = sel.getInnerHTML ? sel.getInnerHTML() : 'Link';
+  sel.set('content', '<a href="' + url + '" target="_blank">' + text + '</a>');
+}
 function switchLang(lang) {
   currentLang=lang;
   document.querySelectorAll('.lang-tab').forEach(function(t,i){t.classList.toggle('active',(i===0&&lang==='sv')||(i===1&&lang==='en'));});
