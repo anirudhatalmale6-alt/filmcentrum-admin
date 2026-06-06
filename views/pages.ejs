@@ -28,6 +28,7 @@
 
 <div class="section-header">
   <h2>CMS Pages (<%= pages.length %>)</h2>
+  <a href="#add-page" class="btn btn-primary" style="padding:10px 20px;font-size:14px;" onclick="document.getElementById('add-page').scrollIntoView({behavior:'smooth'});return false;">+ Add New Page</a>
 </div>
 
 <div class="table-wrap">
@@ -67,7 +68,7 @@
   </table>
 </div>
 
-<div class="add-form">
+<div class="add-form" id="add-page">
   <h3>Add New Page</h3>
   <form method="POST" action="<%= base %>/pages">
     <input type="hidden" name="action" value="add">
