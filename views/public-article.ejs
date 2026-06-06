@@ -6,12 +6,19 @@
   <title><%= article.title_sv || article.title_en %> - FilmCentrum Riks</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
-    .header{background:#ffffff;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #dc2626;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-    .header a.logo{color:#dc2626;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase}
-    .header nav a{color:#334155;text-decoration:none;font-size:13px;margin-left:24px;font-weight:500}
-    .header nav a:hover{color:#dc2626}
+        *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#fff;padding:8px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);position:relative;z-index:10}
+    .header .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .header .logo img{height:40px}
+    .header .logo span{color:#c0392b;font-size:16px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase}
+    .header nav{display:flex;align-items:center;gap:2px}
+    .header nav a{color:#374151;text-decoration:none;font-size:14px;font-weight:500;padding:8px 12px;border-radius:6px;transition:color 0.15s,background 0.15s}
+    .header nav a:hover{color:#c0392b;background:#f9fafb}
+    .header nav a.active{color:#c0392b;background:#fef2f2}
+    .fc-dist-btn{background:#c0392b!important;color:#fff!important;border-radius:6px!important;padding:8px 16px!important;font-weight:600!important;font-size:13px!important}
+    .fc-dist-btn:hover{background:#a93226!important}
+    @media(max-width:768px){.header{flex-direction:column;gap:12px;padding:12px 16px}.header nav{flex-wrap:wrap;justify-content:center;gap:4px}}
     .container{max-width:800px;margin:0 auto;padding:40px 24px}
     .back{display:inline-block;margin-bottom:24px;color:#64748b;text-decoration:none;font-size:13px}
     .back:hover{color:#dc2626}
@@ -41,7 +48,9 @@
       <a href="/filmcentrum/kontakt">Kontakta oss</a>
       <a href="/filmcentrum/login">Logga in</a>
       <a href="/filmcentrum/members">Filmkatalog</a>
+      <a href="/filmcentrum/fc" class="fc-dist-btn">FC Distribution</a>
     </nav>
+  
   
   
   
