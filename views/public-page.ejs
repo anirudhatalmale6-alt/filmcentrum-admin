@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title_sv || page.title_en %> - FilmCentrum Riks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#fafafa;color:#1e293b}
+    .header{background:#1a1a2e;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+    .header a.logo{color:#dc2626;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-decoration:none;letter-spacing:2px;text-transform:uppercase}
+    .header nav{display:flex;gap:20px;align-items:center}
+    .header nav a{color:#94a3b8;text-decoration:none;font-size:13px}
+    .header nav a:hover{color:#fff}
+    .header nav a.active{color:#dc2626}
+    .hero{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:48px 32px;text-align:center;color:#fff}
+    .hero h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:8px}
+    .hero p{color:#94a3b8;font-size:15px}
+    .container{max-width:900px;margin:0 auto;padding:40px 24px}
+    .content{font-size:16px;line-height:1.8;color:#374151}
+    .content h2{font-family:'Playfair Display',serif;font-size:28px;margin:32px 0 16px;color:#1e293b}
+    .content h3{font-size:20px;margin:24px 0 12px;color:#dc2626}
+    .content h4{font-size:17px;margin:20px 0 8px;color:#1e293b}
+    .content p{margin-bottom:16px}
+    .content ul,.content ol{padding-left:24px;margin-bottom:16px}
+    .content li{margin-bottom:8px;line-height:1.7}
+    .content img{max-width:100%;border-radius:12px;margin:20px 0}
+    .content a{color:#dc2626;text-decoration:underline}
+    .content blockquote{border-left:4px solid #dc2626;padding:16px 20px;margin:20px 0;font-style:italic;color:#475569;background:#f8fafc;border-radius:0 8px 8px 0}
+    .content strong{color:#1e293b}
+    .footer{background:#1a1a2e;padding:24px 32px;text-align:center;color:#64748b;font-size:12px;margin-top:48px}
+    .footer a{color:#dc2626;text-decoration:none}
+    @media(max-width:768px){.header{flex-direction:column;gap:12px}.header nav{flex-wrap:wrap;justify-content:center}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/filmcentrum/" class="logo">FilmCentrum Riks</a>
+    <nav>
+      <a href="/filmcentrum/">Hem</a>
+      <a href="/filmcentrum/om-oss">Om oss</a>
+      <a href="/filmcentrum/openthedoors" class="active">FC OpenTheDoors</a>
+      <a href="/filmcentrum/nyheter">Nyheter</a>
+      <a href="/filmcentrum/members">Medlemskatalog</a>
+      <a href="/filmcentrum/login">Logga in</a>
+    </nav>
+  </div>
+  <div class="hero">
+    <h1><%= page.title_sv || page.title_en %></h1>
+  </div>
+  <div class="container">
+    <div class="content"><%- page.content_sv || page.content_en || '' %></div>
+  </div>
+  <div class="footer">&copy; 2026 <a href="/filmcentrum/">FilmCentrum Riks</a> - Sveriges filmkooperativ</div>
+</body>
+</html>

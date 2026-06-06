@@ -784,6 +784,35 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 
 // ============================================================
 // PUBLIC NEWS PAGE
+
+// ============================================================
+// PUBLIC CMS PAGES (server-rendered)
+// ============================================================
+app.get(BASE.replace('/admin', '') + '/openthedoors', function(req, res) {
+  var page = db.prepare("SELECT * FROM pages WHERE slug = 'openthedoors'").get();
+  if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
+  res.render('public-page', { layout: false, page: page });
+});
+app.get(BASE.replace('/admin', '') + '/om-oss', function(req, res) {
+  var page = db.prepare("SELECT * FROM pages WHERE slug = 'om-oss'").get();
+  if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
+  res.render('public-page', { layout: false, page: page });
+});
+app.get(BASE.replace('/admin', '') + '/kontakt', function(req, res) {
+  var page = db.prepare("SELECT * FROM pages WHERE slug = 'kontakt'").get();
+  if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
+  res.render('public-page', { layout: false, page: page });
+});
+app.get(BASE.replace('/admin', '') + '/medlemskap', function(req, res) {
+  var page = db.prepare("SELECT * FROM pages WHERE slug = 'medlemskap'").get();
+  if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
+  res.render('public-page', { layout: false, page: page });
+});
+app.get(BASE.replace('/admin', '') + '/page/:slug', function(req, res) {
+  var page = db.prepare("SELECT * FROM pages WHERE slug = ?").get(req.params.slug);
+  if (!page) return res.redirect(BASE.replace('/admin', '') + '/');
+  res.render('public-page', { layout: false, page: page });
+});
 // ============================================================
 app.get(BASE.replace('/admin', '') + '/nyheter', function(req, res) {
   var articles = db.prepare("SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC").all();
