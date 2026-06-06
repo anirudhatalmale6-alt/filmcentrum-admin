@@ -204,6 +204,7 @@ if (menuCount === 0) {
   });
 }
 
+app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(function(req, res, next) { res.setHeader('X-Content-Type-Options', 'nosniff'); res.setHeader('X-Frame-Options', 'DENY'); res.setHeader('X-XSS-Protection', '1; mode=block'); res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin'); next(); });
 app.use(express.json());
@@ -772,6 +773,36 @@ app.get(BASE + '/api/public/pages/:slug', function(req, res) {
 
 // ============================================================
 // NEWS / ARTICLES
+
+// ============================================================
+// MEDIA UPLOAD API
+// ============================================================
+var multer = require('multer');
+var mediaStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    var dir = path.join(__dirname, 'public/uploads');
+    var fs = require('fs');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function(req, file, cb) {
+    var ext = path.extname(file.originalname) || '.jpg';
+    cb(null, 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6) + ext);
+  }
+});
+var mediaUpload = multer({ storage: mediaStorage, limits: { fileSize: 10 * 1024 * 1024 }, fileFilter: function(req, file, cb) { if (file.mimetype.startsWith('image/')) cb(null, true); else cb(new Error('Only images'), false); } });
+
+app.post(BASE + '/api/upload', auth, mediaUpload.single('file'), function(req, res) {
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  var url = BASE + '/uploads/' + req.file.filename;
+  res.json({ data: [url] });
+});
+
+app.post(BASE + '/api/upload-media', auth, mediaUpload.array('files[]', 10), function(req, res) {
+  if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files' });
+  var urls = req.files.map(function(f) { return BASE + '/uploads/' + f.filename; });
+  res.json({ data: urls });
+});
 // ============================================================
 app.get(BASE + '/articles', auth, function(req, res) {
   var articles = db.prepare('SELECT * FROM articles ORDER BY published_at DESC').all();

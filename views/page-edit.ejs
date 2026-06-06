@@ -1,191 +1,191 @@
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
+<link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.css">
 <style>
-  .back-link { display: inline-block; margin-bottom: 16px; color: #94a3b8; text-decoration: none; font-size: 13px; }
-  .back-link:hover { color: #dc2626; }
-  .success-banner { background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
-  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-  .page-header h2 { font-size: 20px; color: #f1f5f9; }
-  .page-header .slug-info { font-size: 13px; color: #64748b; font-family: monospace; }
-  .title-row { display: flex; gap: 12px; margin-bottom: 16px; }
-  .title-row .form-group { flex: 1; }
-  .title-row .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
-  .title-row .form-group input { width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 13px; outline: none; }
-  .title-row .form-group input:focus { border-color: #dc2626; }
-  .lang-tabs { display: flex; gap: 0; margin-bottom: 0; }
-  .lang-tab { padding: 8px 20px; font-size: 13px; font-weight: 600; border: 1px solid #334155; background: #1a2332; color: #64748b; cursor: pointer; border-bottom: none; }
-  .lang-tab:first-child { border-radius: 6px 0 0 0; }
-  .lang-tab:last-child { border-radius: 0 6px 0 0; }
-  .lang-tab.active { background: #dc2626; color: #fff; border-color: #dc2626; }
-  .editor-container { border: 1px solid #334155; border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 16px; }
-  .gjs-one-bg { background: #1e293b !important; }
-  .gjs-two-color { color: #e2e8f0 !important; }
-  .gjs-three-bg { background: #0f172a !important; }
-  .gjs-four-color, .gjs-four-color-h:hover { color: #dc2626 !important; }
-  .btn-save { padding: 10px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .btn-save:hover { background: #b91c1c; }
-  .btn-secondary { padding: 10px 20px; background: #334155; color: #e2e8f0; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 8px; }
-  .btn-secondary:hover { background: #475569; }
-  .actions-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .back-link{display:inline-block;margin-bottom:16px;color:#94a3b8;text-decoration:none;font-size:13px}
+  .back-link:hover{color:#dc2626}
+  .success-banner{background:#064e3b;color:#6ee7b7;padding:12px 20px;border-radius:8px;margin-bottom:16px;font-size:14px}
+  .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .page-header h2{font-size:20px;color:#f1f5f9}
+  .page-header .slug-info{font-size:13px;color:#64748b;font-family:monospace}
+  .title-row{display:flex;gap:12px;margin-bottom:16px}
+  .title-row .form-group{flex:1}
+  .title-row .form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:4px}
+  .title-row .form-group input{width:100%;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:13px;outline:none}
+  .title-row .form-group input:focus{border-color:#dc2626}
+  .lang-tabs{display:flex;gap:0;margin-bottom:0}
+  .lang-tab{padding:8px 20px;font-size:13px;font-weight:600;border:1px solid #334155;background:#1a2332;color:#64748b;cursor:pointer;border-bottom:none}
+  .lang-tab:first-child{border-radius:6px 0 0 0}.lang-tab:last-child{border-radius:0 6px 0 0}
+  .lang-tab.active{background:#dc2626;color:#fff;border-color:#dc2626}
+  .editor-container{border:1px solid #334155;border-radius:0 0 8px 8px;overflow:hidden;margin-bottom:16px}
+  .btn-save{padding:10px 32px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-save:hover{background:#b91c1c}
+  .btn-secondary{padding:10px 20px;background:#334155;color:#e2e8f0;border:none;border-radius:6px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;margin-left:8px}
+  .gjs-one-bg{background:#1e293b!important}.gjs-two-color{color:#e2e8f0!important}.gjs-three-bg{background:#0f172a!important}.gjs-four-color,.gjs-four-color-h:hover{color:#dc2626!important}
 </style>
 
 <a href="<%= base %>/pages" class="back-link">&larr; Back to Pages</a>
+<% if (success) { %><div class="success-banner">Page saved successfully.</div><% } %>
 
-<% if (success) { %>
-  <div class="success-banner">Page saved successfully.</div>
-<% } %>
-
-<div class="page-header">
-  <div>
-    <h2>Edit Page</h2>
-    <div class="slug-info">/<%= page.slug %></div>
-  </div>
-</div>
+<div class="page-header"><div><h2>Edit Page</h2><div class="slug-info">/<%= page.slug %></div></div></div>
 
 <form method="POST" action="<%= base %>/pages/<%= page.id %>" id="pageForm">
   <div class="title-row">
     <div class="form-group"><label>Title (SV)</label><input type="text" name="title_sv" value="<%= page.title_sv || '' %>"></div>
     <div class="form-group"><label>Title (EN)</label><input type="text" name="title_en" value="<%= page.title_en || '' %>"></div>
   </div>
-
   <div class="lang-tabs">
     <div class="lang-tab active" onclick="switchLang('sv')">Svenska</div>
     <div class="lang-tab" onclick="switchLang('en')">English</div>
   </div>
-
-  <div id="editor-sv" class="editor-container" style="height:520px;"></div>
-  <div id="editor-en" class="editor-container" style="height:520px;display:none;"></div>
-
+  <div id="editor-sv" class="editor-container" style="height:560px;"></div>
+  <div id="editor-en" class="editor-container" style="height:560px;display:none;"></div>
   <textarea name="content_sv" id="hidden_sv" style="display:none;"><%= page.content_sv || '' %></textarea>
   <textarea name="content_en" id="hidden_en" style="display:none;"><%= page.content_en || '' %></textarea>
-
-  <div class="actions-bar">
-    <button type="submit" class="btn-save" onclick="saveEditors()">Save Page</button>
-    <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
-  </div>
+  <button type="submit" class="btn-save" onclick="saveEditors()">Save Page</button>
+  <a href="<%= base %>/pages" class="btn-secondary">Cancel</a>
 </form>
 
-<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.10/dist/css/grapes.min.css">
-<link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.css">
 <script src="https://unpkg.com/grapesjs@0.21.10/dist/grapes.min.js"></script>
 <script src="https://unpkg.com/grapesjs-preset-webpage@1.0.3/dist/grapesjs-preset-webpage.min.js"></script>
-
 <script>
-var currentLang = 'sv';
-var editors = {};
+var currentLang='sv', editors={};
+var uploadUrl='<%= base %>/api/upload';
 
 function initEditor(lang) {
-  var container = document.getElementById('editor-' + lang);
-  var content = document.getElementById('hidden_' + lang).value || '<p>Start editing...</p>';
-
+  var content = document.getElementById('hidden_'+lang).value || '<p>Start editing...</p>';
   editors[lang] = grapesjs.init({
-    container: '#editor-' + lang,
-    height: '520px',
-    width: 'auto',
-    storageManager: false,
-    plugins: ['gjs-preset-webpage'],
-    pluginsOpts: { 'gjs-preset-webpage': { blocksBasicOpts: { flexGrid: true }, navbarOpts: false, countdownOpts: false, formsOpts: false } },
-    canvas: { styles: [
-      'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap'
-    ]},
-    components: content,
-    styleManager: {
-      sectors: [{
-        name: 'Typography',
-        open: true,
-        properties: [
-          { name: 'Font Family', property: 'font-family', type: 'select',
-            options: [
-              {id:'Inter, sans-serif', label:'Inter'},
-              {id:'Playfair Display, serif', label:'Playfair Display'},
-              {id:'Arial, sans-serif', label:'Arial'},
-              {id:'Georgia, serif', label:'Georgia'},
-              {id:'Verdana, sans-serif', label:'Verdana'},
-              {id:'Times New Roman, serif', label:'Times New Roman'},
-              {id:'Courier New, monospace', label:'Courier New'},
-            ]},
-          { name: 'Font Size', property: 'font-size', type: 'slider', min: 10, max: 72, step: 1, units: ['px','em','rem'] },
-          { name: 'Font Weight', property: 'font-weight', type: 'select',
-            options: [{id:'300',label:'Light'},{id:'400',label:'Normal'},{id:'500',label:'Medium'},{id:'600',label:'Semi Bold'},{id:'700',label:'Bold'}] },
-          { name: 'Color', property: 'color', type: 'color' },
-          { name: 'Line Height', property: 'line-height', type: 'slider', min: 1, max: 3, step: 0.1 },
-          { name: 'Letter Spacing', property: 'letter-spacing', type: 'slider', min: -2, max: 10, step: 0.5, units: ['px'] },
-          { name: 'Text Align', property: 'text-align', type: 'radio', options: [{id:'left',label:'L'},{id:'center',label:'C'},{id:'right',label:'R'},{id:'justify',label:'J'}] },
-          { name: 'Text Transform', property: 'text-transform', type: 'select', options: [{id:'none',label:'None'},{id:'uppercase',label:'Uppercase'},{id:'lowercase',label:'Lowercase'},{id:'capitalize',label:'Capitalize'}] },
-        ]
-      },{
-        name: 'Spacing',
-        properties: [
-          { name: 'Margin', property: 'margin', type: 'composite', properties: [
-            {name:'Top',property:'margin-top',type:'integer',units:['px','%']},
-            {name:'Right',property:'margin-right',type:'integer',units:['px','%']},
-            {name:'Bottom',property:'margin-bottom',type:'integer',units:['px','%']},
-            {name:'Left',property:'margin-left',type:'integer',units:['px','%']}
+    container:'#editor-'+lang, height:'560px', width:'auto', storageManager:false,
+    plugins:['gjs-preset-webpage'],
+    pluginsOpts:{'gjs-preset-webpage':{blocksBasicOpts:{flexGrid:true},navbarOpts:false,countdownOpts:false,formsOpts:false}},
+    canvas:{styles:['https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap']},
+    components:content,
+    assetManager:{
+      upload: uploadUrl,
+      uploadName: 'file',
+      multiUpload: false,
+      autoAdd: true,
+      headers: {},
+      credentials: 'same-origin'
+    },
+    styleManager:{
+      sectors:[{
+        name:'Typography', open:true,
+        properties:[
+          {name:'Font',property:'font-family',type:'select',options:[
+            {id:'Inter,sans-serif',label:'Inter'},{id:'Playfair Display,serif',label:'Playfair Display'},
+            {id:'Arial,sans-serif',label:'Arial'},{id:'Georgia,serif',label:'Georgia'},
+            {id:'Helvetica,sans-serif',label:'Helvetica'},{id:'Verdana,sans-serif',label:'Verdana'},
+            {id:'Times New Roman,serif',label:'Times New Roman'},{id:'Courier New,monospace',label:'Courier New'}
           ]},
-          { name: 'Padding', property: 'padding', type: 'composite', properties: [
-            {name:'Top',property:'padding-top',type:'integer',units:['px','%']},
-            {name:'Right',property:'padding-right',type:'integer',units:['px','%']},
-            {name:'Bottom',property:'padding-bottom',type:'integer',units:['px','%']},
-            {name:'Left',property:'padding-left',type:'integer',units:['px','%']}
-          ]}
+          {name:'Size',property:'font-size',type:'slider',min:10,max:72,step:1,units:['px','em','rem']},
+          {name:'Weight',property:'font-weight',type:'select',options:[{id:'300',label:'Light'},{id:'400',label:'Normal'},{id:'500',label:'Medium'},{id:'600',label:'Semi Bold'},{id:'700',label:'Bold'},{id:'800',label:'Extra Bold'}]},
+          {name:'Color',property:'color',type:'color'},
+          {name:'Line Height',property:'line-height',type:'slider',min:1,max:3,step:0.1},
+          {name:'Letter Spacing',property:'letter-spacing',type:'slider',min:-2,max:10,step:0.5,units:['px']},
+          {name:'Align',property:'text-align',type:'radio',options:[{id:'left',label:'L'},{id:'center',label:'C'},{id:'right',label:'R'},{id:'justify',label:'J'}]},
+          {name:'Transform',property:'text-transform',type:'select',options:[{id:'none',label:'None'},{id:'uppercase',label:'UPPER'},{id:'lowercase',label:'lower'},{id:'capitalize',label:'Capitalize'}]},
+          {name:'Decoration',property:'text-decoration',type:'select',options:[{id:'none',label:'None'},{id:'underline',label:'Underline'},{id:'line-through',label:'Strikethrough'}]}
         ]
       },{
-        name: 'Background',
-        properties: [
-          { name: 'Background Color', property: 'background-color', type: 'color' },
-          { name: 'Background Image', property: 'background-image', type: 'file' },
-          { name: 'Border Radius', property: 'border-radius', type: 'slider', min: 0, max: 50, units: ['px','%'] },
+        name:'Spacing',
+        properties:[
+          {name:'Margin',property:'margin',type:'composite',properties:[{name:'T',property:'margin-top',type:'integer',units:['px','%','em']},{name:'R',property:'margin-right',type:'integer',units:['px','%']},{name:'B',property:'margin-bottom',type:'integer',units:['px','%','em']},{name:'L',property:'margin-left',type:'integer',units:['px','%']}]},
+          {name:'Padding',property:'padding',type:'composite',properties:[{name:'T',property:'padding-top',type:'integer',units:['px','%']},{name:'R',property:'padding-right',type:'integer',units:['px','%']},{name:'B',property:'padding-bottom',type:'integer',units:['px','%']},{name:'L',property:'padding-left',type:'integer',units:['px','%']}]}
         ]
       },{
-        name: 'Dimension',
-        properties: [
-          { name: 'Width', property: 'width', type: 'integer', units: ['px','%','vw'] },
-          { name: 'Max Width', property: 'max-width', type: 'integer', units: ['px','%'] },
-          { name: 'Height', property: 'height', type: 'integer', units: ['px','vh','auto'] },
+        name:'Background',
+        properties:[
+          {name:'BG Color',property:'background-color',type:'color'},
+          {name:'BG Image',property:'background-image',type:'file'},
+          {name:'BG Size',property:'background-size',type:'select',options:[{id:'auto',label:'Auto'},{id:'cover',label:'Cover'},{id:'contain',label:'Contain'}]},
+          {name:'BG Position',property:'background-position',type:'select',options:[{id:'center',label:'Center'},{id:'top',label:'Top'},{id:'bottom',label:'Bottom'}]},
+          {name:'Radius',property:'border-radius',type:'slider',min:0,max:50,units:['px','%']},
+          {name:'Shadow',property:'box-shadow',type:'stack',properties:[{name:'X',property:'box-shadow-h',type:'integer',units:['px']},{name:'Y',property:'box-shadow-v',type:'integer',units:['px']},{name:'Blur',property:'box-shadow-blur',type:'integer',units:['px']},{name:'Color',property:'box-shadow-color',type:'color'}]}
+        ]
+      },{
+        name:'Dimension',
+        properties:[
+          {name:'Width',property:'width',type:'integer',units:['px','%','vw','auto']},
+          {name:'Max Width',property:'max-width',type:'integer',units:['px','%']},
+          {name:'Min Height',property:'min-height',type:'integer',units:['px','vh']},
+          {name:'Height',property:'height',type:'integer',units:['px','vh','auto']},
+          {name:'Overflow',property:'overflow',type:'select',options:[{id:'visible',label:'Visible'},{id:'hidden',label:'Hidden'},{id:'auto',label:'Auto'}]}
+        ]
+      },{
+        name:'Border',
+        properties:[
+          {name:'Width',property:'border-width',type:'slider',min:0,max:10,units:['px']},
+          {name:'Style',property:'border-style',type:'select',options:[{id:'none',label:'None'},{id:'solid',label:'Solid'},{id:'dashed',label:'Dashed'},{id:'dotted',label:'Dotted'}]},
+          {name:'Color',property:'border-color',type:'color'}
+        ]
+      },{
+        name:'Display',
+        properties:[
+          {name:'Display',property:'display',type:'select',options:[{id:'block',label:'Block'},{id:'flex',label:'Flex'},{id:'grid',label:'Grid'},{id:'inline-block',label:'Inline Block'},{id:'none',label:'None'}]},
+          {name:'Flex Dir',property:'flex-direction',type:'select',options:[{id:'row',label:'Row'},{id:'column',label:'Column'}]},
+          {name:'Justify',property:'justify-content',type:'select',options:[{id:'flex-start',label:'Start'},{id:'center',label:'Center'},{id:'flex-end',label:'End'},{id:'space-between',label:'Between'},{id:'space-around',label:'Around'}]},
+          {name:'Align',property:'align-items',type:'select',options:[{id:'flex-start',label:'Start'},{id:'center',label:'Center'},{id:'flex-end',label:'End'},{id:'stretch',label:'Stretch'}]},
+          {name:'Gap',property:'gap',type:'integer',units:['px','%']}
         ]
       }]
     },
-    blockManager: {
-      blocks: [
-        { id: 'heading', label: 'Heading', category: 'Basic', content: '<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;margin-bottom:16px;">Rubrik</h2>' },
-        { id: 'paragraph', label: 'Text', category: 'Basic', content: '<p style="font-size:15px;line-height:1.7;margin-bottom:12px;">Skriv text har...</p>' },
-        { id: 'image', label: 'Image', category: 'Basic', content: { type: 'image' } },
-        { id: 'link', label: 'Link', category: 'Basic', content: '<a href="#" style="color:#dc2626;text-decoration:underline;">Lank</a>' },
-        { id: 'button', label: 'Button', category: 'Basic', content: '<a href="#" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;">Knapp</a>' },
-        { id: 'divider', label: 'Divider', category: 'Basic', content: '<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">' },
-        { id: 'list', label: 'List', category: 'Basic', content: '<ul style="padding-left:20px;margin-bottom:16px;"><li>Punkt 1</li><li>Punkt 2</li><li>Punkt 3</li></ul>' },
-        { id: 'section', label: 'Section', category: 'Layout', content: '<section style="padding:40px 24px;"><div style="max-width:900px;margin:0 auto;"><h2>Section</h2><p>Content</p></div></section>' },
-        { id: 'columns', label: '2 Columns', category: 'Layout', content: '<div style="display:flex;gap:24px;flex-wrap:wrap;"><div style="flex:1;min-width:250px;"><p>Column 1</p></div><div style="flex:1;min-width:250px;"><p>Column 2</p></div></div>' },
-        { id: 'cols3', label: '3 Columns', category: 'Layout', content: '<div style="display:flex;gap:20px;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><p>Col 1</p></div><div style="flex:1;min-width:200px;"><p>Col 2</p></div><div style="flex:1;min-width:200px;"><p>Col 3</p></div></div>' },
-        { id: 'card', label: 'Card', category: 'Components', content: '<div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.05);"><h3 style="margin-bottom:8px;">Card Title</h3><p style="color:#64748b;font-size:14px;">Card content</p></div>' },
-        { id: 'video', label: 'Video', category: 'Components', content: { type: 'video' } },
-        { id: 'quote', label: 'Quote', category: 'Components', content: '<blockquote style="border-left:4px solid #dc2626;padding:16px 20px;margin:16px 0;font-style:italic;color:#475569;background:#f8fafc;border-radius:0 8px 8px 0;"><p>Citat har...</p></blockquote>' },
+    blockManager:{
+      blocks:[
+        {id:'heading',label:'Heading',category:'Text',content:'<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;margin-bottom:16px;">Rubrik</h2>'},
+        {id:'subheading',label:'Sub Heading',category:'Text',content:'<h3 style="font-size:20px;font-weight:600;margin-bottom:12px;color:#dc2626;">Underrubrik</h3>'},
+        {id:'paragraph',label:'Text Block',category:'Text',content:'<p style="font-size:15px;line-height:1.7;margin-bottom:12px;">Skriv text har...</p>'},
+        {id:'lead',label:'Lead Text',category:'Text',content:'<p style="font-size:18px;line-height:1.8;color:#475569;margin-bottom:20px;">Inledande text med storre storlek...</p>'},
+        {id:'list-ul',label:'Bullet List',category:'Text',content:'<ul style="padding-left:20px;margin-bottom:16px;line-height:1.8;"><li>Punkt 1</li><li>Punkt 2</li><li>Punkt 3</li></ul>'},
+        {id:'list-ol',label:'Number List',category:'Text',content:'<ol style="padding-left:20px;margin-bottom:16px;line-height:1.8;"><li>Steg 1</li><li>Steg 2</li><li>Steg 3</li></ol>'},
+
+        {id:'image',label:'Image',category:'Media',content:{type:'image'}},
+        {id:'image-text',label:'Image + Text',category:'Media',content:'<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:24px;"><div style="flex:1;min-width:250px;"><img src="https://placehold.co/600x400/1e293b/e2e8f0?text=Bild" style="width:100%;border-radius:8px;"></div><div style="flex:1;min-width:250px;"><h3>Rubrik</h3><p>Beskrivning har...</p></div></div>'},
+        {id:'youtube',label:'YouTube',category:'Media',content:'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-bottom:20px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe></div>'},
+        {id:'vimeo',label:'Vimeo',category:'Media',content:'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-bottom:20px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" src="https://player.vimeo.com/video/VIDEO_ID" allowfullscreen></iframe></div>'},
+        {id:'gallery',label:'Image Gallery',category:'Media',content:'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;"><img src="https://placehold.co/400x300/1e293b/e2e8f0?text=1" style="width:100%;border-radius:8px;"><img src="https://placehold.co/400x300/1e293b/e2e8f0?text=2" style="width:100%;border-radius:8px;"><img src="https://placehold.co/400x300/1e293b/e2e8f0?text=3" style="width:100%;border-radius:8px;"></div>'},
+
+        {id:'link-btn',label:'Link',category:'Elements',content:'<a href="#" style="color:#dc2626;text-decoration:underline;font-weight:500;">Lank</a>'},
+        {id:'button',label:'Button',category:'Elements',content:'<a href="#" style="display:inline-block;padding:14px 32px;background:#dc2626;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Knapp</a>'},
+        {id:'button-outline',label:'Outline Button',category:'Elements',content:'<a href="#" style="display:inline-block;padding:14px 32px;background:transparent;color:#dc2626;border:2px solid #dc2626;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Knapp</a>'},
+        {id:'divider',label:'Divider',category:'Elements',content:'<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">'},
+        {id:'spacer',label:'Spacer',category:'Elements',content:'<div style="height:40px;"></div>'},
+        {id:'quote',label:'Quote',category:'Elements',content:'<blockquote style="border-left:4px solid #dc2626;padding:16px 24px;margin:20px 0;font-style:italic;color:#475569;background:#f8fafc;border-radius:0 8px 8px 0;font-size:16px;line-height:1.7;"><p>Citat har...</p><cite style="font-size:13px;font-style:normal;color:#94a3b8;display:block;margin-top:8px;">- Namn</cite></blockquote>'},
+        {id:'icon-text',label:'Icon + Text',category:'Elements',content:'<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;"><div style="font-size:32px;">🎬</div><div><h4 style="margin-bottom:4px;">Rubrik</h4><p style="color:#64748b;font-size:14px;">Beskrivning</p></div></div>'},
+
+        {id:'section',label:'Section',category:'Layout',content:'<section style="padding:48px 24px;"><div style="max-width:900px;margin:0 auto;"><h2 style="font-family:Playfair Display,serif;">Section</h2><p>Content</p></div></section>'},
+        {id:'hero',label:'Hero Banner',category:'Layout',content:'<section style="padding:80px 32px;background:linear-gradient(135deg,#1a1a2e,#16213e);text-align:center;color:#fff;border-radius:12px;margin-bottom:24px;"><h1 style="font-family:Playfair Display,serif;font-size:42px;margin-bottom:16px;">Hero Rubrik</h1><p style="font-size:18px;color:#94a3b8;max-width:600px;margin:0 auto 24px;">Undertext</p><a href="#" style="display:inline-block;padding:14px 32px;background:#dc2626;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Knapp</a></section>'},
+        {id:'cols2',label:'2 Columns',category:'Layout',content:'<div style="display:flex;gap:24px;flex-wrap:wrap;"><div style="flex:1;min-width:250px;"><p>Kolumn 1</p></div><div style="flex:1;min-width:250px;"><p>Kolumn 2</p></div></div>'},
+        {id:'cols3',label:'3 Columns',category:'Layout',content:'<div style="display:flex;gap:20px;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><p>Kol 1</p></div><div style="flex:1;min-width:200px;"><p>Kol 2</p></div><div style="flex:1;min-width:200px;"><p>Kol 3</p></div></div>'},
+        {id:'card',label:'Card',category:'Layout',content:'<div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:16px;"><h3 style="margin-bottom:8px;">Korttitel</h3><p style="color:#64748b;font-size:14px;">Kortinnehall</p></div>'},
+        {id:'cards-row',label:'3 Cards Row',category:'Layout',content:'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;text-align:center;"><div style="font-size:36px;margin-bottom:12px;">🎥</div><h3>Kort 1</h3><p style="color:#64748b;font-size:14px;">Text</p></div><div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;text-align:center;"><div style="font-size:36px;margin-bottom:12px;">🎬</div><h3>Kort 2</h3><p style="color:#64748b;font-size:14px;">Text</p></div><div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;text-align:center;"><div style="font-size:36px;margin-bottom:12px;">🏆</div><h3>Kort 3</h3><p style="color:#64748b;font-size:14px;">Text</p></div></div>'},
+        {id:'cta',label:'Call to Action',category:'Layout',content:'<section style="padding:48px 32px;background:#dc2626;text-align:center;border-radius:12px;margin:24px 0;"><h2 style="color:#fff;font-family:Playfair Display,serif;font-size:28px;margin-bottom:12px;">Bli medlem idag!</h2><p style="color:#fecaca;margin-bottom:20px;">Ga med i Sveriges storsta filmkooperativ</p><a href="#" style="display:inline-block;padding:14px 32px;background:#fff;color:#dc2626;border-radius:8px;text-decoration:none;font-weight:700;">Anmalan</a></section>'},
+
+        {id:'contact',label:'Contact Box',category:'Blocks',content:'<div style="background:#f8fafc;border-radius:12px;padding:32px;border:1px solid #e2e8f0;margin-bottom:24px;"><h3 style="margin-bottom:16px;">Kontakt</h3><p><strong>E-post:</strong> styrelsen@filmcentrum.se</p><p><strong>Webbplats:</strong> www.filmcentrum.com</p></div>'},
+        {id:'team',label:'Team Member',category:'Blocks',content:'<div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;padding:16px;background:#f8fafc;border-radius:12px;"><img src="https://placehold.co/80x80/1e293b/e2e8f0?text=Foto" style="width:80px;height:80px;border-radius:50%;object-fit:cover;"><div><h4 style="margin-bottom:2px;">Namn</h4><p style="color:#dc2626;font-size:13px;margin-bottom:4px;">Roll / Titel</p><p style="color:#64748b;font-size:13px;">Kort beskrivning</p></div></div>'},
+        {id:'stats',label:'Statistics',category:'Blocks',content:'<div style="display:flex;gap:32px;justify-content:center;padding:32px;text-align:center;flex-wrap:wrap;"><div><div style="font-size:36px;font-weight:800;color:#dc2626;">1000+</div><div style="font-size:13px;color:#64748b;">Filmer</div></div><div><div style="font-size:36px;font-weight:800;color:#dc2626;">400+</div><div style="font-size:13px;color:#64748b;">Medlemmar</div></div><div><div style="font-size:36px;font-weight:800;color:#dc2626;">50+</div><div style="font-size:13px;color:#64748b;">Ar</div></div></div>'},
+        {id:'map',label:'Google Map',category:'Blocks',content:'<div style="border-radius:8px;overflow:hidden;margin-bottom:20px;"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2034.4!2d18.07!3d59.33!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTnCsDE5JzQ4LjAiTiAxOMKwMDQnMTIuMCJF!5e0!3m2!1ssv!2sse!4v1" width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe></div>'}
       ]
     }
   });
 }
 
-initEditor('sv');
-initEditor('en');
+initEditor('sv'); initEditor('en');
 
 function switchLang(lang) {
-  currentLang = lang;
-  document.querySelectorAll('.lang-tab').forEach(function(t, i) {
-    t.classList.toggle('active', (i === 0 && lang === 'sv') || (i === 1 && lang === 'en'));
-  });
-  document.getElementById('editor-sv').style.display = lang === 'sv' ? 'block' : 'none';
-  document.getElementById('editor-en').style.display = lang === 'en' ? 'block' : 'none';
-  if (editors[lang]) editors[lang].refresh();
+  currentLang=lang;
+  document.querySelectorAll('.lang-tab').forEach(function(t,i){t.classList.toggle('active',(i===0&&lang==='sv')||(i===1&&lang==='en'));});
+  document.getElementById('editor-sv').style.display=lang==='sv'?'block':'none';
+  document.getElementById('editor-en').style.display=lang==='en'?'block':'none';
+  if(editors[lang]) editors[lang].refresh();
 }
 
 function saveEditors() {
-  ['sv', 'en'].forEach(function(lang) {
-    if (editors[lang]) {
-      var html = editors[lang].getHtml();
-      var css = editors[lang].getCss();
-      var fullContent = css ? '<style>' + css + '</style>' + html : html;
-      document.getElementById('hidden_' + lang).value = fullContent;
+  ['sv','en'].forEach(function(lang){
+    if(editors[lang]){
+      var html=editors[lang].getHtml(); var css=editors[lang].getCss();
+      document.getElementById('hidden_'+lang).value=css?'<style>'+css+'</style>'+html:html;
     }
   });
 }
-
-document.getElementById('pageForm').addEventListener('submit', function() { saveEditors(); });
+document.getElementById('pageForm').addEventListener('submit',function(){saveEditors();});
 </script>
