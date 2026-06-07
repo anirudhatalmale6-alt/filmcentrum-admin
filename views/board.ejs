@@ -38,7 +38,7 @@
         <div class="role"><%= m.role %></div>
         <div class="desc"><%= m.description || '' %></div>
         <span class="cat-badge cat-ordinarie">Ordinarie</span>
-        <form method="POST" action="<%= base %>/board" style="display:inline"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
+        <a href="<%= base %>/board/<%= m.id %>/edit" style="display:inline-block;padding:3px 8px;background:#1d4ed8;color:#fff;border-radius:4px;font-size:10px;text-decoration:none;margin-right:4px;">Redigera</a><form method="POST" action="<%= base %>/board" style="display:inline"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
         <label style="display:inline-block;margin-top:4px;padding:3px 8px;background:#1d4ed8;color:#fff;border-radius:4px;font-size:10px;cursor:pointer;">Foto<input type="file" accept="image/*" style="display:none" onchange="uploadBoardPhoto(this, '<%= m.id %>')"></label>
       </div>
     <% }); %>
@@ -55,7 +55,7 @@
         <div class="role"><%= m.role %></div>
         <div class="desc"><%= m.description || '' %></div>
         <span class="cat-badge cat-suppleant">Suppleant</span>
-        <form method="POST" action="<%= base %>/board" style="display:inline"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
+        <a href="<%= base %>/board/<%= m.id %>/edit" style="display:inline-block;padding:3px 8px;background:#1d4ed8;color:#fff;border-radius:4px;font-size:10px;text-decoration:none;margin-right:4px;">Redigera</a><form method="POST" action="<%= base %>/board" style="display:inline"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<%= m.id %>"><button class="btn-del" onclick="return confirm('Delete?')">Ta bort</button></form>
         <label style="display:inline-block;margin-top:4px;padding:3px 8px;background:#1d4ed8;color:#fff;border-radius:4px;font-size:10px;cursor:pointer;">Foto<input type="file" accept="image/*" style="display:none" onchange="uploadBoardPhoto(this, '<%= m.id %>')"></label>
       </div>
     <% }); %>

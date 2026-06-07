@@ -668,6 +668,21 @@ app.post(BASE + '/board', auth, function(req, res) {
   res.redirect(BASE + '/board?saved=1');
 });
 
+// Edit board member
+app.get(BASE + '/board/:id/edit', auth, function(req, res) {
+  var member = db.prepare("SELECT * FROM board_members WHERE id = ?").get(req.params.id);
+  if (!member) return res.redirect(BASE + '/board');
+  res.render('board-edit', { base: BASE, member: member, success: req.query.saved === '1' });
+});
+
+app.post(BASE + '/board/:id/edit', auth, function(req, res) {
+  var b = req.body;
+  db.prepare("UPDATE board_members SET name=?, role=?, title=?, description=?, category=?, bio=?, sort_order=? WHERE id=?").run(
+    b.name || '', b.role || '', b.title || '', b.description || '', b.category || 'ordinarie', b.bio || '', parseInt(b.sort_order) || 0, req.params.id
+  );
+  res.redirect(BASE + '/board/' + req.params.id + '/edit?saved=1');
+});
+
 // Public Styrelse page
 app.get(BASE.replace("/admin", "") + "/styrelse", function(req, res) {
   var board = db.prepare("SELECT * FROM board_members ORDER BY sort_order").all();
