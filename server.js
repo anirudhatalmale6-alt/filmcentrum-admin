@@ -1302,6 +1302,24 @@ var mediaStorage = multer.diskStorage({
 });
 var mediaUpload = multer({ storage: mediaStorage, limits: { fileSize: 10 * 1024 * 1024 }, fileFilter: function(req, file, cb) { if (file.mimetype.startsWith('image/')) cb(null, true); else cb(new Error('Only images'), false); } });
 
+// Board member photo upload
+app.post(BASE + '/api/board-photo', auth, mediaUpload.single('file'), function(req, res) {
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  var photoPath = BASE + '/uploads/' + req.file.filename;
+  if (req.body.member_id) {
+    db.prepare("UPDATE board_members SET photo = ? WHERE id = ?").run(photoPath, req.body.member_id);
+  }
+  res.json({ success: true, path: photoPath });
+});
+
+// Theme logo upload
+app.post(BASE + '/api/theme-logo', auth, mediaUpload.single('file'), function(req, res) {
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  var logoPath = BASE + '/uploads/' + req.file.filename;
+  db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('theme_logo', ?)").run(logoPath);
+  res.json({ success: true, path: logoPath });
+});
+
 app.post(BASE + '/api/upload', auth, mediaUpload.single('file'), async function(req, res) {
   if (!req.file) return res.status(400).json({ error: 'No file' });
   try {
